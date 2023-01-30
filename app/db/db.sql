@@ -2,7 +2,7 @@
 -- create database academic_management;
 -- TODO: check if pre_req is also a course or not. [course catalog].
 -- TODO: refractor code to maybe separate different modules or even triggers and functions.
-
+-- TODO: Is it better to go with individual table for each student or same table for all students, for different semester_AY table.
 
 --!-----------------------------------------------* course_catalog starts *----------------------------------------------------------------
 drop table course_catalog;

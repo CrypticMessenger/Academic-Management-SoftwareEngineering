@@ -1,6 +1,5 @@
 package studentmanagement;
 
-import java.util.Scanner;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -8,7 +7,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class App {
+public class Server {
     private final String url = "jdbc:postgresql://localhost/academic_management";
     private final String user = "postgres";
     private final String password = "1421";
@@ -52,9 +51,6 @@ public class App {
     }
 
     public static void main(String[] args) {
-        App app = new App();
-        Connection conn = app.connect();
-        app.getResultSet(conn, "select * from student_auth");
 
     }
 }

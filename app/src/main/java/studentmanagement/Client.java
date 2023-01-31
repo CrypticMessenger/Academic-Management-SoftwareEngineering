@@ -17,9 +17,12 @@ public class Client {
     public Connection connect() {
         Connection conn = null;
         try {
+            // Connect to the database
             conn = DriverManager.getConnection(url, user, password);
+            // Print a message to the console
             System.out.println("Connected to the PostgreSQL server successfully.");
         } catch (SQLException e) {
+            // Print a message to the console
             System.out.println(e.getMessage());
         }
         return conn;
@@ -70,20 +73,21 @@ public class Client {
         String pwd = sc.nextLine();
 
         // TODO: deal with SQL injection attacks
+        // TODO: refactor this code
         try {
-            Statement st = conn.createStatement();
-            System.out.println("SELECT login_check(" + id + "," + pwd + ")");
-            ResultSet rs = st.executeQuery("SELECT login_check('" + id + "','" + pwd + "')");
-            rs.next();
-            String result = rs.getString(1);
-            if (result.equals("s")) {
-                System.out.println("Welcome student!");
-            } else if (result.equals("p")) {
-                System.out.println("Welcome professor!");
-            } else if (result.equals("a")) {
-                System.out.println("Welcome admin!");
-            } else if (result.equals("f")) {
-                System.out.println("Login failed!");
+            Statement statement = conn.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT login_check('" + id + "','" + pwd + "')");
+            resultSet.next();
+            String result = resultSet.getString(1);
+            switch (result) {
+                case "s":
+                    System.out.println("Welcome student!");
+                case "p":
+                    System.out.println("Welcome professor!");
+                case "a":
+                    System.out.println("Welcome admin!");
+                case "f":
+                    System.out.println("Login failed!");
             }
 
         } catch (SQLException e) {

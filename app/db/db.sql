@@ -76,28 +76,10 @@ BEGIN
       || ' (
         sem integer,
         AY text,
-        courses text [] default array[]::text[],
-        grades text [] default array[]::text[],
-        credits_earned integer default 0
+        course text not null,
+        grade text
       )';
     
-    joining_year := cast(substring(roll_num,1,4) as integer);
-    -- sem := 2;
-    -- FOR i IN 1..8 LOOP
-    --   if sem = 1 then
-    --     ay := cast(((joining_year) || '-' || (joining_year+1)) as text);
-    --   elsif sem = 2 then
-    --     ay := cast(((joining_year) || '-' || (joining_year+1)) as text);
-    --     joining_year := joining_year + 1;
-    --   end if;
-        
-    --   EXECUTE 'insert into '
-    --   || quote_ident(table_name)
-    --   || '(sem,ay) values('
-    --   || quote_literal(sem) ||',' || quote_literal(ay) ||')';
-
-    --   sem := 3-sem;
-    -- END LOOP;
   end if;
   RETURN new;
 END;
@@ -174,28 +156,6 @@ $$ LANGUAGE plpgsql;
 
 
 
-CREATE OR REPLACE FUNCTION add_course_student(id text, course text,sem integer,ay text,credit_limit integer)
-RETURNS text AS $$
-DECLARE
-    credits integer;
-    table_name text;
-    
-BEGIN
-    table_name := 's' || substring(add_course_student.id,1,11);
-    raise notice 'hello %',table_name;
-    select credits into c 
-    from course_catalog
-    where course_code = add_course_student.courses;
-    select update_or_insert(table_name,sem,ay,course);
-
-
-    
-    raise notice 'hello';
-    return 'hello';
-END;
-$$ LANGUAGE plpgsql;
-
-
 
 
 
@@ -215,8 +175,6 @@ insert into user_auth(id,name,pwd,roles) values('2020csb1070@iitrpr.ac.in','Amit
 insert into user_auth(id,name,pwd,roles) values('2020csb1072@iitrpr.ac.in','Ankit Sharma','X123','s');
 insert into user_auth(id,name,pwd,roles) values('2020csb1074@iitrpr.ac.in','Arshdeep Singh','X123','s');
 
-select add_course_student('2020csb1072@iitrpr.ac.in','cs301',1,'2023-2024',24);
--- upsert('2020csb1072@iitrpr.ac.in',1,'2023-2024',Array ['CS301'],Array['A']);
 
 insert into user_auth(id,name,pwd,roles) values('apurva@iitrpr.ac.in','Apurva Mudgal','X123','p');
 insert into user_auth(id,name,pwd,roles) values('gunturi@iitrpr.ac.in','V. Gunturi','X123','p');

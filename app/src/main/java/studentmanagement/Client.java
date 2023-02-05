@@ -1,102 +1,72 @@
 package studentmanagement;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.io.*;
+import java.net.*;
 import java.util.Scanner;
 
 public class Client {
-    private final String url = "jdbc:postgresql://localhost/academic_management";
-    private final String user = "postgres";
-    private final String password = "1421";
-    private String current_user = "";
-
-    public Connection connect() {
-        Connection conn = null;
+    public static void main(String[] args) throws IOException {
+        Socket clientSocket = null;
         try {
-            // Connect to the database
-            conn = DriverManager.getConnection(url, user, password);
-            // Print a message to the console
-            System.out.println("Connected to the PostgreSQL server successfully.");
-        } catch (SQLException e) {
-            // Print a message to the console
-            System.out.println(e.getMessage());
+            clientSocket = new Socket("localhost", 4444);
+        } catch (UnknownHostException e) {
+            System.err.println("Unknown host: localhost");
+            System.exit(1);
+        } catch (IOException e) {
+            System.err.println("Couldn't get I/O for the connection to: localhost");
+            System.exit(1);
         }
-        return conn;
-    }
 
-    public Boolean getResultSet(Connection conn, String query) {
-        Boolean flag = false;
-        try {
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(query);
+        PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(
+                        clientSocket.getInputStream()));
+        Scanner scan = new Scanner(System.in);
+        String inputLine;
+        String email = "";
+        String password = "";
+        Boolean login = false;
+        while (!login) {
 
-            ResultSetMetaData rsmd = rs.getMetaData();
-            int columnsNumber = rsmd.getColumnCount();
-            for (int i = 1; i <= columnsNumber; i++) {
-                if (i > 1)
-                    System.out.print("  ");
-                System.out.print(rsmd.getColumnName(i));
-            }
-            System.out.println("");
-            while (rs.next()) {
-                for (int i = 1; i <= columnsNumber; i++) {
-                    if (i > 1)
-                        System.out.print("  ");
-                    String columnValue = rs.getString(i);
-                    System.out.print(columnValue + " ");
+            System.out.println("1: Login");
+            System.out.println("2: Exit");
+            System.out.print("Choose: ");
+            inputLine = scan.nextLine();
+            if (inputLine.equals("2")) {
+                System.out.println("Bye.");
+                out.println("exit: " + inputLine);
+            } else if (inputLine.equals("1")) {
+
+                System.out.println("Login");
+                System.out.print("email: ");
+                email = scan.nextLine();
+                System.out.print("password: ");
+                password = scan.nextLine();
+                inputLine = "login: " + email + " " + password;
+                out.println(inputLine);
+                switch (in.readLine()) {
+                    case "s":
+                        System.out.println("welcome Student!");
+                        login = true;
+                        break;
+                    case "p":
+                        System.out.println("welcome Professor!");
+                        login = true;
+                        break;
+                    case "a":
+                        System.out.println("welcome Admin!");
+                        login = true;
+                        break;
+                    default:
+                        System.out.println("Login Failed!");
+                        break;
                 }
-                System.out.println("");
-                if (!flag) {
-                    flag = true;
-                }
             }
-            return flag;
-        } catch (SQLException e) {
-            System.err.println(e.getMessage());
-            return flag;
         }
 
-    }
-
-    public static void main(String[] args) {
-        Client app = new Client();
-        Connection conn = app.connect();
-        // make an authetication system for users
-        Scanner sc = new Scanner(System.in);
-        System.out.println("Enter your email id: ");
-        String id = sc.nextLine();
-        System.out.println("Enter your password: ");
-        String pwd = sc.nextLine();
-
-        // TODO: deal with SQL injection attacks
-        // TODO: refactor this code
-        try {
-            Statement statement = conn.createStatement();
-            ResultSet resultSet = statement.executeQuery("SELECT login_check('" + id + "','" + pwd + "')");
-            resultSet.next();
-            String result = resultSet.getString(1);
-            switch (result) {
-                case "s":
-                    System.out.println("Welcome student!");
-                case "p":
-                    System.out.println("Welcome professor!");
-                case "a":
-                    System.out.println("Welcome admin!");
-                case "f":
-                    System.out.println("Login failed!");
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        System.out.println(id);
-        System.out.println(pwd);
-        sc.close();
-
+        out.close();
+        in.close();
+        clientSocket.close();
+        scan.close();
     }
 }

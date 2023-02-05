@@ -27,6 +27,14 @@ credits integer;
 BEGIN
 	credits := (new.L + (new.P)/2);
     new.C = credits;
+    EXECUTE 'create table if not exists '
+      || quote_ident(lower(new.course_code))
+      || ' (
+        student_id text,
+        grade text,
+        primary key (student_id),
+        constraint check_student foreign key (student_id) references user_auth(id)
+      )';
 	RETURN new;
 END;
 $$;
@@ -47,29 +55,51 @@ create table user_auth (
     roles varchar(255) not null,
     primary key (id)
 );
-
 CREATE OR REPLACE FUNCTION add_student_record()
   RETURNS TRIGGER 
   LANGUAGE PLPGSQL
   AS
 $$
 declare
-sem integer;
+  roll_num text;
+  table_name text;
+  joining_year integer;
+  sem integer;
+  ay text;
+  i integer;
 BEGIN
-    If new.roles = 's' then 
+  If new.roles = 's' then 
+    roll_num := substring(new.id,1,11);
+    table_name := 's' || substring(new.id,1,11);
     EXECUTE 'create table if not exists '
-      || quote_ident('s' || substring(new.id,1,11))
+      || quote_ident(table_name)
       || ' (
         sem integer,
         AY text,
-        courses text [],
-        grades text [],
-        cgpa numeric(10,2),
+        courses text [] default array[]::text[],
+        grades text [] default array[]::text[],
         credits_earned integer default 0
       )';
-    end if;
-	
-	RETURN new;
+    
+    joining_year := cast(substring(roll_num,1,4) as integer);
+    -- sem := 2;
+    -- FOR i IN 1..8 LOOP
+    --   if sem = 1 then
+    --     ay := cast(((joining_year) || '-' || (joining_year+1)) as text);
+    --   elsif sem = 2 then
+    --     ay := cast(((joining_year) || '-' || (joining_year+1)) as text);
+    --     joining_year := joining_year + 1;
+    --   end if;
+        
+    --   EXECUTE 'insert into '
+    --   || quote_ident(table_name)
+    --   || '(sem,ay) values('
+    --   || quote_literal(sem) ||',' || quote_literal(ay) ||')';
+
+    --   sem := 3-sem;
+    -- END LOOP;
+  end if;
+  RETURN new;
 END;
 $$;
 
@@ -110,6 +140,60 @@ END;
 $$ LANGUAGE plpgsql;
 
 
+CREATE OR REPLACE FUNCTION update_or_insert(table_name text, sem text, ay text, course text) 
+RETURNS VOID AS $$
+declare
+ c_temp text[];
+ found Boolean;
+BEGIN
+ WITH cte AS (
+    SELECT courses
+    FROM update_or_insert.table_name
+    WHERE sem = update_or_insert.sem and ay =  update_or_insert.ay 
+    LIMIT 1
+  )
+  SELECT array_append(courses, course) INTO c_temp
+  FROM cte;
+
+    if (array_length(c_temp,1) > 0) then
+        found = true;
+    else
+        found = false;
+    end if;
+
+  IF found THEN
+    UPDATE mytable
+    SET courses =  c_temp 
+    WHERE id = update_or_insert.sem and ay = update_or_insert.ay;
+  ELSE
+    INSERT INTO update_or_insert.table_name (sem, ay, courses)
+    VALUES (update_or_insert.sem, update_or_insert.ay, ARRAY[update_or_insert.course]);
+  END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+CREATE OR REPLACE FUNCTION add_course_student(id text, course text,sem integer,ay text,credit_limit integer)
+RETURNS text AS $$
+DECLARE
+    credits integer;
+    table_name text;
+    
+BEGIN
+    table_name := 's' || substring(add_course_student.id,1,11);
+    raise notice 'hello %',table_name;
+    select credits into c 
+    from course_catalog
+    where course_code = add_course_student.courses;
+    select update_or_insert(table_name,sem,ay,course);
+
+
+    
+    raise notice 'hello';
+    return 'hello';
+END;
+$$ LANGUAGE plpgsql;
 
 
 
@@ -130,19 +214,9 @@ insert into course_catalog(course_code, L, T,P) values('CS305',3,0,2);
 insert into user_auth(id,name,pwd,roles) values('2020csb1070@iitrpr.ac.in','Amit Kumar','X123','s');
 insert into user_auth(id,name,pwd,roles) values('2020csb1072@iitrpr.ac.in','Ankit Sharma','X123','s');
 insert into user_auth(id,name,pwd,roles) values('2020csb1074@iitrpr.ac.in','Arshdeep Singh','X123','s');
-insert into s2020csb1070(sem,ay) values(2,'2020-2021');
-insert into s2020csb1070(sem,ay) values(1,'2021-2022');
-insert into s2020csb1070(sem,ay) values(2,'2021-2022');
-insert into s2020csb1070(sem,ay) values(1,'2022-2023');
-insert into s2020csb1070(sem,ay) values(2,'2022-2023');
-insert into s2020csb1070(sem,ay) values(1,'2023-2024');
 
-insert into s2020csb1072(sem,ay) values(2,'2020-2021');
-insert into s2020csb1072(sem,ay) values(1,'2021-2022');
-insert into s2020csb1072(sem,ay) values(2,'2021-2022');
-insert into s2020csb1072(sem,ay) values(1,'2022-2023');
-insert into s2020csb1072(sem,ay) values(2,'2022-2023');
-insert into s2020csb1072(sem,ay) values(1,'2023-2024');
+select add_course_student('2020csb1072@iitrpr.ac.in','cs301',1,'2023-2024',24);
+-- upsert('2020csb1072@iitrpr.ac.in',1,'2023-2024',Array ['CS301'],Array['A']);
 
 insert into user_auth(id,name,pwd,roles) values('apurva@iitrpr.ac.in','Apurva Mudgal','X123','p');
 insert into user_auth(id,name,pwd,roles) values('gunturi@iitrpr.ac.in','V. Gunturi','X123','p');

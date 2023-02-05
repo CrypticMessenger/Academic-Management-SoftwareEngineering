@@ -1,11 +1,8 @@
 package studentmanagement;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+import java.io.*;
+import java.net.*;
 
 public class Server {
     private final String url = "jdbc:postgresql://localhost/academic_management";
@@ -15,42 +12,71 @@ public class Server {
     public Connection connect() {
         Connection conn = null;
         try {
+            // Connect to the database
             conn = DriverManager.getConnection(url, user, password);
+            // Print a message to the console
             System.out.println("Connected to the PostgreSQL server successfully.");
         } catch (SQLException e) {
+            // Print a message to the console
             System.out.println(e.getMessage());
         }
         return conn;
     }
 
-    public void getResultSet(Connection conn, String query) {
+    public static void main(String[] args) throws IOException {
+        ServerSocket serverSocket = null;
         try {
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(query);
-
-            ResultSetMetaData rsmd = rs.getMetaData();
-            int columnsNumber = rsmd.getColumnCount();
-            for (int i = 1; i <= columnsNumber; i++) {
-                if (i > 1)
-                    System.out.print("  ");
-                System.out.print(rsmd.getColumnName(i));
-            }
-            System.out.println("");
-            while (rs.next()) {
-                for (int i = 1; i <= columnsNumber; i++) {
-                    if (i > 1)
-                        System.out.print("  ");
-                    String columnValue = rs.getString(i);
-                    System.out.print(columnValue + " ");
-                }
-                System.out.println("");
-            }
-        } catch (SQLException e) {
-            System.err.println(e.getMessage());
+            serverSocket = new ServerSocket(4444);
+            System.out.println("Server started!");
+        } catch (IOException e) {
+            System.out.println("Could not listen on port: 4444");
+            System.exit(-1);
         }
+
+        Socket clientSocket = null;
+        try {
+            clientSocket = serverSocket.accept();
+        } catch (IOException e) {
+            System.out.println("Accept failed: 4444");
+            System.exit(-1);
+        }
+
+        PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(
+                        clientSocket.getInputStream()));
+        String inputLine;
+        Server server = new Server();
+
+        while ((inputLine = in.readLine()) != null) {
+
+            String[] request = inputLine.split(" ");
+            // login
+            if (request[0].equals("login:")) {
+                Connection conn = server.connect();
+                String email = request[1];
+                String password = request[2];
+                try {
+                    Statement statement = conn.createStatement();
+                    ResultSet resultSet = statement
+                            .executeQuery("SELECT login_check('" + email + "','" + password + "')");
+                    resultSet.next();
+                    String result = resultSet.getString(1);
+                    out.println(result);
+
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            // exit
+            else if (request[0].equals("exit:")) {
+                break;
+            }
+        }
+        out.close();
+        in.close();
+        clientSocket.close();
+        serverSocket.close();
     }
 
-    public static void main(String[] args) {
-
-    }
 }

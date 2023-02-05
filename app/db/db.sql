@@ -122,37 +122,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 
-CREATE OR REPLACE FUNCTION update_or_insert(table_name text, sem text, ay text, course text) 
-RETURNS VOID AS $$
-declare
- c_temp text[];
- found Boolean;
-BEGIN
- WITH cte AS (
-    SELECT courses
-    FROM update_or_insert.table_name
-    WHERE sem = update_or_insert.sem and ay =  update_or_insert.ay 
-    LIMIT 1
-  )
-  SELECT array_append(courses, course) INTO c_temp
-  FROM cte;
 
-    if (array_length(c_temp,1) > 0) then
-        found = true;
-    else
-        found = false;
-    end if;
-
-  IF found THEN
-    UPDATE mytable
-    SET courses =  c_temp 
-    WHERE id = update_or_insert.sem and ay = update_or_insert.ay;
-  ELSE
-    INSERT INTO update_or_insert.table_name (sem, ay, courses)
-    VALUES (update_or_insert.sem, update_or_insert.ay, ARRAY[update_or_insert.course]);
-  END IF;
-END;
-$$ LANGUAGE plpgsql;
 
 
 

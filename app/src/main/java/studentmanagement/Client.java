@@ -48,17 +48,45 @@ public class Client {
                     case "s":
                         System.out.println("welcome Student!");
                         login = true;
+                        while (true) {
+                            System.out.println("1: Register for course");
+                            System.out.println("2: De-register for course");
+                            System.out.println("2: View grades and courses");
+                            System.out.println("4: Logout");
+                            System.out.print("Choose: ");
+                            inputLine = scan.nextLine();
+                            break;
+                        }
                         break;
                     case "p":
                         System.out.println("welcome Professor!");
                         login = true;
+                        while (true) {
+                            System.out.println("1: View grades in the courses");
+                            System.out.println("2: Float a course");
+                            System.out.println("3: Un-register a course");
+                            System.out.println("4: Upload grades for course");
+                            System.out.println("5: Logout");
+                            System.out.print("Choose: ");
+                            inputLine = scan.nextLine();
+                            break;
+                        }
                         break;
                     case "a":
                         System.out.println("welcome Admin!");
                         login = true;
+                        while (true) {
+                            System.out.println("1: Edit course Catalogue");
+                            System.out.println("2: View student record");
+                            System.out.println("3: Generate transcripts");
+                            System.out.println("4: Logout");
+                            System.out.print("Choose: ");
+                            inputLine = scan.nextLine();
+                            break;
+                        }
                         break;
                     default:
-                        System.out.println("Login Failed!");
+                        System.out.println("Login Failed! Try again.");
                         break;
                 }
             }

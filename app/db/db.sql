@@ -4,6 +4,7 @@
 -- TODO: refractor code to maybe separate different modules or even triggers and functions.
 -- TODO: Is it better to go with individual table for each student or same table for all students, for different semester_AY table.
 -- TODO: add semester and AY
+\c academic_management
 --!-----------------------------------------------* course_catalog starts *----------------------------------------------------------------
 drop table course_catalog;
 create table course_catalog(
@@ -123,7 +124,13 @@ $$ LANGUAGE plpgsql;
 
 
 
-
+create table login_log(
+  id serial,
+  user_id varchar(255) not null,
+  login_time timestamp default now(),
+  primary key (id),
+  constraint check_user foreign key (user_id) references user_auth(id)
+);
 
 
 

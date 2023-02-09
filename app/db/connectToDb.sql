@@ -1,1 +1,0 @@
-\c academic_management

@@ -127,12 +127,16 @@ $$ LANGUAGE plpgsql;
 create table login_log(
   id serial,
   user_id varchar(255) not null,
-  login_time timestamp default now(),
+  status varchar(255) not null,
+  time_stamp timestamp default now(),
   primary key (id),
   constraint check_user foreign key (user_id) references user_auth(id)
 );
 
-
+create table current_session(
+  ay varchar(255) not null,
+  sem integer not null
+);
 
 
 
@@ -148,15 +152,17 @@ insert into course_catalog(course_code, L, T,P,pre_req) values('CS302',3,1,0, Ar
 insert into course_catalog(course_code, L, T,P) values('CS303',3,1,2);
 insert into course_catalog(course_code, L, T,P,pre_req) values('CS304',3,1,2, array ['CS303']);
 insert into course_catalog(course_code, L, T,P) values('CS305',3,0,2);
+
 insert into user_auth(id,name,pwd,roles) values('2020csb1070@iitrpr.ac.in','Amit Kumar','X123','s');
 insert into user_auth(id,name,pwd,roles) values('2020csb1072@iitrpr.ac.in','Ankit Sharma','X123','s');
 insert into user_auth(id,name,pwd,roles) values('2020csb1074@iitrpr.ac.in','Arshdeep Singh','X123','s');
-
-
 insert into user_auth(id,name,pwd,roles) values('apurva@iitrpr.ac.in','Apurva Mudgal','X123','p');
 insert into user_auth(id,name,pwd,roles) values('gunturi@iitrpr.ac.in','V. Gunturi','X123','p');
 insert into user_auth(id,name,pwd,roles) values('balwinder@iitrpr.ac.in','Balwinder Sodhi','X123','p');
 insert into user_auth(id,name,pwd,roles) values('admin@iitrpr.ac.in','Admin','X123','a');
+
 insert into course_offerings(course_code, instructor_id) values('CS302','apurva@iitrpr.ac.in');
 insert into course_offerings(course_code, instructor_id) values('CS301','gunturi@iitrpr.ac.in');
 insert into course_offerings(course_code, instructor_id,cg_constraint) values('CS305','balwinder@iitrpr.ac.in',7.5);
+
+insert into current_session(ay,sem) values('2023-24',1);

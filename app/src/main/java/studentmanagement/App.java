@@ -36,10 +36,9 @@ public class App {
         App app = new App();
         String email = "";
         String password = "";
-        Boolean login = false;
         Scanner scan = new Scanner(System.in);
         String inputLine;
-        while (!login) {
+        while (true) {
 
             System.out.println("1: Login");
             System.out.println("2: Exit");
@@ -75,72 +74,19 @@ public class App {
                         // case student
                         case "s":
                             Student student = new Student(email, conn);
-                            System.out.println("Welcome " + student.getName() + " !");
-                            while (true) {
-                                System.out.println("1: Register for course");
-                                System.out.println("2: De-register for course");
-                                System.out.println("3: View grades and courses");
-                                System.out.println("4: Logout");
-                                System.out.print("Choose: ");
-                                inputLine = scan.nextLine();
-                                if (inputLine.equals("4")) {
-                                    student.finalize();
-                                    login = false;
-                                    break;
-                                } else if (inputLine.equals("3")) {
-                                    student.viewGrades();
-                                } else if (inputLine.equals("2")) {
-                                    student.deregisterCourse();
-                                } else if (inputLine.equals("1")) {
-                                    student.registerCourse();
-                                } else {
-                                    System.out.println("Invalid input");
-                                }
-
-                                // break;
-
-                            }
+                            student.studentOptions(scan);
                             break;
 
                         // case professor
                         case "p":
                             Professor professor = new Professor(email, conn);
-                            System.out.println("Welcome " + professor.getName() + " !");
-                            while (true) {
-                                System.out.println("1: View grades in the courses");
-                                System.out.println("2: Float a course");
-                                System.out.println("3: Un-register a course");
-                                System.out.println("4: Upload grades for course");
-                                System.out.println("5: Logout");
-                                System.out.print("Choose: ");
-                                inputLine = scan.nextLine();
-                                if (inputLine.equals("5")) {
-                                    professor.finalize();
-                                    login = false;
-                                    break;
-                                }
-                                break;
-                            }
+                            professor.professorOptions(scan);
                             break;
 
                         // case admin
                         case "a":
                             Admin admin = new Admin(email, conn);
-                            System.out.println("Welcome " + admin.getName() + " !");
-                            while (true) {
-                                System.out.println("1: Edit course Catalogue");
-                                System.out.println("2: View student record");
-                                System.out.println("3: Generate transcripts");
-                                System.out.println("4: Logout");
-                                System.out.print("Choose: ");
-                                inputLine = scan.nextLine();
-                                if (inputLine.equals("4")) {
-                                    admin.finalize();
-                                    login = false;
-                                    break;
-                                }
-                                break;
-                            }
+                            admin.adminOptions(scan);
                             break;
 
                         // case login failed
@@ -152,6 +98,7 @@ public class App {
                 } catch (SQLException e) {
                     System.out.println("error in login!");
                     e.printStackTrace();
+                    break;
                 }
             }
         }

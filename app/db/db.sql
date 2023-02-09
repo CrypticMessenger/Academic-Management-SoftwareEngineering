@@ -13,8 +13,10 @@ create table course_catalog(
     T integer not null,
     P integer not null,
     C integer not null,
+    ay text null,
+    sem text not null,
     pre_req text [],
-    primary key (course_code)
+    primary key (course_code,ay,sem)
     
 );
 
@@ -28,14 +30,7 @@ credits integer;
 BEGIN
 	credits := (new.L + (new.P)/2);
     new.C = credits;
-    EXECUTE 'create table if not exists '
-      || quote_ident(lower(new.course_code))
-      || ' (
-        student_id text,
-        grade text,
-        primary key (student_id),
-        constraint check_student foreign key (student_id) references user_auth(id)
-      )';
+   
 	RETURN new;
 END;
 $$;
@@ -62,15 +57,10 @@ CREATE OR REPLACE FUNCTION add_student_record()
   AS
 $$
 declare
-  roll_num text;
   table_name text;
-  joining_year integer;
-  sem integer;
-  ay text;
-  i integer;
+  
 BEGIN
   If new.roles = 's' then 
-    roll_num := substring(new.id,1,11);
     table_name := 's' || substring(new.id,1,11);
     EXECUTE 'create table if not exists '
       || quote_ident(table_name)
@@ -96,12 +86,10 @@ execute procedure add_student_record();
 --!-----------------------------------------------* course_offerings starts *----------------------------------------------------------------
 drop table course_offerings;
 create table course_offerings(
-    id serial,
     course_code varchar(255) not null,
     instructor_id varchar(255) not null,
     cg_constraint numeric(10,3) default 0,
-    primary key (id),
-    constraint check_course foreign key (course_code) references course_catalog(course_code),
+    primary key (instructor_id,course_code),
     constraint check_inst foreign key (instructor_id) references user_auth(id)
 );
 --------------------------------------------------* course_offerings ends *----------------------------------------------------------------
@@ -124,6 +112,7 @@ $$ LANGUAGE plpgsql;
 
 
 
+--!--------------------------------------------------------------* login_log starts *----------------------------------------------------------------
 create table login_log(
   id serial,
   email varchar(255) not null,
@@ -132,32 +121,49 @@ create table login_log(
   primary key (id),
   constraint check_user foreign key (email) references user_auth(id)
 );
+----------------------------------------------------------------* login_log ends *----------------------------------------------------------------
 
+
+--!--------------------------------------------------------------* current_session starts *----------------------------------------------------------------
 create table current_session(
   ay varchar(255) not null,
-  sem integer not null
+  sem integer not null,
+  primary key (ay,sem)
+);
+----------------------------------------------------------------* current_session starts *----------------------------------------------------------------
+
+
+--!--------------------------------------------------------------* config starts *----------------------------------------------------------------
+create table config(
+  grade_submission_start boolean default false,
+  grade_submission_end boolean default false,
+  validation_end boolean default false
 );
 
+----------------------------------------------------------------* config ends *----------------------------------------------------------------
+
+--!--------------------------------------------------------------* report_validator starts *----------------------------------------------------------------
+create table report_validator(
+  course_code varchar(255) not null,
+  student_id varchar(255) not null,
+  primary key(course_code, student_id)
+);
+----------------------------------------------------------------* report_validator starts *----------------------------------------------------------------
 
 
 
 
-
-
-
-
-
-insert into course_catalog(course_code, L, T,P) values('CS301',3,1,2);
-insert into course_catalog(course_code, L, T,P) values('CS201',3,1,2);
-insert into course_catalog(course_code, L, T,P) values('CS202',3,1,2);
-insert into course_catalog(course_code, L, T,P) values('CS204',3,1,2);
-insert into course_catalog(course_code, L, T,P) values('CS205',3,1,2);
-insert into course_catalog(course_code, L, T,P,pre_req) values('CS302',3,1,0, Array ['CS301','CS305']); 
-insert into course_catalog(course_code, L, T,P,pre_req) values('CS303',3,1,2,Array ['CS302']);
-insert into course_catalog(course_code, L, T,P,pre_req) values('CS304',3,1,2, array ['CS303']);
-insert into course_catalog(course_code, L, T,P) values('CS305',3,0,2);
-insert into course_catalog(course_code, L, T,P) values('CS306',3,0,2);
-insert into course_catalog(course_code, L, T,P) values('CS539',3,0,2);
+insert into course_catalog(course_code, L, T,P,ay,sem) values('CS301',3,1,2,'2023-2024',1);
+insert into course_catalog(course_code, L, T,P,ay,sem) values('CS201',3,1,2,'2023-2024',1);
+insert into course_catalog(course_code, L, T,P,ay,sem) values('CS202',3,1,2,'2023-2024',1);
+insert into course_catalog(course_code, L, T,P,ay,sem) values('CS204',3,1,2,'2023-2024',1);
+insert into course_catalog(course_code, L, T,P,ay,sem) values('CS205',3,1,2,'2023-2024',1);
+insert into course_catalog(course_code, L, T,P,pre_req,ay,sem) values('CS302',3,1,0, Array ['CS301','CS305'],'2023-2024',1); 
+insert into course_catalog(course_code, L, T,P,pre_req,ay,sem) values('CS303',3,1,2,Array ['CS302'],'2023-2024',1);
+insert into course_catalog(course_code, L, T,P,pre_req,ay,sem) values('CS304',3,1,2, array ['CS303'],'2023-2024',1);
+insert into course_catalog(course_code, L, T,P,ay,sem) values('CS305',3,0,2,'2023-2024',1);
+insert into course_catalog(course_code, L, T,P,ay,sem) values('CS306',3,0,2,'2023-2024',1);
+insert into course_catalog(course_code, L, T,P,ay,sem) values('CS539',3,0,2,'2023-2024',1);
 
 insert into user_auth(id,name,pwd,roles) values('2020csb1070@iitrpr.ac.in','Amit Kumar','X123','s');
 insert into user_auth(id,name,pwd,roles) values('2020csb1072@iitrpr.ac.in','Ankit Sharma','X123','s');

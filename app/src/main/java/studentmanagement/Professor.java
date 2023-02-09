@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Scanner;
 
 public class Professor extends Person {
     private String name;
@@ -28,6 +29,25 @@ public class Professor extends Person {
 
     public String getName() {
         return this.name;
+    }
+
+    public void professorOptions(Scanner scan) {
+        System.out.println("Welcome " + getName() + " !");
+        String inputLine;
+        while (true) {
+            System.out.println("1: View grades in the courses");
+            System.out.println("2: Float a course");
+            System.out.println("3: Un-register a course");
+            System.out.println("4: Upload grades for course");
+            System.out.println("5: Logout");
+            System.out.print("Choose: ");
+            inputLine = scan.nextLine();
+            if (inputLine.equals("5")) {
+                finalize();
+                break;
+            }
+            break;
+        }
     }
 
     public void finalize() {

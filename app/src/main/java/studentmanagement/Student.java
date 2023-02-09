@@ -1,6 +1,7 @@
 package studentmanagement;
 
 import java.sql.*;
+import java.util.Scanner;
 
 public class Student extends Person {
     private String name;
@@ -48,8 +49,28 @@ public class Student extends Person {
         // TODO: view grades
     }
 
-    public void studentOptions() {
-
+    public void studentOptions(Scanner scan) {
+        System.out.println("Welcome " + this.getName() + " !");
+        while (true) {
+            System.out.println("1: Register for course");
+            System.out.println("2: De-register for course");
+            System.out.println("3: View grades and courses");
+            System.out.println("4: Logout");
+            System.out.print("Choose: ");
+            String inputLine = scan.nextLine();
+            if (inputLine.equals("4")) {
+                finalize();
+                break;
+            } else if (inputLine.equals("3")) {
+                viewGrades();
+            } else if (inputLine.equals("2")) {
+                deregisterCourse();
+            } else if (inputLine.equals("1")) {
+                registerCourse();
+            } else {
+                System.out.println("Invalid input");
+            }
+        }
     }
 
     // destructor for student

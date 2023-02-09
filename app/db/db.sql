@@ -126,11 +126,11 @@ $$ LANGUAGE plpgsql;
 
 create table login_log(
   id serial,
-  user_id varchar(255) not null,
+  email varchar(255) not null,
   status varchar(255) not null,
   time_stamp timestamp default now(),
   primary key (id),
-  constraint check_user foreign key (user_id) references user_auth(id)
+  constraint check_user foreign key (email) references user_auth(id)
 );
 
 create table current_session(
@@ -149,7 +149,7 @@ create table current_session(
 
 insert into course_catalog(course_code, L, T,P) values('CS301',3,1,2);
 insert into course_catalog(course_code, L, T,P,pre_req) values('CS302',3,1,0, Array ['CS301','CS305']); 
-insert into course_catalog(course_code, L, T,P) values('CS303',3,1,2);
+insert into course_catalog(course_code, L, T,P,pre_req) values('CS303',3,1,2,Array ['CS302']);
 insert into course_catalog(course_code, L, T,P,pre_req) values('CS304',3,1,2, array ['CS303']);
 insert into course_catalog(course_code, L, T,P) values('CS305',3,0,2);
 

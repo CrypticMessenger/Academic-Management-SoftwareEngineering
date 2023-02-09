@@ -10,10 +10,13 @@ public class Student extends Person {
     public Student(String email, Connection conn) {
         super(email);
         this.conn = conn;
+        String get_name_query = "SELECT name FROM user_auth WHERE id = ?";
         try {
-            Statement statement = conn.createStatement();
+            log_login_logout(conn, email, "login");
+            PreparedStatement statement = conn.prepareStatement(get_name_query);
+            statement.setString(1, email);
             ResultSet resultSet = statement
-                    .executeQuery("SELECT name FROM user_auth WHERE id = '" + this.getEmail() + "'");
+                    .executeQuery();
             resultSet.next();
             this.name = (resultSet.getString(1));
 
@@ -22,6 +25,7 @@ public class Student extends Person {
             e.printStackTrace();
         }
         this.department = email.substring(4, 5);
+
     }
 
     public String getDepartment() {
@@ -35,6 +39,7 @@ public class Student extends Person {
     // destructor for student
     public void finalize() {
         try {
+            log_login_logout(conn, getEmail(), "logout");
             conn.close();
         } catch (SQLException e) {
             System.out.println("Error in Student destructor");

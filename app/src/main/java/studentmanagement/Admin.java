@@ -1,6 +1,7 @@
 package studentmanagement;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -13,6 +14,7 @@ public class Admin extends Person {
         super(email);
         this.conn = conn;
         try {
+            log_login_logout(conn, getEmail(), "login");
             Statement statement = conn.createStatement();
             ResultSet resultSet = statement
                     .executeQuery("SELECT name FROM user_auth WHERE id = '" + this.getEmail() + "'");
@@ -34,6 +36,8 @@ public class Admin extends Person {
     // destroyer for admin
     public void finalize() {
         try {
+            log_login_logout(conn, getEmail(), "logout");
+
             conn.close();
         } catch (SQLException e) {
             System.out.println("Error in Admin destructor");

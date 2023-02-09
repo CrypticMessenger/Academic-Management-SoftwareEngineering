@@ -10,7 +10,7 @@ import java.sql.Statement;
 import java.util.Scanner;
 
 // TODO: make more object oriented, like making student, admin or teacher class
-public class Client {
+public class App {
     private final String url = "jdbc:postgresql://localhost/academic_management";
     private final String user = "postgres";
     private final String password = "1421";
@@ -31,7 +31,7 @@ public class Client {
 
     public static void main(String[] args) throws IOException {
 
-        Client app = new Client();
+        App app = new App();
         String email = "";
         String password = "";
         Boolean login = false;
@@ -78,6 +78,7 @@ public class Client {
                                     login = false;
                                     break;
                                 }
+
                                 break;
 
                             }

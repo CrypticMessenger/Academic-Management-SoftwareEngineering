@@ -148,10 +148,16 @@ create table current_session(
 
 
 insert into course_catalog(course_code, L, T,P) values('CS301',3,1,2);
+insert into course_catalog(course_code, L, T,P) values('CS201',3,1,2);
+insert into course_catalog(course_code, L, T,P) values('CS202',3,1,2);
+insert into course_catalog(course_code, L, T,P) values('CS204',3,1,2);
+insert into course_catalog(course_code, L, T,P) values('CS205',3,1,2);
 insert into course_catalog(course_code, L, T,P,pre_req) values('CS302',3,1,0, Array ['CS301','CS305']); 
 insert into course_catalog(course_code, L, T,P,pre_req) values('CS303',3,1,2,Array ['CS302']);
 insert into course_catalog(course_code, L, T,P,pre_req) values('CS304',3,1,2, array ['CS303']);
 insert into course_catalog(course_code, L, T,P) values('CS305',3,0,2);
+insert into course_catalog(course_code, L, T,P) values('CS306',3,0,2);
+insert into course_catalog(course_code, L, T,P) values('CS539',3,0,2);
 
 insert into user_auth(id,name,pwd,roles) values('2020csb1070@iitrpr.ac.in','Amit Kumar','X123','s');
 insert into user_auth(id,name,pwd,roles) values('2020csb1072@iitrpr.ac.in','Ankit Sharma','X123','s');
@@ -166,3 +172,11 @@ insert into course_offerings(course_code, instructor_id) values('CS301','gunturi
 insert into course_offerings(course_code, instructor_id,cg_constraint) values('CS305','balwinder@iitrpr.ac.in',7.5);
 
 insert into current_session(ay,sem) values('2023-24',1);
+
+insert into s2020csb1072(sem,ay,course,grade) values (1,'2020-21','CS301','A');
+insert into s2020csb1072(sem,ay,course,grade) values (2,'2020-21','CS539','A-');
+insert into s2020csb1072(sem,ay,course,grade) values (1,'2021-22','CS305','B');
+insert into s2020csb1072(sem,ay,course,grade) values (1,'2021-22','CS306','A');
+insert into s2020csb1072(sem,ay,course,grade) values (2,'2021-22','CS302','A-');
+insert into s2020csb1072(sem,ay,course,grade) values (1,'2022-23','CS303','F');
+insert into s2020csb1072(sem,ay,course,grade) values (2,'2022-23','CS303','A');

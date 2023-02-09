@@ -1,7 +1,6 @@
 package studentmanagement;
 
 import java.io.*;
-import java.net.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -9,11 +8,14 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Scanner;
 
-// TODO: make more object oriented, like making student, admin or teacher class
+// TODO: make studnt options different
+//- make more object oriented, like making student, admin or teacher class
 public class App {
     private final String url = "jdbc:postgresql://localhost/academic_management";
     private final String user = "postgres";
     private final String password = "1421";
+    private String ay;
+    private String semester;
 
     public Connection connect() {
         Connection conn = null;
@@ -60,16 +62,24 @@ public class App {
                             .executeQuery("SELECT login_check('" + email + "','" + password + "')");
                     resultSet.next();
                     String result = resultSet.getString(1);
+                    statement = conn.createStatement();
+                    resultSet = statement.executeQuery("select * from current_session");
+                    resultSet.next();
+                    app.ay = resultSet.getString(1);
+                    app.semester = resultSet.getString(2);
+                    System.out.println("Current session: " + app.ay + " " + app.semester);
                     conn.close();
                     conn = app.connect();
                     switch (result) {
+
+                        // case student
                         case "s":
                             Student student = new Student(email, conn);
                             System.out.println("Welcome " + student.getName() + " !");
                             while (true) {
                                 System.out.println("1: Register for course");
                                 System.out.println("2: De-register for course");
-                                System.out.println("2: View grades and courses");
+                                System.out.println("3: View grades and courses");
                                 System.out.println("4: Logout");
                                 System.out.print("Choose: ");
                                 inputLine = scan.nextLine();
@@ -77,12 +87,22 @@ public class App {
                                     student.finalize();
                                     login = false;
                                     break;
+                                } else if (inputLine.equals("3")) {
+                                    student.viewGrades();
+                                } else if (inputLine.equals("2")) {
+                                    student.deregisterCourse();
+                                } else if (inputLine.equals("1")) {
+                                    student.registerCourse();
+                                } else {
+                                    System.out.println("Invalid input");
                                 }
 
-                                break;
+                                // break;
 
                             }
                             break;
+
+                        // case professor
                         case "p":
                             Professor professor = new Professor(email, conn);
                             System.out.println("Welcome " + professor.getName() + " !");
@@ -102,6 +122,8 @@ public class App {
                                 break;
                             }
                             break;
+
+                        // case admin
                         case "a":
                             Admin admin = new Admin(email, conn);
                             System.out.println("Welcome " + admin.getName() + " !");
@@ -120,13 +142,15 @@ public class App {
                                 break;
                             }
                             break;
+
+                        // case login failed
                         default:
                             conn.close();
                             System.out.println("Login Failed! Try again.");
                             break;
                     }
                 } catch (SQLException e) {
-                    // TODO Auto-generated catch block
+                    System.out.println("error in login!");
                     e.printStackTrace();
                 }
             }

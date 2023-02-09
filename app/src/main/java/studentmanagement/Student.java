@@ -36,6 +36,22 @@ public class Student extends Person {
         return this.name;
     }
 
+    public void registerCourse() {
+        // TODO: register courses
+    }
+
+    public void deregisterCourse() {
+        // TODO: deregister courses
+    }
+
+    public void viewGrades() {
+        // TODO: view grades
+    }
+
+    public void studentOptions() {
+
+    }
+
     // destructor for student
     public void finalize() {
         try {

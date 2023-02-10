@@ -1,0 +1,1 @@
+select * from course_catalog where course_code ='CS301' and ay = '2020-21' and sem = 1;

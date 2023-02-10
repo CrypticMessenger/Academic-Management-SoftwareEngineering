@@ -14,8 +14,6 @@ public class App {
     private final String url = "jdbc:postgresql://localhost/academic_management";
     private final String user = "postgres";
     private final String password = "1421";
-    private String ay;
-    private String semester;
 
     public Connection connect() {
         Connection conn = null;
@@ -64,28 +62,29 @@ public class App {
                     statement = conn.createStatement();
                     resultSet = statement.executeQuery("select * from current_session");
                     resultSet.next();
-                    app.ay = resultSet.getString(1);
-                    app.semester = resultSet.getString(2);
-                    System.out.println("Current session: " + app.ay + " " + app.semester);
+                    String ay = resultSet.getString(1);
+                    String sem = resultSet.getString(2);
+
+                    // ! remove close(())
                     conn.close();
                     conn = app.connect();
                     switch (result) {
 
                         // case student
                         case "s":
-                            Student student = new Student(email, conn);
+                            Student student = new Student(email, conn, ay, sem);
                             student.studentOptions(scan);
                             break;
 
                         // case professor
                         case "p":
-                            Professor professor = new Professor(email, conn);
+                            Professor professor = new Professor(email, conn, ay, sem);
                             professor.professorOptions(scan);
                             break;
 
                         // case admin
                         case "a":
-                            Admin admin = new Admin(email, conn);
+                            Admin admin = new Admin(email, conn, ay, sem);
                             admin.adminOptions(scan);
                             break;
 

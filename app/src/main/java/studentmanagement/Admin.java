@@ -10,8 +10,8 @@ public class Admin extends Person {
     private String name;
     private Connection conn;
 
-    public Admin(String email, Connection conn) {
-        super(email);
+    public Admin(String email, Connection conn, String ay, String sem) {
+        super(email, ay, sem);
         this.conn = conn;
         try {
             log_login_logout(conn, getEmail(), "login");
@@ -33,6 +33,7 @@ public class Admin extends Person {
         return this.name;
     }
 
+    // TODO: See how to use interfaces to remove repetition.
     public void adminOptions(Scanner scan) {
         System.out.println("Welcome " + getName() + " !");
         String inputLine;
@@ -40,7 +41,11 @@ public class Admin extends Person {
             System.out.println("1: Edit course Catalogue");
             System.out.println("2: View student record");
             System.out.println("3: Generate transcripts");
-            System.out.println("4: Logout");
+            System.out.println("4: Start grade submission");
+            System.out.println("5: End grade submission");
+            System.out.println("6: Validate grade submission");
+            System.out.println("7: Start a new Academic session");
+            System.out.println("8: Logout");
             System.out.print("Choose: ");
             inputLine = scan.nextLine();
             if (inputLine.equals("4")) {

@@ -10,8 +10,8 @@ public class Professor extends Person {
     private String name;
     private Connection conn;
 
-    public Professor(String email, Connection conn) {
-        super(email);
+    public Professor(String email, Connection conn, String ay, String sem) {
+        super(email, ay, sem);
         this.conn = conn;
         try {
             log_login_logout(conn, getEmail(), "login");
@@ -31,15 +31,17 @@ public class Professor extends Person {
         return this.name;
     }
 
+    // TODO: option 5 only available if validation report is available.
     public void professorOptions(Scanner scan) {
         System.out.println("Welcome " + getName() + " !");
         String inputLine;
         while (true) {
             System.out.println("1: View grades in the courses");
             System.out.println("2: Float a course");
-            System.out.println("3: Un-register a course");
+            System.out.println("3: Cancel a course");
             System.out.println("4: Upload grades for course");
-            System.out.println("5: Logout");
+            System.out.println("5: Validate grade submission");
+            System.out.println("6: Logout");
             System.out.print("Choose: ");
             inputLine = scan.nextLine();
             if (inputLine.equals("5")) {
@@ -50,6 +52,7 @@ public class Professor extends Person {
         }
     }
 
+    // TODO: try to inherit from Person
     public void finalize() {
         try {
             log_login_logout(conn, getEmail(), "logout");

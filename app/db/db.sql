@@ -11,10 +11,10 @@ create table course_catalog(
     course_code varchar(255) not null,
     L integer not null,
     T integer not null,
-    P integer not null,
-    C integer not null,
+    P numeric(10,2) not null,
+    C numeric(10,2) not null,
     ay text null,
-    sem text not null,
+    sem integer not null,
     pre_req text [],
     primary key (course_code,ay,sem)
     
@@ -26,7 +26,7 @@ CREATE OR REPLACE FUNCTION add_credit()
   AS
 $$
 declare
-credits integer;
+credits numeric(10,2);
 BEGIN
 	credits := (new.L + (new.P)/2);
     new.C = credits;
@@ -135,11 +135,20 @@ create table current_session(
 
 --!--------------------------------------------------------------* config starts *----------------------------------------------------------------
 create table config(
+  id serial primary key,
+  sem_start boolean default true,
+  course_float_start boolean default false,
+  course_float_end boolean default false,
+  student_enroll_start boolean default false,
+  student_enroll_end boolean default false,
   grade_submission_start boolean default false,
   grade_submission_end boolean default false,
-  validation_end boolean default false
+  validation_end boolean default false,
+  semester_end boolean default false
 );
-
+create table config_number(
+  id integer not  null default 1
+);
 ----------------------------------------------------------------* config ends *----------------------------------------------------------------
 
 --!--------------------------------------------------------------* report_validator starts *----------------------------------------------------------------
@@ -153,17 +162,24 @@ create table report_validator(
 
 
 
-insert into course_catalog(course_code, L, T,P,ay,sem) values('CS301',3,1,2,'2023-2024',1);
-insert into course_catalog(course_code, L, T,P,ay,sem) values('CS201',3,1,2,'2023-2024',1);
-insert into course_catalog(course_code, L, T,P,ay,sem) values('CS202',3,1,2,'2023-2024',1);
-insert into course_catalog(course_code, L, T,P,ay,sem) values('CS204',3,1,2,'2023-2024',1);
-insert into course_catalog(course_code, L, T,P,ay,sem) values('CS205',3,1,2,'2023-2024',1);
-insert into course_catalog(course_code, L, T,P,pre_req,ay,sem) values('CS302',3,1,0, Array ['CS301','CS305'],'2023-2024',1); 
-insert into course_catalog(course_code, L, T,P,pre_req,ay,sem) values('CS303',3,1,2,Array ['CS302'],'2023-2024',1);
-insert into course_catalog(course_code, L, T,P,pre_req,ay,sem) values('CS304',3,1,2, array ['CS303'],'2023-2024',1);
-insert into course_catalog(course_code, L, T,P,ay,sem) values('CS305',3,0,2,'2023-2024',1);
-insert into course_catalog(course_code, L, T,P,ay,sem) values('CS306',3,0,2,'2023-2024',1);
-insert into course_catalog(course_code, L, T,P,ay,sem) values('CS539',3,0,2,'2023-2024',1);
+insert into course_catalog(course_code, L, T,P,ay,sem) values('CS301',3,1,2,'2023-24',1);
+insert into course_catalog(course_code, L, T,P,ay,sem) values('CS301',3,1,2,'2020-21',1);
+insert into course_catalog(course_code, L, T,P,ay,sem) values('CS201',3,1,2,'2023-24',1);
+insert into course_catalog(course_code, L, T,P,ay,sem) values('CS202',3,1,2,'2023-24',1);
+insert into course_catalog(course_code, L, T,P,ay,sem) values('CS204',3,1,2,'2023-24',1);
+insert into course_catalog(course_code, L, T,P,ay,sem) values('CS205',3,1,2,'2023-24',1);
+insert into course_catalog(course_code, L, T,P,pre_req,ay,sem) values('CS302',3,1,0, Array ['CS301','CS305'],'2023-24',1); 
+insert into course_catalog(course_code, L, T,P,pre_req,ay,sem) values('CS302',3,1,0, Array ['CS301','CS305'],'2021-22',2); 
+insert into course_catalog(course_code, L, T,P,pre_req,ay,sem) values('CS303',3,1,2,Array ['CS302'],'2023-24',1);
+insert into course_catalog(course_code, L, T,P,pre_req,ay,sem) values('CS303',3,1,2,Array ['CS302'],'2022-23',1);
+insert into course_catalog(course_code, L, T,P,pre_req,ay,sem) values('CS303',3,1,2,Array ['CS302'],'2022-23',2);
+insert into course_catalog(course_code, L, T,P,pre_req,ay,sem) values('CS304',3,1,2, array ['CS303'],'2023-24',1);
+insert into course_catalog(course_code, L, T,P,ay,sem) values('CS305',3,0,2,'2023-24',1);
+insert into course_catalog(course_code, L, T,P,ay,sem) values('CS305',3,0,2,'2021-22',1);
+insert into course_catalog(course_code, L, T,P,ay,sem) values('CS306',3,0,2,'2023-24',1);
+insert into course_catalog(course_code, L, T,P,ay,sem) values('CS306',3,0,2,'2021-22',1);
+insert into course_catalog(course_code, L, T,P,ay,sem) values('CS539',3,0,2,'2023-24',1);
+insert into course_catalog(course_code, L, T,P,ay,sem) values('CS539',3,0,2,'2020-21',2);
 
 insert into user_auth(id,name,pwd,roles) values('2020csb1070@iitrpr.ac.in','Amit Kumar','X123','s');
 insert into user_auth(id,name,pwd,roles) values('2020csb1072@iitrpr.ac.in','Ankit Sharma','X123','s');
@@ -176,6 +192,7 @@ insert into user_auth(id,name,pwd,roles) values('admin@iitrpr.ac.in','Admin','X1
 insert into course_offerings(course_code, instructor_id) values('CS302','apurva@iitrpr.ac.in');
 insert into course_offerings(course_code, instructor_id) values('CS301','gunturi@iitrpr.ac.in');
 insert into course_offerings(course_code, instructor_id,cg_constraint) values('CS305','balwinder@iitrpr.ac.in',7.5);
+insert into course_offerings(course_code, instructor_id) values('CS304','balwinder@iitrpr.ac.in');
 
 insert into current_session(ay,sem) values('2023-24',1);
 
@@ -186,3 +203,16 @@ insert into s2020csb1072(sem,ay,course,grade) values (1,'2021-22','CS306','A');
 insert into s2020csb1072(sem,ay,course,grade) values (2,'2021-22','CS302','A-');
 insert into s2020csb1072(sem,ay,course,grade) values (1,'2022-23','CS303','F');
 insert into s2020csb1072(sem,ay,course,grade) values (2,'2022-23','CS303','A');
+
+
+insert into config(sem_start,course_float_start,course_float_end,student_enroll_start,student_enroll_end,grade_submission_start,grade_submission_end,validation_end,semester_end) values(true,false,false,false,false,false,false,false,false);
+insert into config(sem_start,course_float_start,course_float_end,student_enroll_start,student_enroll_end,grade_submission_start,grade_submission_end,validation_end,semester_end) values(true,true,false,false,false,false,false,false,false);
+insert into config(sem_start,course_float_start,course_float_end,student_enroll_start,student_enroll_end,grade_submission_start,grade_submission_end,validation_end,semester_end) values(true,false,true,false,false,false,false,false,false);
+insert into config(sem_start,course_float_start,course_float_end,student_enroll_start,student_enroll_end,grade_submission_start,grade_submission_end,validation_end,semester_end) values(true,false,true,true,false,false,false,false,false);
+insert into config(sem_start,course_float_start,course_float_end,student_enroll_start,student_enroll_end,grade_submission_start,grade_submission_end,validation_end,semester_end) values(true,false,true,false,true,false,false,false,false);
+insert into config(sem_start,course_float_start,course_float_end,student_enroll_start,student_enroll_end,grade_submission_start,grade_submission_end,validation_end,semester_end) values(true,false,true,false,true,true,false,false,false);
+insert into config(sem_start,course_float_start,course_float_end,student_enroll_start,student_enroll_end,grade_submission_start,grade_submission_end,validation_end,semester_end) values(true,false,true,false,true,false,true,false,false);
+insert into config(sem_start,course_float_start,course_float_end,student_enroll_start,student_enroll_end,grade_submission_start,grade_submission_end,validation_end,semester_end) values(true,false,true,false,true,false,true,true,false);
+insert into config(sem_start,course_float_start,course_float_end,student_enroll_start,student_enroll_end,grade_submission_start,grade_submission_end,validation_end,semester_end) values(true,false,true,false,true,false,true,false,true);
+
+insert into config_number(id) values(4);

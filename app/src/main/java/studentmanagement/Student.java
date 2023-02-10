@@ -11,9 +11,17 @@ public class Student extends Person {
     private String department;
     private Connection conn;
     private String table_name;
+    private Map<String, Integer> grade_to_number = new HashMap<>();
+    private Float total_earned_credits;
+    private Float current_sem_credits;
+    private Float past_2_credits;
+    private Float cgpa;
 
     public Student(String email, Connection conn, String ay, String sem) {
         super(email, ay, sem);
+        this.total_earned_credits = 0.0f;
+        this.current_sem_credits = 0.0f;
+        this.past_2_credits = 0.0f;
         this.table_name = "s" + email.substring(0, 11);
         this.conn = conn;
         String get_name_query = "SELECT name FROM user_auth WHERE id = ?";
@@ -31,7 +39,19 @@ public class Student extends Person {
             e.printStackTrace();
         }
         this.department = email.substring(4, 5);
+        setup_grade_to_number();
 
+    }
+
+    public void setup_grade_to_number() {
+        grade_to_number.put("A", 10);
+        grade_to_number.put("A-", 9);
+        grade_to_number.put("B", 8);
+        grade_to_number.put("B-", 7);
+        grade_to_number.put("C", 6);
+        grade_to_number.put("C-", 5);
+        grade_to_number.put("D", 4);
+        grade_to_number.put("F", 0);
     }
 
     public String getDepartment() {
@@ -42,59 +62,134 @@ public class Student extends Person {
         return this.name;
     }
 
+    private Float getCGPA() {
+        try {
+
+            String get_cgpa_query = "select * from " + table_name + " ,course_catalog where " + table_name
+                    + ".course = course_catalog.course_code and " + table_name + ".ay = course_catalog.ay and "
+                    + table_name + ".sem = course_catalog.sem ";
+            ResultSet resultSet = getResultSet(conn, get_cgpa_query);
+
+            Float total_grade_points = 0.0f;
+
+            Float cgpa_score = 0.0f;
+
+            String[][] past_2_ay_sem = get_prev_2_sem_ay();
+            String[] past_2_ay = past_2_ay_sem[0];
+            String[] past_2_sem = past_2_ay_sem[1];
+
+            while (resultSet.next()) {
+                if (resultSet.getString(4) == null) {
+                    this.current_sem_credits += resultSet.getFloat(9);
+                } else if (!resultSet.getString(4).equals("F")) {
+                    this.total_earned_credits += resultSet.getFloat(9);
+                    total_grade_points += grade_to_number.get(resultSet.getString(4)) * resultSet.getFloat(9);
+                    String sem_temp = resultSet.getString(1);
+                    String ay_temp = resultSet.getString(2);
+
+                    if ((ay_temp.equals(past_2_ay[0]) && sem_temp.equals(past_2_sem[0]))
+                            || (ay_temp.equals(past_2_ay[1]) && sem_temp.equals(past_2_sem[1]))) {
+
+                        this.past_2_credits += resultSet.getFloat(9);
+                    }
+                }
+
+            }
+            cgpa_score = total_grade_points / this.total_earned_credits;
+            return cgpa_score;
+        } catch (SQLException e) {
+            System.out.println("Error in getCGPA");
+            e.printStackTrace();
+            return 0.0f;
+        }
+    }
+
     public void registerCourse(String course_code) {
         Statement statement;
         ResultSet resultSet;
-        // -- fetch current config id, and allow only if config = 4
         try {
-            statement = conn.createStatement();
-            resultSet = statement.executeQuery("select * from config_number");
-            resultSet.next();
-            Integer config_number = resultSet.getInt(1);
+            // fetch current config id, and allow only if config = 4
+            Integer config_number = getConfigNumber(conn);
             if (config_number != 4) {
                 System.out.println("Registration is not open");
                 return;
             }
-            // -- first check if course is in course offering
-            statement = conn.createStatement();
-            resultSet = statement
-                    .executeQuery("select * from course_offerings where course_code = '" + course_code + "'");
+
+            // check if course is in course offering
+            resultSet = getResultSet(conn, "select * from course_offerings where course_code = '" + course_code + "'");
             if (!resultSet.next()) {
                 System.out.println("Course not offered");
                 return;
             }
-            // TODO: check cgpa constraint
-            Float cg_constraint = resultSet.getFloat(3);
-            Float cgpa = 0.0f;
-            Float total_credits = 0.0f;
-            String get_cgpa_query = "select * from " + table_name + " ,course_catalog where " + table_name
-                    + ".course = course_catalog.course_code and " + table_name + ".ay = course_catalog.ay and "
-                    + table_name + ".sem = course_catalog.sem and " + table_name + ".grade is not null and "
-                    + table_name + ".grade != 'F'";
-            System.out.println(get_cgpa_query);
-            statement = conn.createStatement();
-            resultSet = statement.executeQuery(get_cgpa_query);
-            Map<String, Integer> grade_to_number = new HashMap<>();
-            grade_to_number.put("A", 10);
-            grade_to_number.put("A-", 9);
-            grade_to_number.put("B", 8);
-            grade_to_number.put("B-", 7);
-            grade_to_number.put("C", 6);
-            grade_to_number.put("C-", 5);
-            grade_to_number.put("D", 4);
-            grade_to_number.put("F", 0);
 
-            while (resultSet.next()) {
-                total_credits += resultSet.getFloat(9);
-                cgpa += grade_to_number.get(resultSet.getString(4)) * resultSet.getFloat(9);
+            // -- check cgpa constraint
+
+            // get cgpa constraint of the requested course
+            Float cg_constraint = resultSet.getFloat(3);
+            // TODOD:maybe do these computations only when cg_constraint is not 0
+
+            // get all courses taken by student in past with their credits and grades
+            // String get_cgpa_query = "select * from " + table_name + " ,course_catalog
+            // where " + table_name
+            // + ".course = course_catalog.course_code and " + table_name + ".ay =
+            // course_catalog.ay and "
+            // + table_name + ".sem = course_catalog.sem ";
+            // resultSet = getResultSet(conn, get_cgpa_query);
+
+            // get past 2 semesters and their ay
+            // String[][] past_2_ay_sem = get_prev_2_sem_ay();
+            // String[] past_2_ay = past_2_ay_sem[0];
+            // String[] past_2_sem = past_2_ay_sem[1];
+
+            // Float current_sem_credits = 0.0f;
+            // Float past_2_credits = 0.0f;
+            // while (resultSet.next()) {
+            // if (resultSet.getString(4) == null) {
+            // current_sem_credits += resultSet.getFloat(9);
+            // continue;
+            // } else if (!resultSet.getString(4).equals("F")) {
+            // total_earned_credits += resultSet.getFloat(9);
+            // cgpa += grade_to_number.get(resultSet.getString(4)) * resultSet.getFloat(9);
+            // String sem_temp = resultSet.getString(1);
+            // String ay_temp = resultSet.getString(2);
+            // System.out.println("ay_temp: " + ay_temp);
+            // System.out.println("sem_temp: " + sem_temp);
+            // System.out.println("credit: " + resultSet.getFloat(9));
+            // if ((ay_temp.equals(past_2_ay[0]) && sem_temp.equals(past_2_sem[0]))
+            // || (ay_temp.equals(past_2_ay[1]) && sem_temp.equals(past_2_sem[1]))) {
+
+            // past_2_credits += resultSet.getFloat(9);
+            // }
+            // }
+
+            // }
+            // cgpa /= total_earned_credits;
+            this.cgpa = getCGPA();
+            System.out.println("cgpa: " + this.cgpa);
+            if (this.cgpa < cg_constraint) {
+                System.out.println("cgpa constraint not met");
+                return;
             }
-            cgpa /= total_credits;
-            System.out.println("cgpa: " + cgpa + " total_credits: " + total_credits);
+
+            Float avg_past_credits = this.past_2_credits / 2;
+            // TODO: fourth check if credit limit allows for registration
+            System.out.println("select * from course_catalog where course_code = '" + course_code + "' and ay = '"
+                    + getAy() + "' and sem = '" + getSem() + "'");
+            resultSet = getResultSet(conn,
+                    "select * from course_catalog where course_code = '" + course_code + "' and ay = '"
+                            + getAy() + "' and sem = '" + getSem() + "'");
+            resultSet.next();
+
+            Float requested_course_credits = resultSet.getFloat(5);
+            Float credit_limit = (1.25f * avg_past_credits) < 12 ? 12 : (1.25f * avg_past_credits);
+            if (this.current_sem_credits + requested_course_credits > credit_limit) {
+                System.out.println("Credit limit exceeded");
+                return;
+            }
 
             // TODO: secodn check if student is already registered for the course
             // TODO: third check if student has taken all the prerequisites with no grade as
             // F or null
-            // TODO: fourth check if credit limit allows for registration
             // TODO: register courses
         } catch (SQLException e) {
             System.out.println("Error in Student registerCourse");

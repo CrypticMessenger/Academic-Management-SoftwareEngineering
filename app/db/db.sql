@@ -163,6 +163,7 @@ create table report_validator(
 
 
 insert into course_catalog(course_code, L, T,P,ay,sem) values('CS301',3,1,2,'2023-24',1);
+insert into course_catalog(course_code, L, T,P,ay,sem) values('CS304',3,1,2,'2022-23',1);
 insert into course_catalog(course_code, L, T,P,ay,sem) values('CS301',3,1,2,'2020-21',1);
 insert into course_catalog(course_code, L, T,P,ay,sem) values('CS201',3,1,2,'2023-24',1);
 insert into course_catalog(course_code, L, T,P,ay,sem) values('CS202',3,1,2,'2023-24',1);

@@ -64,7 +64,6 @@ public class App {
                     resultSet.next();
                     String ay = resultSet.getString(1);
                     String sem = resultSet.getString(2);
-
                     // ! remove close(())
                     conn.close();
                     conn = app.connect();

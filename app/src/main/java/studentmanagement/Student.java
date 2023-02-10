@@ -122,66 +122,26 @@ public class Student extends Person {
                 return;
             }
 
-            // -- check cgpa constraint
-
-            // get cgpa constraint of the requested course
+            // check cgpa constraint
             Float cg_constraint = resultSet.getFloat(3);
-            // TODOD:maybe do these computations only when cg_constraint is not 0
-
-            // get all courses taken by student in past with their credits and grades
-            // String get_cgpa_query = "select * from " + table_name + " ,course_catalog
-            // where " + table_name
-            // + ".course = course_catalog.course_code and " + table_name + ".ay =
-            // course_catalog.ay and "
-            // + table_name + ".sem = course_catalog.sem ";
-            // resultSet = getResultSet(conn, get_cgpa_query);
-
-            // get past 2 semesters and their ay
-            // String[][] past_2_ay_sem = get_prev_2_sem_ay();
-            // String[] past_2_ay = past_2_ay_sem[0];
-            // String[] past_2_sem = past_2_ay_sem[1];
-
-            // Float current_sem_credits = 0.0f;
-            // Float past_2_credits = 0.0f;
-            // while (resultSet.next()) {
-            // if (resultSet.getString(4) == null) {
-            // current_sem_credits += resultSet.getFloat(9);
-            // continue;
-            // } else if (!resultSet.getString(4).equals("F")) {
-            // total_earned_credits += resultSet.getFloat(9);
-            // cgpa += grade_to_number.get(resultSet.getString(4)) * resultSet.getFloat(9);
-            // String sem_temp = resultSet.getString(1);
-            // String ay_temp = resultSet.getString(2);
-            // System.out.println("ay_temp: " + ay_temp);
-            // System.out.println("sem_temp: " + sem_temp);
-            // System.out.println("credit: " + resultSet.getFloat(9));
-            // if ((ay_temp.equals(past_2_ay[0]) && sem_temp.equals(past_2_sem[0]))
-            // || (ay_temp.equals(past_2_ay[1]) && sem_temp.equals(past_2_sem[1]))) {
-
-            // past_2_credits += resultSet.getFloat(9);
-            // }
-            // }
-
-            // }
-            // cgpa /= total_earned_credits;
             this.cgpa = getCGPA();
-            System.out.println("cgpa: " + this.cgpa);
             if (this.cgpa < cg_constraint) {
                 System.out.println("cgpa constraint not met");
                 return;
             }
 
+            // check if credit limit allows for registration
             Float avg_past_credits = this.past_2_credits / 2;
-            // TODO: fourth check if credit limit allows for registration
-            System.out.println("select * from course_catalog where course_code = '" + course_code + "' and ay = '"
-                    + getAy() + "' and sem = '" + getSem() + "'");
+
+            // get credit of requested course
             resultSet = getResultSet(conn,
                     "select * from course_catalog where course_code = '" + course_code + "' and ay = '"
                             + getAy() + "' and sem = '" + getSem() + "'");
             resultSet.next();
-
             Float requested_course_credits = resultSet.getFloat(5);
+            // if avg past credits is less than 12, then credit limit is 12
             Float credit_limit = (1.25f * avg_past_credits) < 12 ? 12 : (1.25f * avg_past_credits);
+
             if (this.current_sem_credits + requested_course_credits > credit_limit) {
                 System.out.println("Credit limit exceeded");
                 return;
@@ -211,12 +171,15 @@ public class Student extends Person {
             System.out.println("1: Register for course");
             System.out.println("2: De-register for course");
             System.out.println("3: View grades and courses");
-            System.out.println("4: Logout");
+            System.out.println("4: Get Current CGPA");
+            System.out.println("5: Logout");
             System.out.print("Choose: ");
             String inputLine = scan.nextLine();
-            if (inputLine.equals("4")) {
+            if (inputLine.equals("5")) {
                 finalize();
                 break;
+            } else if (inputLine.equals("4")) {
+                System.out.println("Your CGPA is: " + getCGPA());
             } else if (inputLine.equals("3")) {
                 viewGrades();
             } else if (inputLine.equals("2")) {

@@ -105,7 +105,6 @@ public class Student extends Person {
     }
 
     public void registerCourse(String course_code) {
-        Statement statement;
         ResultSet resultSet;
         try {
             // fetch current config id, and allow only if config = 4
@@ -147,8 +146,15 @@ public class Student extends Person {
                 return;
             }
 
-            // TODO: secodn check if student is already registered for the course
-            // TODO: third check if student has taken all the prerequisites with no grade as
+            // check if student is already registered for the course
+            resultSet = getResultSet(conn, "select * from " + table_name + " where course = '" + course_code
+                    + "' and ay = '" + getAy() + "' and sem = '" + getSem() + "'");
+            if (resultSet.next()) {
+                System.out.println("Already registered for course");
+                return;
+            }
+
+            // TODO: check if student has taken all the prerequisites with no grade as
             // F or null
             // TODO: register courses
         } catch (SQLException e) {

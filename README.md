@@ -20,4 +20,6 @@
   - [ ]  Must be able to update course grades via .csv files. Input would be a filepath and the file
 contents must be updated in the database.
 
+  ```👹Deadline: 26-02-23 18:05👺```
+
 ## Advanced functionalities

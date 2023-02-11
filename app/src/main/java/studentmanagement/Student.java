@@ -1,11 +1,13 @@
 package studentmanagement;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
-// TODO: refractor code and make it readable
 
+// TODO: refractor code and make it readable
+//TODO: one functiion should do only one thing
 public class Student extends Person {
     private String name;
     private String department;
@@ -71,6 +73,9 @@ public class Student extends Person {
             ResultSet resultSet = getResultSet(conn, get_cgpa_query);
 
             Float total_grade_points = 0.0f;
+            Float total_earned_credits = 0.0f;
+            Float current_sem_credits = 0.0f;
+            Float past_2_credits = 0.0f;
 
             Float cgpa_score = 0.0f;
 
@@ -80,9 +85,10 @@ public class Student extends Person {
 
             while (resultSet.next()) {
                 if (resultSet.getString(4) == null) {
-                    this.current_sem_credits += resultSet.getFloat(9);
+                    current_sem_credits += resultSet.getFloat(9);
+                    System.out.println("Current sem credits: " + this.current_sem_credits);
                 } else if (!resultSet.getString(4).equals("F")) {
-                    this.total_earned_credits += resultSet.getFloat(9);
+                    total_earned_credits += resultSet.getFloat(9);
                     total_grade_points += grade_to_number.get(resultSet.getString(4)) * resultSet.getFloat(9);
                     String sem_temp = resultSet.getString(1);
                     String ay_temp = resultSet.getString(2);
@@ -90,17 +96,77 @@ public class Student extends Person {
                     if ((ay_temp.equals(past_2_ay[0]) && sem_temp.equals(past_2_sem[0]))
                             || (ay_temp.equals(past_2_ay[1]) && sem_temp.equals(past_2_sem[1]))) {
 
-                        this.past_2_credits += resultSet.getFloat(9);
+                        past_2_credits += resultSet.getFloat(9);
                     }
                 }
 
             }
-            cgpa_score = total_grade_points / this.total_earned_credits;
+            System.out.println("Total earned credits: " + this.total_earned_credits);
+            System.out.println("total grade points: " + total_grade_points);
+            cgpa_score = total_grade_points / total_earned_credits;
+            this.past_2_credits = past_2_credits;
+            this.total_earned_credits = total_earned_credits;
+            this.current_sem_credits = current_sem_credits;
+
             return cgpa_score;
         } catch (SQLException e) {
             System.out.println("Error in getCGPA");
             e.printStackTrace();
             return 0.0f;
+        }
+    }
+
+    private ArrayList<String> getPrerequisites(String course_code) {
+
+        ArrayList<String> list = new ArrayList<String>();
+
+        try {
+            ResultSet resultSet = getResultSet(conn, "select pre_req from course_catalog where course_code = '"
+                    + course_code + "' and ay = '" + getAy() + "' and sem = '" + getSem() + "'");
+            if (resultSet.next()) {
+                Array pre_req = resultSet.getArray(1);
+                if (pre_req != null) {
+                    Object[] pre_req_array = (Object[]) pre_req.getArray();
+                    for (Object element : pre_req_array) {
+                        list.add((String) element);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error in getPrerequisites");
+            e.printStackTrace();
+        }
+        return list;
+
+    }
+
+    private ArrayList<String> getAllPrereq(String course_code) {
+        ArrayList<String> list = new ArrayList<String>();
+
+        ArrayList<String> pre_req = getPrerequisites(course_code);
+        for (String element : pre_req) {
+            if (!list.contains(element)) {
+                list.add(element);
+                list.addAll(getAllPrereq(element));
+            }
+        }
+        return list;
+    }
+
+    private Boolean checkPrereqCondition(String course_code) {
+        ArrayList<String> pre_req = getAllPrereq(course_code);
+        ArrayList<String> courses_taken = new ArrayList<String>();
+        try {
+            ResultSet resultSet = getResultSet(conn,
+                    "select course from " + table_name + " where grade != 'F' and grade is not null");
+            while (resultSet.next()) {
+                courses_taken.add(resultSet.getString(1));
+            }
+            return courses_taken.containsAll(pre_req);
+        } catch (SQLException e) {
+            System.out.println("Error in checkPrereqCondition");
+            e.printStackTrace();
+            return false;
         }
     }
 
@@ -148,15 +214,29 @@ public class Student extends Person {
 
             // check if student is already registered for the course
             resultSet = getResultSet(conn, "select * from " + table_name + " where course = '" + course_code
-                    + "' and ay = '" + getAy() + "' and sem = '" + getSem() + "'");
+                    + "' and (grade != 'F' or grade is null )");
             if (resultSet.next()) {
-                System.out.println("Already registered for course");
+                System.out.println("Already registered or credited the course");
                 return;
             }
 
-            // TODO: check if student has taken all the prerequisites with no grade as
-            // F or null
-            // TODO: register courses
+            // check if student has taken all the prerequisites with no grade as F or null
+            if (!checkPrereqCondition(course_code)) {
+                System.out.println("Prerequisite condition not met");
+                return;
+            }
+
+            // register courses
+            String registerCourseQuery = "insert into " + table_name + "(sem,ay,course) values ('" + getSem() + "','"
+                    + getAy() + "', '" + course_code + "')";
+            Statement st = conn.createStatement();
+            st.executeUpdate(registerCourseQuery);
+            System.out.println(course_code + " registered successfully!!");
+            this.current_sem_credits += requested_course_credits;
+            System.out.println("Current credits: " + (this.current_sem_credits));
+            System.out.println("Credit limit: " + credit_limit);
+            System.out.println("cgpa: " + this.cgpa);
+
         } catch (SQLException e) {
             System.out.println("Error in Student registerCourse");
             e.printStackTrace();

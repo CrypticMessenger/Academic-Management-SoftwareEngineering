@@ -15,7 +15,7 @@ create table course_catalog(
     C numeric(10,2) not null,
     ay text null,
     sem integer not null,
-    pre_req text [],
+    pre_req text [] default null,
     primary key (course_code,ay,sem)
     
 );
@@ -192,7 +192,12 @@ insert into user_auth(id,name,pwd,roles) values('admin@iitrpr.ac.in','Admin','X1
 
 insert into course_offerings(course_code, instructor_id) values('CS302','apurva@iitrpr.ac.in');
 insert into course_offerings(course_code, instructor_id) values('CS301','gunturi@iitrpr.ac.in');
+insert into course_offerings(course_code, instructor_id) values('CS201','gunturi@iitrpr.ac.in');
+insert into course_offerings(course_code, instructor_id) values('CS202','gunturi@iitrpr.ac.in');
+insert into course_offerings(course_code, instructor_id) values('CS204','gunturi@iitrpr.ac.in');
+insert into course_offerings(course_code, instructor_id) values('CS205','gunturi@iitrpr.ac.in');
 insert into course_offerings(course_code, instructor_id,cg_constraint) values('CS305','balwinder@iitrpr.ac.in',7.5);
+insert into course_offerings(course_code, instructor_id,cg_constraint) values('CS539','balwinder@iitrpr.ac.in',0.0);
 insert into course_offerings(course_code, instructor_id) values('CS304','balwinder@iitrpr.ac.in');
 
 insert into current_session(ay,sem) values('2023-24',1);
@@ -201,7 +206,7 @@ insert into s2020csb1072(sem,ay,course,grade) values (1,'2020-21','CS301','A');
 insert into s2020csb1072(sem,ay,course,grade) values (2,'2020-21','CS539','A-');
 insert into s2020csb1072(sem,ay,course,grade) values (1,'2021-22','CS305','B');
 insert into s2020csb1072(sem,ay,course,grade) values (1,'2021-22','CS306','A');
-insert into s2020csb1072(sem,ay,course,grade) values (2,'2021-22','CS302','A-');
+insert into s2020csb1072(sem,ay,course,grade) values (2,'2021-22','CS302','A');
 insert into s2020csb1072(sem,ay,course,grade) values (1,'2022-23','CS303','F');
 insert into s2020csb1072(sem,ay,course,grade) values (2,'2022-23','CS303','A');
 

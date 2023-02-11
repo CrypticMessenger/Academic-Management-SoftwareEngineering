@@ -1,10 +1,8 @@
 package studentmanagement;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import studentmanagement.utils.DatabaseUtils;
+
+import java.sql.*;
 
 // an abstract class named Person with name and email
 public abstract class Person {
@@ -34,8 +32,8 @@ public abstract class Person {
 
     public Integer getConfigNumber(Connection conn) {
         try {
-            Statement statement = conn.createStatement();
-            ResultSet resultSet = statement.executeQuery("select * from config_number");
+
+            ResultSet resultSet = DatabaseUtils.getResultSet(conn, "select * from config_number");
             resultSet.next();
             Integer config_number = resultSet.getInt(1);
             return config_number;
@@ -43,18 +41,6 @@ public abstract class Person {
             System.out.println("Error in getConfigNumber");
             e.printStackTrace();
             return -1;
-        }
-    }
-
-    public ResultSet getResultSet(Connection conn, String query) {
-        try {
-            Statement statement = conn.createStatement();
-            ResultSet resultSet = statement.executeQuery(query);
-            return resultSet;
-        } catch (SQLException e) {
-            System.out.println("Error in getResultSet");
-            e.printStackTrace();
-            return null;
         }
     }
 

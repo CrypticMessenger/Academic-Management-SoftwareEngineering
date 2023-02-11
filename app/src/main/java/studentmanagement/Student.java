@@ -1,27 +1,21 @@
 package studentmanagement;
 
+import studentmanagement.utils.*;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
-// TODO: refractor code and make it readable
-//TODO: one functiion should do only one thing
 public class Student extends Person {
     private String name;
     private String department;
     private Connection conn;
     private String table_name;
-    private Map<String, Integer> grade_to_number = new HashMap<>();
-    private Float total_earned_credits;
     private Float current_sem_credits;
     private Float past_2_credits;
     private Float cgpa;
 
     public Student(String email, Connection conn, String ay, String sem) {
         super(email, ay, sem);
-        this.total_earned_credits = 0.0f;
+        AcademicNorms.setup_grade_to_number();
         this.current_sem_credits = 0.0f;
         this.past_2_credits = 0.0f;
         this.table_name = "s" + email.substring(0, 11);
@@ -41,19 +35,7 @@ public class Student extends Person {
             e.printStackTrace();
         }
         this.department = email.substring(4, 5);
-        setup_grade_to_number();
 
-    }
-
-    public void setup_grade_to_number() {
-        grade_to_number.put("A", 10);
-        grade_to_number.put("A-", 9);
-        grade_to_number.put("B", 8);
-        grade_to_number.put("B-", 7);
-        grade_to_number.put("C", 6);
-        grade_to_number.put("C-", 5);
-        grade_to_number.put("D", 4);
-        grade_to_number.put("F", 0);
     }
 
     public String getDepartment() {
@@ -70,7 +52,7 @@ public class Student extends Person {
             String get_cgpa_query = "select * from " + table_name + " ,course_catalog where " + table_name
                     + ".course = course_catalog.course_code and " + table_name + ".ay = course_catalog.ay and "
                     + table_name + ".sem = course_catalog.sem ";
-            ResultSet resultSet = getResultSet(conn, get_cgpa_query);
+            ResultSet resultSet = DatabaseUtils.getResultSet(conn, get_cgpa_query);
 
             Float total_grade_points = 0.0f;
             Float total_earned_credits = 0.0f;
@@ -86,10 +68,10 @@ public class Student extends Person {
             while (resultSet.next()) {
                 if (resultSet.getString(4) == null) {
                     current_sem_credits += resultSet.getFloat(9);
-                    System.out.println("Current sem credits: " + this.current_sem_credits);
                 } else if (!resultSet.getString(4).equals("F")) {
                     total_earned_credits += resultSet.getFloat(9);
-                    total_grade_points += grade_to_number.get(resultSet.getString(4)) * resultSet.getFloat(9);
+                    total_grade_points += AcademicNorms.grade_to_number.get(resultSet.getString(4))
+                            * resultSet.getFloat(9);
                     String sem_temp = resultSet.getString(1);
                     String ay_temp = resultSet.getString(2);
 
@@ -101,11 +83,8 @@ public class Student extends Person {
                 }
 
             }
-            System.out.println("Total earned credits: " + this.total_earned_credits);
-            System.out.println("total grade points: " + total_grade_points);
             cgpa_score = total_grade_points / total_earned_credits;
             this.past_2_credits = past_2_credits;
-            this.total_earned_credits = total_earned_credits;
             this.current_sem_credits = current_sem_credits;
 
             return cgpa_score;
@@ -121,8 +100,9 @@ public class Student extends Person {
         ArrayList<String> list = new ArrayList<String>();
 
         try {
-            ResultSet resultSet = getResultSet(conn, "select pre_req from course_catalog where course_code = '"
-                    + course_code + "' and ay = '" + getAy() + "' and sem = '" + getSem() + "'");
+            ResultSet resultSet = DatabaseUtils.getResultSet(conn,
+                    "select pre_req from course_catalog where course_code = '"
+                            + course_code + "' and ay = '" + getAy() + "' and sem = '" + getSem() + "'");
             if (resultSet.next()) {
                 Array pre_req = resultSet.getArray(1);
                 if (pre_req != null) {
@@ -157,7 +137,7 @@ public class Student extends Person {
         ArrayList<String> pre_req = getAllPrereq(course_code);
         ArrayList<String> courses_taken = new ArrayList<String>();
         try {
-            ResultSet resultSet = getResultSet(conn,
+            ResultSet resultSet = DatabaseUtils.getResultSet(conn,
                     "select course from " + table_name + " where grade != 'F' and grade is not null");
             while (resultSet.next()) {
                 courses_taken.add(resultSet.getString(1));
@@ -181,7 +161,8 @@ public class Student extends Person {
             }
 
             // check if course is in course offering
-            resultSet = getResultSet(conn, "select * from course_offerings where course_code = '" + course_code + "'");
+            resultSet = DatabaseUtils.getResultSet(conn,
+                    "select * from course_offerings where course_code = '" + course_code + "'");
             if (!resultSet.next()) {
                 System.out.println("Course not offered");
                 return;
@@ -199,13 +180,15 @@ public class Student extends Person {
             Float avg_past_credits = this.past_2_credits / 2;
 
             // get credit of requested course
-            resultSet = getResultSet(conn,
+            resultSet = DatabaseUtils.getResultSet(conn,
                     "select * from course_catalog where course_code = '" + course_code + "' and ay = '"
                             + getAy() + "' and sem = '" + getSem() + "'");
             resultSet.next();
             Float requested_course_credits = resultSet.getFloat(5);
             // if avg past credits is less than 12, then credit limit is 12
-            Float credit_limit = (1.25f * avg_past_credits) < 12 ? 12 : (1.25f * avg_past_credits);
+            Float minSemCredits = AcademicNorms.minSemCredits;
+            Float credit_limit = (1.25f * avg_past_credits) < minSemCredits ? minSemCredits
+                    : (1.25f * avg_past_credits);
 
             if (this.current_sem_credits + requested_course_credits > credit_limit) {
                 System.out.println("Credit limit exceeded");
@@ -213,8 +196,9 @@ public class Student extends Person {
             }
 
             // check if student is already registered for the course
-            resultSet = getResultSet(conn, "select * from " + table_name + " where course = '" + course_code
-                    + "' and (grade != 'F' or grade is null )");
+            resultSet = DatabaseUtils.getResultSet(conn,
+                    "select * from " + table_name + " where course = '" + course_code
+                            + "' and (grade != 'F' or grade is null )");
             if (resultSet.next()) {
                 System.out.println("Already registered or credited the course");
                 return;
@@ -231,7 +215,7 @@ public class Student extends Person {
                     + getAy() + "', '" + course_code + "')";
             Statement st = conn.createStatement();
             st.executeUpdate(registerCourseQuery);
-            System.out.println(course_code + " registered successfully!!");
+            System.out.println("\n " + course_code + " registered successfully!!\n");
             this.current_sem_credits += requested_course_credits;
             System.out.println("Current credits: " + (this.current_sem_credits));
             System.out.println("Credit limit: " + credit_limit);
@@ -252,7 +236,7 @@ public class Student extends Person {
     }
 
     public void studentOptions(Scanner scan) {
-        System.out.println("Welcome " + this.getName() + " !");
+        System.out.println("Welcome " + this.name + " !");
         while (true) {
             System.out.println("1: Register for course");
             System.out.println("2: De-register for course");
@@ -271,7 +255,7 @@ public class Student extends Person {
             } else if (inputLine.equals("2")) {
                 deregisterCourse();
             } else if (inputLine.equals("1")) {
-                // TODO: maybe display to offered courses
+                AcademicNorms.displayCourseCatalog(conn);
                 System.out.println("Enter course code: ");
                 String course_code = scan.nextLine();
                 registerCourse(course_code);

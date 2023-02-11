@@ -1,5 +1,6 @@
 # Academic Management
 
+## Basic functionalities
 - [x]  A Student must be able to: 
   - [x]  Register/deregister for a course:
     - [x]  not allowed to register for a course without clearing the pre-req.
@@ -7,7 +8,7 @@
   - [x]  View only their grades.
   - [x]  Compute their current CGPA. 
 
-   ```Checkpoint: 11-02-23 18:05```
+   ```📍Checkpoint: 11-02-23 18:05```
 
 - [ ]  Academic office must be able to:
   - [ ]  Edit the course catalog (with username Staff Dean’s office)
@@ -19,4 +20,4 @@
   - [ ]  Must be able to update course grades via .csv files. Input would be a filepath and the file
 contents must be updated in the database.
 
-<!-- date in markdown -->
+## Advanced functionalities

@@ -16,7 +16,8 @@
   - [ ]  Generate transcript (Preferably a .txt file) of students.
 - [ ]  Faculty must be able to:
   - [ ]  View grade of all students.
-  - [ ]  Register/deregister courses they would like to offer.
+  - [ ]  Register courses they would like to offer.
+  - [ ]  deregister courses they would like to offer.
   - [ ]  Must be able to update course grades via .csv files. Input would be a filepath and the file
 contents must be updated in the database.
 

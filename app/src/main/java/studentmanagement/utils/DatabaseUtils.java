@@ -19,6 +19,16 @@ public class DatabaseUtils {
         }
     }
 
+    public static void executeUpdateQuery(Connection conn, String query) {
+        try {
+            Statement statement = conn.createStatement();
+            statement.executeUpdate(query);
+        } catch (SQLException e) {
+            System.out.println("Error in executeUpdateQuery");
+            e.printStackTrace();
+        }
+    }
+
     public static Integer getConfigNumber(Connection conn) {
         try {
 
@@ -31,6 +41,12 @@ public class DatabaseUtils {
             e.printStackTrace();
             return -1;
         }
+    }
+
+    public static void setConfigNumber(Connection conn, Integer new_config) {
+        String setConfigNumberQuery = "update config_number set id = " + new_config;
+        DatabaseUtils.executeUpdateQuery(conn, setConfigNumberQuery);
+
     }
 
 }

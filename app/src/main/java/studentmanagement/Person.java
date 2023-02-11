@@ -7,8 +7,8 @@ import studentmanagement.utils.DatabaseUtils;
 // an abstract class named Person with name and email
 public abstract class Person {
     private String email;
-    private String ay;
-    private String sem;
+    private static String ay;
+    private static String sem;
 
     public Person(String email, String ay_in, String sem_in) {
         this.email = email;
@@ -23,6 +23,16 @@ public abstract class Person {
     // getter for ay
     public String getAy() {
         return ay;
+    }
+
+    // setter for ay
+    public void setAy(String new_ay) {
+        ay = new_ay;
+    }
+
+    // setter for sem
+    public void setSem(String new_sem) {
+        sem = new_sem;
     }
 
     // getter for sem

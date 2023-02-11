@@ -15,7 +15,6 @@ public class Student extends Person {
 
     public Student(String email, Connection conn, String ay, String sem) {
         super(email, ay, sem);
-        AcademicNorms.setup_grade_to_number();
         this.current_sem_credits = 0.0f;
         this.past_2_credits = 0.0f;
         this.table_name = "s" + email.substring(0, 11);
@@ -154,7 +153,7 @@ public class Student extends Person {
         ResultSet resultSet;
         try {
             // fetch current config id, and allow only if config = 4
-            Integer config_number = getConfigNumber(conn);
+            Integer config_number = DatabaseUtils.getConfigNumber(conn);
             if (config_number != 4) {
                 System.out.println("Registration is not open");
                 return;
@@ -186,7 +185,7 @@ public class Student extends Person {
             resultSet.next();
             Float requested_course_credits = resultSet.getFloat(5);
             // if avg past credits is less than 12, then credit limit is 12
-            Float minSemCredits = AcademicNorms.minSemCredits;
+            Float minSemCredits = AcademicNorms.minMaxSemCredits;
             Float credit_limit = (1.25f * avg_past_credits) < minSemCredits ? minSemCredits
                     : (1.25f * avg_past_credits);
 
@@ -227,12 +226,34 @@ public class Student extends Person {
         }
     }
 
-    public void deregisterCourse() {
-        // TODO: deregister courses
-    }
+    public void deregisterCourse(String course_code) {
+        ResultSet resultSet;
+        // config number should be 4
+        try {
+            Integer config_number = DatabaseUtils.getConfigNumber(conn);
+            if (config_number != 4) {
+                System.out.println("Course drop is not allowed!");
+                return;
+            }
+            // student course_code should be in running state, hence grade should be null
+            resultSet = DatabaseUtils.getResultSet(conn,
+                    "select * from " + table_name + " where course = '" + course_code + "' and grade is null and ay = '"
+                            + getAy() + "' and sem = '" + getSem() + "'");
+            if (!resultSet.next()) {
+                System.out.println("Course not registered or already credited!");
+                return;
+            }
+            // deregister courses
+            String deregisterCourseQuery = "delete from " + table_name + " where course = '" + course_code
+                    + "' and ay = '" + getAy() + "' and sem = '" + getSem() + "' and grade is null";
+            Statement statement = conn.createStatement();
+            statement.executeUpdate(deregisterCourseQuery);
+            System.out.println("\n " + course_code + " deregistered successfully!!\n");
+        } catch (SQLException e) {
+            System.out.println("Error in Student deregisterCourse");
+            e.printStackTrace();
+        }
 
-    public void viewGrades() {
-        // TODO: view grades
     }
 
     public void studentOptions(Scanner scan) {
@@ -251,12 +272,15 @@ public class Student extends Person {
             } else if (inputLine.equals("4")) {
                 System.out.println("Your CGPA is: " + getCGPA());
             } else if (inputLine.equals("3")) {
-                viewGrades();
+                viewGrades(conn, getEmail());
             } else if (inputLine.equals("2")) {
-                deregisterCourse();
+                viewGrades(conn, getEmail());
+                System.out.print("Enter course code: ");
+                String course_code = scan.nextLine();
+                deregisterCourse(course_code);
             } else if (inputLine.equals("1")) {
-                AcademicNorms.displayCourseCatalog(conn);
-                System.out.println("Enter course code: ");
+                displayCourseCatalog(conn);
+                System.out.print("Enter course code: ");
                 String course_code = scan.nextLine();
                 registerCourse(course_code);
             } else {

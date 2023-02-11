@@ -1,8 +1,8 @@
 package studentmanagement;
 
-import studentmanagement.utils.DatabaseUtils;
-
 import java.sql.*;
+
+import studentmanagement.utils.DatabaseUtils;
 
 // an abstract class named Person with name and email
 public abstract class Person {
@@ -28,20 +28,6 @@ public abstract class Person {
     // getter for sem
     public String getSem() {
         return sem;
-    }
-
-    public Integer getConfigNumber(Connection conn) {
-        try {
-
-            ResultSet resultSet = DatabaseUtils.getResultSet(conn, "select * from config_number");
-            resultSet.next();
-            Integer config_number = resultSet.getInt(1);
-            return config_number;
-        } catch (SQLException e) {
-            System.out.println("Error in getConfigNumber");
-            e.printStackTrace();
-            return -1;
-        }
     }
 
     public String[][] get_prev_2_sem_ay() {
@@ -79,6 +65,45 @@ public abstract class Person {
             statement.executeUpdate();
         } catch (SQLException e) {
             System.out.println("Error in log_login_logout");
+            e.printStackTrace();
+        }
+    }
+
+    public void displayCourseCatalog(Connection conn) {
+        ResultSet resultSet = DatabaseUtils.getResultSet(conn, "select * from course_offerings ");
+
+        try {
+            while (resultSet.next()) {
+                try {
+                    String course_code = resultSet.getString(1);
+                    String course_name = resultSet.getString(2);
+                    Float cgpa_constraint = resultSet.getFloat(3);
+                    System.out.println(course_code + " " + course_name + " " + cgpa_constraint);
+                } catch (SQLException e) {
+                    System.out.println("Error in displayCourseCatalog");
+                    e.printStackTrace();
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error in displayCourseCatalog");
+            e.printStackTrace();
+        }
+    }
+
+    public void viewGrades(Connection conn, String student_email) {
+        String table_name = "s" + student_email.substring(0, 11);
+
+        ResultSet resultSet = DatabaseUtils.getResultSet(conn,
+                "select sem,ay,course,coalesce(grade,'Ongoing')  from " + table_name);
+        try {
+            System.out.println("Sem | Ay | Course | Grade");
+            while (resultSet.next()) {
+                System.out.println(
+                        resultSet.getString(1) + " | " + resultSet.getString(2) + " | " + resultSet.getString(3)
+                                + " | " + resultSet.getString(4));
+            }
+        } catch (SQLException e) {
+            System.out.println("Error in Student viewGrades");
             e.printStackTrace();
         }
     }

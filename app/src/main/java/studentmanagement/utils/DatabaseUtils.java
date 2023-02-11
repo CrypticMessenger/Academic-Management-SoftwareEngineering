@@ -19,4 +19,18 @@ public class DatabaseUtils {
         }
     }
 
+    public static Integer getConfigNumber(Connection conn) {
+        try {
+
+            ResultSet resultSet = DatabaseUtils.getResultSet(conn, "select * from config_number");
+            resultSet.next();
+            Integer config_number = resultSet.getInt(1);
+            return config_number;
+        } catch (SQLException e) {
+            System.out.println("Error in getConfigNumber");
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
 }

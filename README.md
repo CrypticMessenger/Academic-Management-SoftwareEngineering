@@ -17,13 +17,17 @@
    
    ```📍Checkpoint: 12-02-23 12:16```
 
-- [ ]  Faculty must be able to:
-  - [ ]  View grade of all students.
-  - [ ]  Register courses they would like to offer.
-  - [ ]  deregister courses they would like to offer.
-  - [ ]  Must be able to update course grades via .csv files. Input would be a filepath and the file
+- [x]  Faculty must be able to:
+  - [x]  View grade of all students.
+  - [x]  Register courses they would like to offer.
+  - [x]  deregister courses they would like to offer.
+  - [x]  Must be able to update course grades via .csv files. Input would be a filepath and the file
 contents must be updated in the database.
+   ```📍Checkpoint: 13-02-23 00:00```
 
-  ```👹Deadline: 26-02-23 18:05👺```
-
+  ```👹Deadline: 26-02-23 18:05👺``` ✅
 ## Advanced functionalities
+
+## Bonus functionalities
+- Refractoring and better error handling left to be done.
+- thorough testing left to be done.

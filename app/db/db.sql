@@ -13,7 +13,7 @@ create table course_catalog(
     T integer not null,
     P numeric(10,2) not null,
     C numeric(10,2) not null,
-    ay text null,
+    ay text not null,
     sem integer not null,
     pre_req text [] default null,
     primary key (course_code,ay,sem)

@@ -12,8 +12,8 @@ public abstract class Person {
 
     public Person(String email, String ay_in, String sem_in) {
         this.email = email;
-        this.ay = ay_in;
-        this.sem = sem_in;
+        ay = ay_in;
+        sem = sem_in;
     }
 
     public String getEmail() {
@@ -66,6 +66,32 @@ public abstract class Person {
         return past_2_ay_sem;
     }
 
+    public String[][] get_next_n_sem_ay(Integer n) {
+        String[] ay_sem = ay.split("-");
+        Integer ay_int = Integer.parseInt(ay_sem[0]);
+        Integer sem_int = Integer.parseInt(sem);
+        String[] next_n_ay = new String[n];
+        String[] next_n_sem = new String[n];
+        String ay_temp;
+        String sem_temp;
+        Integer i = 0;
+        while (i < n) {
+            if (sem_int == 1) {
+                sem_int = 2;
+            } else {
+                sem_int = 1;
+                ay_int += 1;
+            }
+            ay_temp = ay_int.toString() + "-" + ((ay_int + 1) % 100);
+            sem_temp = sem_int.toString();
+            next_n_ay[i] = ay_temp;
+            next_n_sem[i] = sem_temp;
+            i++;
+        }
+        String[][] next_n_ay_sem = { next_n_ay, next_n_sem };
+        return next_n_ay_sem;
+    }
+
     public void log_login_logout(Connection conn, String email, String status) {
         try {
             String enter_logout_log = "Insert into login_log(email,status) values (?,?)";
@@ -100,12 +126,28 @@ public abstract class Person {
         }
     }
 
-    public void viewGrades(Connection conn, String student_email) {
-        String table_name = "s" + student_email.substring(0, 11);
-
-        ResultSet resultSet = DatabaseUtils.getResultSet(conn,
-                "select sem,ay,course,coalesce(grade,'Ongoing')  from " + table_name);
+    public Boolean checkStudentExist(Connection conn, String email) {
         try {
+            String checkStudentQuery = "select * from user_auth where id ='" + email + "' and roles='s'";
+            ResultSet resultSetCheckStudent = DatabaseUtils.getResultSet(conn, checkStudentQuery);
+            return resultSetCheckStudent.next();
+        } catch (SQLException e) {
+            System.out.println("Error in checkStudentExist");
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public void viewGrades(Connection conn, String student_email) {
+        try {
+            if (!checkStudentExist(conn, student_email)) {
+                System.out.println("Student does not exist");
+                return;
+            }
+            String table_name = "s" + student_email.substring(0, 11);
+
+            ResultSet resultSet = DatabaseUtils.getResultSet(conn,
+                    "select sem,ay,course,coalesce(grade,'Ongoing')  from " + table_name);
             System.out.println("Sem | Ay | Course | Grade");
             while (resultSet.next()) {
                 System.out.println(

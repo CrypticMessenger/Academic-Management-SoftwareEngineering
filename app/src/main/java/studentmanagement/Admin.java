@@ -44,41 +44,6 @@ public class Admin extends Person {
         return this.name;
     }
 
-    private void viewCourseGrade(String email, String course_code, String ay, String sem) {
-        // somewhat like table format
-        String table_name = "s" + email.substring(0, 11);
-        try {
-            ResultSet resultSet = DatabaseUtils.getResultSet(conn,
-                    "select * from " + table_name + " where course='" + course_code + "' and ay='" + ay
-                            + "' and sem='" + sem + "' and grade is not null");
-            if (resultSet.next()) {
-                System.out.println(email + " : " + resultSet.getString(4));
-            }
-
-        } catch (SQLException e) {
-            System.out.println("Error in viewCourseGrade");
-            e.printStackTrace();
-        }
-    }
-
-    private void viewCourseRecord(String course_code, String ay, String sem) {
-
-        try {
-            ResultSet resultSet = DatabaseUtils.getResultSet(conn, "select id from user_auth where roles='s'");
-            System.out.println(
-                    "-----------Course Code: " + course_code + "---AY: " + ay + "--- SEM: " + sem + "----------------");
-            System.out.println("Student email : Grade");
-            while (resultSet.next()) {
-                String student_email = resultSet.getString(1);
-                viewCourseGrade(student_email, course_code, ay, sem);
-            }
-            System.out.println("--------------------------------------------------------------------");
-        } catch (SQLException e) {
-            System.out.println("Error in viewCourseRecord");
-            e.printStackTrace();
-        }
-    }
-
     private void triggerEvent(String event, String state, Integer new_config, Scanner scanner) {
         Integer config = DatabaseUtils.getConfigNumber(conn);
         String question = state.equals("starting") ? "start" : "end";
@@ -132,6 +97,10 @@ public class Admin extends Person {
         }
     }
 
+    // ToDO: refractor teacher part
+    // TODO: check if registration is allowed for student, before asking for course
+    // code
+    // TODO: getAy() doesn't work if admin changes semester, so take care of it.
     private void validateStudentGrades(String email, String ay, String sem) {
         String table_name = "s" + email.substring(0, 11);
         String invalidEntryFilter = "select course from " + table_name + " where grade is null and ay='" + ay
@@ -140,6 +109,12 @@ public class Admin extends Person {
             ResultSet resultSet = DatabaseUtils.getResultSet(conn, invalidEntryFilter);
             while (resultSet.next()) {
                 System.out.println(email + " : " + resultSet.getString(1));
+                String checkEntry = "select * from report_validator where course_code='" + resultSet.getString(1)
+                        + "' and student_id='" + email + "'";
+                ResultSet resultSet1 = DatabaseUtils.getResultSet(conn, checkEntry);
+                if (resultSet1.next()) {
+                    continue;
+                }
                 String insertIntoValidator = "Insert into report_validator(course_code,student_id) values('"
                         + resultSet.getString(1) + "','" + email + "')";
                 DatabaseUtils.executeUpdateQuery(conn, insertIntoValidator);
@@ -207,37 +182,6 @@ public class Admin extends Person {
         } catch (SQLException e) {
             System.out.println("Error in generateAllTranscripts");
             e.printStackTrace();
-        }
-    }
-
-    private void viewStudentRecordsOptions(Scanner scan) {
-        while (true) {
-            System.out.println("1: View records of one course");
-            System.out.println("2: View records of one student");
-            System.out.println("3: go back to menu!");
-            System.out.print("Choose: ");
-            String response = scan.nextLine();
-            if (response.equals("1")) {
-                System.out.print("Enter course code: ");
-                String course_code = scan.nextLine();
-                System.out.print("Enter ay(eg: 2013-14): ");
-                String ay = scan.nextLine();
-                System.out.print("Enter sem(eg: 1 or 2): ");
-                String sem = scan.nextLine();
-                // view for one course record
-                viewCourseRecord(course_code, ay, sem);
-
-            } else if (response.equals("2")) {
-                // one student DONE
-                System.out.print("Enter student email: ");
-                String student_email = scan.nextLine();
-                viewGrades(conn, student_email);
-            } else if (response.equals("3")) {
-                break;
-            } else {
-                System.out.println("Invalid input");
-            }
-
         }
     }
 
@@ -380,7 +324,7 @@ public class Admin extends Person {
 
             } else if (inputLine.equals("11")) {
                 // view student records
-                viewStudentRecordsOptions(scan);
+                viewStudentRecordsOptions(conn, scan);
 
             } else if (inputLine.equals("12")) {
                 // generate transcripts

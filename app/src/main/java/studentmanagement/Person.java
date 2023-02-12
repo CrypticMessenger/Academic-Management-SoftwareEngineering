@@ -1,6 +1,7 @@
 package studentmanagement;
 
 import java.sql.*;
+import java.util.Scanner;
 
 import studentmanagement.utils.DatabaseUtils;
 
@@ -126,6 +127,41 @@ public abstract class Person {
         }
     }
 
+    public void viewCourseGrade(Connection conn, String email, String course_code, String ay, String sem) {
+        // somewhat like table format
+        String table_name = "s" + email.substring(0, 11);
+        try {
+            ResultSet resultSet = DatabaseUtils.getResultSet(conn,
+                    "select * from " + table_name + " where course='" + course_code + "' and ay='" + ay
+                            + "' and sem='" + sem + "' ");
+            if (resultSet.next()) {
+                System.out.println(email + " : " + resultSet.getString(4));
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error in viewCourseGrade");
+            e.printStackTrace();
+        }
+    }
+
+    public void viewCourseRecord(Connection conn, String course_code, String ay, String sem) {
+
+        try {
+            ResultSet resultSet = DatabaseUtils.getResultSet(conn, "select id from user_auth where roles='s'");
+            System.out.println(
+                    "-----------Course Code: " + course_code + "---AY: " + ay + "--- SEM: " + sem + "----------------");
+            System.out.println("Student email : Grade");
+            while (resultSet.next()) {
+                String student_email = resultSet.getString(1);
+                viewCourseGrade(conn, student_email, course_code, ay, sem);
+            }
+            System.out.println("--------------------------------------------------------------------");
+        } catch (SQLException e) {
+            System.out.println("Error in viewCourseRecord");
+            e.printStackTrace();
+        }
+    }
+
     public Boolean checkStudentExist(Connection conn, String email) {
         try {
             String checkStudentQuery = "select * from user_auth where id ='" + email + "' and roles='s'";
@@ -157,6 +193,37 @@ public abstract class Person {
         } catch (SQLException e) {
             System.out.println("Error in Student viewGrades");
             e.printStackTrace();
+        }
+    }
+
+    public void viewStudentRecordsOptions(Connection conn, Scanner scan) {
+        while (true) {
+            System.out.println("1: View records of one course");
+            System.out.println("2: View records of one student");
+            System.out.println("3: go back to menu!");
+            System.out.print("Choose: ");
+            String response = scan.nextLine();
+            if (response.equals("1")) {
+                System.out.print("Enter course code: ");
+                String course_code = scan.nextLine();
+                System.out.print("Enter ay(eg: 2013-14): ");
+                String ay = scan.nextLine();
+                System.out.print("Enter sem(eg: 1 or 2): ");
+                String sem = scan.nextLine();
+                // view for one course record
+                viewCourseRecord(conn, course_code, ay, sem);
+
+            } else if (response.equals("2")) {
+                // one student DONE
+                System.out.print("Enter student email: ");
+                String student_email = scan.nextLine();
+                viewGrades(conn, student_email);
+            } else if (response.equals("3")) {
+                break;
+            } else {
+                System.out.println("Invalid input");
+            }
+
         }
     }
 

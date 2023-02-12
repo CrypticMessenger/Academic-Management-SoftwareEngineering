@@ -15,6 +15,7 @@ import java.util.Scanner;
 import studentmanagement.utils.DatabaseUtils;
 //TODO: refractor ccode
 //TODO: show warning when ending the semester to check report_validator last time
+//TODO: print the validation report
 
 public class Admin extends Person {
     private String name;
@@ -374,8 +375,7 @@ public class Admin extends Person {
             System.out.print("Choose: ");
             inputLine = scan.nextLine();
             if (inputLine.equals("1")) {
-                // TODO: for option 1, ask for actions like go back, edit, new... edit catalog
-                // function
+                // edit catalog function
                 editCourseCatalog(scan);
 
             } else if (inputLine.equals("11")) {

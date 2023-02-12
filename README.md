@@ -10,10 +10,13 @@
 
    ```📍Checkpoint: 11-02-23 18:05```
 
-- [ ]  Academic office must be able to:
-  - [ ]  Edit the course catalog (with username Staff Dean’s office)
-  - [ ]  View grade of all students.
-  - [ ]  Generate transcript (Preferably a .txt file) of students.
+- [x]  Academic office must be able to:
+  - [x]  Edit the course catalog (with username Staff Dean’s office)
+  - [x]  View grade of all students.
+  - [x]  Generate transcript (Preferably a .txt file) of students.
+   
+   ```📍Checkpoint: 12-02-23 12:16```
+
 - [ ]  Faculty must be able to:
   - [ ]  View grade of all students.
   - [ ]  Register courses they would like to offer.

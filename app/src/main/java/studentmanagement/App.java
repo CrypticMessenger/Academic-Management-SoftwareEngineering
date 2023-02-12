@@ -8,7 +8,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Scanner;
 
-// TODO: make studnt options different
 //- make more object oriented, like making student, admin or teacher class
 public class App {
     private final String url = "jdbc:postgresql://localhost/academic_management";

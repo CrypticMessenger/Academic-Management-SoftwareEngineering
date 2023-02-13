@@ -27,7 +27,18 @@ contents must be updated in the database.
 
   ```👹Deadline: 26-02-23 18:05👺``` ✅
 ## Advanced functionalities
+1. [ ] Implement the concept of UG curriculum into the application.
+2. [ ] You should maintain a list of Program Cores and Program Electives and information about BTP
+Capstone.
+3. [ ] Note that information in item 2 may change with time. For e.g., a course which was PC for a
+batch may no longer be a PC for their junior batch.
+4. [ ] In summary you would have to maintain enough information to track his progress through the UG
+curriculum.
+5. [ ] Implement a procedure to check for graduation check. A student is allowed to check if he/she has
+completed all the Program Core courses, minimum number of program electives and passed the
+BTP Capstone credits.
 
 ## Bonus functionalities
 - Refractoring and better error handling left to be done.
 - thorough testing left to be done.
+- Encrypt passwords

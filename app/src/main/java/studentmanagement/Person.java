@@ -227,4 +227,21 @@ public abstract class Person {
         }
     }
 
+    public Integer getSemCompleted(Connection conn, String student_email) {
+        Integer result = -1;
+        try {
+            String table_name = "s" + student_email.substring(0, 11);
+            String query = "select count(*) from (select distinct sem, ay from " + table_name
+                    + " where grade is not null) as cnt";
+            ResultSet resultSet = DatabaseUtils.getResultSet(conn, query);
+            resultSet.next();
+            result = resultSet.getInt(1);
+        } catch (SQLException e) {
+            System.out.println("Error in getSemCompleted");
+            e.printStackTrace();
+        }
+        return result;
+
+    }
+
 }

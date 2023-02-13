@@ -135,12 +135,14 @@ public class Student extends Person {
     private Boolean checkPrereqCondition(String course_code) {
         ArrayList<String> pre_req = getAllPrereq(course_code);
         ArrayList<String> courses_taken = new ArrayList<String>();
+        System.out.println(pre_req);
         try {
             ResultSet resultSet = DatabaseUtils.getResultSet(conn,
                     "select course from " + table_name + " where grade != 'F' and grade is not null");
             while (resultSet.next()) {
                 courses_taken.add(resultSet.getString(1));
             }
+            System.out.println(courses_taken);
             return courses_taken.containsAll(pre_req);
         } catch (SQLException e) {
             System.out.println("Error in checkPrereqCondition");
@@ -194,7 +196,80 @@ public class Student extends Person {
                 return;
             }
 
-            // check if student is already registered for the course
+            // check if student is already registered for the course also checks if this
+            // course is PC or not
+            resultSet = DatabaseUtils.getResultSet(conn,
+                    "select * from " + table_name + " where course = '" + course_code
+                            + "' and (grade != 'F' or grade is null )");
+            if (resultSet.next()) {
+                System.out.println("Already registered or credited the course");
+                return;
+            }
+
+            // check if student has taken all the prerequisites with no grade as F or null
+            if (!checkPrereqCondition(course_code)) {
+                System.out.println("Prerequisite condition not met");
+                return;
+            }
+
+            // register courses
+            String registerCourseQuery = "insert into " + table_name + "(sem,ay,course) values ('" + getSem() + "','"
+                    + getAy() + "', '" + course_code + "')";
+            Statement st = conn.createStatement();
+            st.executeUpdate(registerCourseQuery);
+            System.out.println("\n " + course_code + " registered successfully!!\n");
+            this.current_sem_credits += requested_course_credits;
+            System.out.println("Current credits: " + (this.current_sem_credits));
+            System.out.println("Credit limit: " + credit_limit);
+            System.out.println("cgpa: " + this.cgpa);
+
+        } catch (SQLException e) {
+            System.out.println("Error in Student registerCourse");
+            e.printStackTrace();
+        }
+    }
+
+    public void forceRegisterCourse(String course_code) {
+        ResultSet resultSet;
+        try {
+
+            // check if course is in course offering
+            resultSet = DatabaseUtils.getResultSet(conn,
+                    "select * from course_offerings where course_code = '" + course_code + "'");
+            if (!resultSet.next()) {
+                System.out.println("Course not offered");
+                return;
+            }
+
+            // check cgpa constraint
+            Float cg_constraint = resultSet.getFloat(3);
+            this.cgpa = getCGPA();
+            if (this.cgpa < cg_constraint) {
+                System.out.println("cgpa constraint not met");
+                return;
+            }
+
+            // check if credit limit allows for registration
+            Float avg_past_credits = this.past_2_credits / 2;
+
+            // get credit of requested course
+            resultSet = DatabaseUtils.getResultSet(conn,
+                    "select * from course_catalog where course_code = '" + course_code + "' and ay = '"
+                            + getAy() + "' and sem = '" + getSem() + "'");
+            resultSet.next();
+            Float requested_course_credits = resultSet.getFloat(5);
+            // if avg past credits is less than 12, then credit limit is 12
+            Float minSemCredits = AcademicNorms.minMaxSemCredits;
+            Float credit_limit = (1.25f * avg_past_credits) < minSemCredits ? minSemCredits
+                    : (1.25f * avg_past_credits);
+
+            if (this.current_sem_credits + requested_course_credits > credit_limit) {
+                System.out.println("Credit limit exceeded");
+                return;
+            }
+
+            // check if student is already registered for the course also checks if this
+            // course is PC or not
             resultSet = DatabaseUtils.getResultSet(conn,
                     "select * from " + table_name + " where course = '" + course_code
                             + "' and (grade != 'F' or grade is null )");

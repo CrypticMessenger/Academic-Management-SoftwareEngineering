@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.Array;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,10 +14,12 @@ import java.util.Date;
 import java.util.Scanner;
 
 import studentmanagement.utils.DatabaseUtils;
+
 //TODO: refractor ccode
 //TODO: show warning when ending the semester to check report_validator last time
 //TODO: print the validation report
-
+//TODO: program elective registration for professors;
+//TODO: program elective registration for students
 public class Admin extends Person {
     private String name;
     private Connection conn;
@@ -101,6 +104,14 @@ public class Admin extends Person {
     // TODO: check if registration is allowed for student, before asking for course
     // code
     // TODO: getAy() doesn't work if admin changes semester, so take care of it.
+    // TODO: admin can edit UG curriculum when semester has ended that is config = 9
+    // TODO: when admin starts the new semseter, whole UG currilum will
+    // automatically insert into course_catalog, so admin will only float the
+    // electives
+    // TODO: whatif teacher removes course, student enrolled in that course should
+    // also be removed
+    // TODO: when student want to register a course, PE_for should contain his
+    // department
     private void validateStudentGrades(String email, String ay, String sem) {
         String table_name = "s" + email.substring(0, 11);
         String invalidEntryFilter = "select course from " + table_name + " where grade is null and ay='" + ay
@@ -222,7 +233,11 @@ public class Admin extends Person {
                 "Update current_session set ay = '" + ay + "', sem = '" + sem + "'");
         setAy(ay);
         setSem(sem);
+        String setupCourseCatalog = "insert into course_catalog(course_code,l,t,p,ay,sem,pre_req,pc_or_pe,pc_for,pe_for,pc_sem,pe_minsem) select course_code,l,t,p,'"
+                + getAy() + "'," + getSem() + ",pre_req,'pc',pc_for,pe_for,pc_sem,pe_minsem from ug_curriculum";
+        DatabaseUtils.executeUpdateQuery(conn, setupCourseCatalog);
         System.out.println("New session started!");
+
     }
 
     private void editCourseCatalog(Scanner scan) {
@@ -353,6 +368,35 @@ public class Admin extends Person {
             } else if (inputLine.equals("3")) {
                 // dis-allow course float
                 triggerEvent("course float", "ending", 3, scan);
+                String enrollPCStudents = "select * from course_catalog,user_auth where user_auth.dept = any(course_catalog.pc_for) and user_auth.roles = 's' and course_catalog.ay='"
+                        + getAy() + "' and course_catalog.sem=" + getSem() + "";
+                System.out.println(enrollPCStudents);
+
+                ResultSet rs1 = DatabaseUtils.getResultSet(conn, enrollPCStudents);
+                try {
+                    while (rs1.next()) {
+                        String course_code = rs1.getString(1);
+                        String email = rs1.getString(15);
+                        String table_name = "s" + email.substring(0, 11);
+                        String pc_sem = rs1.getString(12);
+                        if (Integer.parseInt(pc_sem) == getSemCompleted(conn, email) + 1) {
+                            Student st = new Student(email, conn, getAy(), getSem());
+                            System.out.println("Studentenrolling pc student: " + email + " in course: " + course_code);
+                            st.forceRegisterCourse(course_code);
+                            // String enrollPCStudent = "insert into " + table_name +
+                            // "(sem,ay,course)values('" + getSem()
+                            // + "','"
+                            // + getAy() + "','" + course_code + "')";
+                            // DatabaseUtils.executeUpdateQuery(conn, enrollPCStudent);
+                        }
+                        System.out.println("sem_comp:" + getSemCompleted(conn, email));
+                        System.out.println("pc_sem: " + pc_sem);
+
+                    }
+                } catch (SQLException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
 
             } else if (inputLine.equals("4")) {
                 // allow course enrollment

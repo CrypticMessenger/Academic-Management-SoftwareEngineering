@@ -8,6 +8,15 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Scanner;
 
+// TODO:TEACHER when floating course, course catalog should be printed.
+// TODO:TEACHER when cancelling course, floating courses by the teacher should be printed.
+//TODO:TEACHER maybe log whichever grades are uploaded by the teacher
+//TODO: TEACHER, do you really need to ask for sem and ay when viewign student records?
+//TODO: TEACHER when validating course, make sure you print, no student avaiable if it's empty
+//TODO: refractor code
+//TODO: extend advanced funcctionality
+//TODO: test
+
 //- make more object oriented, like making student, admin or teacher class
 public class App {
     private final String url = "jdbc:postgresql://localhost/academic_management";

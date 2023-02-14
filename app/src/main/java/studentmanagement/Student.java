@@ -348,12 +348,18 @@ public class Student extends Person {
             System.out.println("2: De-register for course");
             System.out.println("3: View grades and courses");
             System.out.println("4: Get Current CGPA");
-            System.out.println("5: Logout");
+            System.out.println("5: Student  graduation check");
+            System.out.println("6: Logout");
             System.out.print("Choose: ");
             String inputLine = scan.nextLine();
-            if (inputLine.equals("5")) {
+            if (inputLine.equals("6")) {
                 finalize();
                 break;
+                // TODO: check in teacher if only teacher floating the course can upload or
+                // download grade or student sheet
+            } else if (inputLine.equals("5")) {
+                graduationCheck();
+                System.out.println("Your CGPA is: " + getCGPA());
             } else if (inputLine.equals("4")) {
                 System.out.println("Your CGPA is: " + getCGPA());
             } else if (inputLine.equals("3")) {
@@ -372,6 +378,12 @@ public class Student extends Person {
                 System.out.println("Invalid input");
             }
         }
+    }
+
+    private void graduationCheck() {
+        // TODO: check if student has passed all the cores and electives
+        // TODO: check if student has credits >= 145
+        // TODO: check if he has credited and paassed BTP CP301,302,303
     }
 
     // destructor for student

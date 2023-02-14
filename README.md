@@ -33,11 +33,12 @@ batch may no longer be a PC for their junior batch.
 1. [x] In summary you would have to maintain enough information to track his progress through the UG
 curriculum.
    ```📍Checkpoint: 14-02-23 10:18```
-1. [ ] Implement a procedure to check for graduation check. A student is allowed to check if he/she has
+1. [x] Implement a procedure to check for graduation check. A student is allowed to check if he/she has
 completed all the Program Core courses, minimum number of program electives and passed the
 BTP Capstone credits.
-1. [ ] You should maintain a list of Program Cores and Program Electives and information about BTP
+1. [x] You should maintain a list of Program Cores and Program Electives and information about BTP
 Capstone.
+   ```📍Checkpoint: 14-02-23 21:31```
 
 ## Bonus functionalities
 - Refractoring and better error handling left to be done.

@@ -188,23 +188,24 @@ create table ug_curriculum (
 
 -- insert into course_catalog(course_code, L, T,P,ay,sem) values('CS301',3,1,2,'2023-24',1);
 -- insert into course_catalog(course_code, L, T,P,ay,sem) values('CS304',3,1,2,'2022-23',1);
--- insert into course_catalog(course_code, L, T,P,ay,sem) values('CS301',3,1,2,'2020-21',1);
+insert into course_catalog(course_code, L, T,P,ay,sem,pc_or_pe,pe_for,pe_minsem) values('CS301',3,1,2,'2020-21',1,'pe',Array ['cs'],0);
 -- insert into course_catalog(course_code, L, T,P,ay,sem) values('CS201',3,1,2,'2023-24',1);
 -- insert into course_catalog(course_code, L, T,P,ay,sem) values('CS202',3,1,2,'2023-24',1);
 -- insert into course_catalog(course_code, L, T,P,ay,sem) values('CS204',3,1,2,'2023-24',1);
 -- insert into course_catalog(course_code, L, T,P,ay,sem) values('CS205',3,1,2,'2023-24',1);
 -- insert into course_catalog(course_code, L, T,P,pre_req,ay,sem) values('CS302',3,1,0, Array ['CS301','CS305'],'2023-24',1); 
--- insert into course_catalog(course_code, L, T,P,pre_req,ay,sem) values('CS302',3,1,0, Array ['CS301','CS305'],'2021-22',2); 
+insert into course_catalog(course_code, L, T,P,pre_req,ay,sem,pc_or_pe,pe_for,pe_minsem) values('CS302',3,1,0, Array ['CS301','CS305'],'2021-22',2,'pe',Array ['cs'],0); 
 -- insert into course_catalog(course_code, L, T,P,pre_req,ay,sem) values('CS303',3,1,2,Array ['CS302'],'2023-24',1);
 -- insert into course_catalog(course_code, L, T,P,pre_req,ay,sem) values('CS303',3,1,2,Array ['CS302'],'2022-23',1);
--- insert into course_catalog(course_code, L, T,P,pre_req,ay,sem) values('CS303',3,1,2,Array ['CS302'],'2022-23',2);
+insert into course_catalog(course_code, L, T,P,pre_req,ay,sem,pc_or_pe,pe_for,pe_minsem) values('CS303',3,1,2,Array ['CS302'],'2022-23',2,'pe',Array ['cs'],0);
+insert into course_catalog(course_code, L, T,P,pre_req,ay,sem,pc_or_pe,pe_for,pe_minsem) values('CS303',3,1,2,Array ['CS302'],'2022-23',1,'pe',Array ['cs'],0);
 -- insert into course_catalog(course_code, L, T,P,pre_req,ay,sem) values('CS304',3,1,2, array ['CS303'],'2023-24',1);
 -- insert into course_catalog(course_code, L, T,P,ay,sem) values('CS305',3,0,2,'2023-24',1);
--- insert into course_catalog(course_code, L, T,P,ay,sem) values('CS305',3,0,2,'2021-22',1);
+insert into course_catalog(course_code, L, T,P,ay,sem,pc_or_pe,pe_for,pe_minsem) values('CS305',3,0,2,'2021-22',1,'pe',Array ['cs'],0);
 -- insert into course_catalog(course_code, L, T,P,ay,sem) values('CS306',3,0,2,'2023-24',1);
--- insert into course_catalog(course_code, L, T,P,ay,sem) values('CS306',3,0,2,'2021-22',1);
+insert into course_catalog(course_code, L, T,P,ay,sem,pc_or_pe,pe_for,pe_minsem) values('CS306',3,0,2,'2021-22',1,'pe',Array ['cs'],0);
 -- insert into course_catalog(course_code, L, T,P,ay,sem) values('CS539',3,0,2,'2023-24',1);
--- insert into course_catalog(course_code, L, T,P,ay,sem) values('CS539',3,0,2,'2020-21',2);
+insert into course_catalog(course_code, L, T,P,ay,sem,pc_or_pe,pe_for,pe_minsem) values('CS539',3,0,2,'2020-21',2,'pe',Array ['cs'],0);
 
 -- insert into ug_curriculum(course_code,l,t,p,pre_req,pc_for,pc_sem,pe_for,pe_minsem) values('CS101',3,1,2,null,null,null,null,null);
 

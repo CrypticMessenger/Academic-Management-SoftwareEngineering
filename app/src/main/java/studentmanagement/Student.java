@@ -380,10 +380,60 @@ public class Student extends Person {
         }
     }
 
-    private void graduationCheck() {
+    private Boolean getPassStatus(String course_code) {
+        String query = "select * from " + table_name + " where course = '" + course_code
+                + "' and grade !='F' and grade is not null";
+        ResultSet resultSet = DatabaseUtils.getResultSet(conn, query);
+        try {
+            if (resultSet.next()) {
+                return true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    private Boolean graduationCheck() {
         // TODO: check if student has passed all the cores and electives
-        // TODO: check if student has credits >= 145
-        // TODO: check if he has credited and paassed BTP CP301,302,303
+        String student_email = getEmail();
+        Boolean result = false;
+        String query = "select s.sem, s.ay,c.c,s.course,s.grade from " + table_name
+                + " as s,course_catalog as c where s.course = c.course_code and s.ay = c.ay and s.sem = c.sem";
+        ResultSet resultSet = DatabaseUtils.getResultSet(conn, query);
+        Integer total_credits = 0;
+        try {
+            while (resultSet.next()) {
+                String course = resultSet.getString(4);
+                String grade = resultSet.getString(5);
+                Integer credits = resultSet.getInt(3);
+                Integer gradePoint = AcademicNorms.grade_to_number.get(grade);
+                if (getPassStatus(course)) {
+                    total_credits += credits;
+                } else {
+                    System.out.println("You have not passed the course: " + course);
+                    return false;
+                }
+
+            }
+            // TODO: check if student has credits >= 145
+            if (total_credits < 10) {
+                System.out.println("You have not completed the minimum credits required for graduation");
+                return false;
+            }
+            System.out.println("You have completed " + total_credits + " credits");
+            if (getPassStatus("CP301") && getPassStatus("CP302") && getPassStatus("CP303")) {
+                System.out.println("You have completed the BTP requirements");
+                return true;
+            }
+            // TODO: check if he has credited and paassed BTP CP301,302,303
+            System.out.println("You have not completed the BTP requirements");
+            return false;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     // destructor for student

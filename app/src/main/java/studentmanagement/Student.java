@@ -33,7 +33,7 @@ public class Student extends Person {
             System.out.println("Error in Student constructor");
             e.printStackTrace();
         }
-        this.department = email.substring(4, 5);
+        this.department = email.substring(4, 6);
 
     }
 
@@ -209,6 +209,16 @@ public class Student extends Person {
             // check if student has taken all the prerequisites with no grade as F or null
             if (!checkPrereqCondition(course_code)) {
                 System.out.println("Prerequisite condition not met");
+                return;
+            }
+
+            // TODO: check if course is offered for the branch?
+            String query = "select * from course_catalog where course_code = '" + course_code + "' and ay = '"
+                    + getAy() + "' and sem = " + getSem() + " and '" + getDepartment() + "'=any(pe_for)";
+            System.out.println(query);
+            resultSet = DatabaseUtils.getResultSet(conn, query);
+            if (!resultSet.next()) {
+                System.out.println("Course not offered for your branch");
                 return;
             }
 

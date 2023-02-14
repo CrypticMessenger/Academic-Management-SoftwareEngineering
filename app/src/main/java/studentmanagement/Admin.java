@@ -20,6 +20,7 @@ import studentmanagement.utils.DatabaseUtils;
 //TODO: print the validation report
 //TODO: program elective registration for professors;
 //TODO: program elective registration for students
+//TODO: remove useless print statements
 public class Admin extends Person {
     private String name;
     private Connection conn;
@@ -241,12 +242,14 @@ public class Admin extends Person {
     }
 
     private void editCourseCatalog(Scanner scan) {
-        Integer config = DatabaseUtils.getConfigNumber(conn);
-        if (config != 1) {
-            System.out.println("Cannot edit course catalog now!");
-            return;
-        }
+        // TODO: decide here
+        // Integer config = DatabaseUtils.getConfigNumber(conn);
+        // if (config != 1) {
+        // System.out.println("Cannot edit course catalog now!");
+        // return;
+        // }
         while (true) {
+            // TODO: add course edit option
             System.out.println("1: Add a new course");
             System.out.println("2: Remove a course");
             System.out.println("3: go back!");
@@ -286,11 +289,37 @@ public class Admin extends Person {
                         }
                     }
                     String pre_req_string = "'" + String.join("','", pre_req) + "'";
-                    System.out.println(getAy());
-                    System.out.println(getSem());
-                    String query = "insert into course_catalog(course_code,l,t,p,ay,sem,pre_req) values('" + course_code
+                    ArrayList<String> pe_for = new ArrayList<String>();
+                    System.out.println("Enter PE for: ");
+                    while (true) {
+                        System.out.println(
+                                "Enter branch code(cs,mm,mc,ch,ce,me) of PE_for course or enter 'done' to finish");
+                        String course_pe_for = scan.nextLine();
+                        if (course_pe_for.equals("done")) {
+                            break;
+                        }
+                        if (pe_for.contains(course_pe_for)) {
+                            System.out.println("Course already added as a PE for!");
+                            continue;
+                        } else {
+                            pe_for.add(course_pe_for);
+                        }
+                    }
+                    String pe_for_string = "'" + String.join("','", pe_for) + "'";
+                    Integer pe_minsem = 0;
+                    System.out.println("Enter minimum semester for PE: ");
+                    String temp = scan.nextLine();
+                    if (temp.equals("")) {
+                        pe_minsem = 0;
+                    } else {
+                        pe_minsem = Integer.parseInt(temp);
+                    }
+
+                    String query = "insert into course_catalog(course_code,l,t,p,ay,sem,pre_req,pc_or_pe,pe_for,pe_minsem) values('"
+                            + course_code
                             + "'," + l
-                            + "," + t + "," + p + ",'" + getAy() + "'," + getSem() + ",Array[" + pre_req_string + "])";
+                            + "," + t + "," + p + ",'" + getAy() + "'," + getSem() + ",Array[" + pre_req_string
+                            + "],'pe',Array[" + pe_for_string + "]," + pe_minsem + ")";
                     DatabaseUtils.executeUpdateQuery(conn, query);
                     System.out.println("Course added to catalog!");
                 } catch (SQLException e) {

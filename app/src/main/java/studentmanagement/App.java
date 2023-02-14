@@ -16,6 +16,7 @@ import java.util.Scanner;
 //TODO: refractor code
 //TODO: extend advanced funcctionality
 //TODO: test
+//TODO: take care of ordering of status and stuff
 
 //- make more object oriented, like making student, admin or teacher class
 public class App {

@@ -46,7 +46,8 @@ public class Professor extends Person {
             System.out.println("3: Cancel a course");
             System.out.println("4: Upload grades for course");
             System.out.println("5: Validate grade submission");
-            System.out.println("6: Logout");
+            System.out.println("6: get student list csv");
+            System.out.println("7: Logout");
             System.out.print("Choose: ");
             inputLine = scan.nextLine();
             if (inputLine.equals("5")) {
@@ -64,10 +65,22 @@ public class Professor extends Person {
                 cancelACourse(scan);
 
             } else if (inputLine.equals("4")) {
+                System.out.println("Enter the course code: ");
+                String courseCode = scan.nextLine();
                 // upload grades for course
-                uploadGradesForCourse(scan);
+                uploadGradesForCourse(scan, courseCode);
 
             } else if (inputLine.equals("6")) {
+                System.out.println("Enter the course code: ");
+                String courseCode = scan.nextLine();
+                System.out.println("Enter the ay: ");
+                String ay = scan.nextLine();
+                System.out.println("Enter the sem: ");
+                String sem = scan.nextLine();
+                System.out.println("Enter the path to save the csv file: ");
+                String path = scan.nextLine();
+                saveCourseRecord(conn, courseCode, ay, sem, path);
+            } else if (inputLine.equals("7")) {
                 finalize();
                 break;
             } else
@@ -76,7 +89,7 @@ public class Professor extends Person {
 
     }
 
-    private void uploadGradesForCourse(Scanner scan) {
+    private void uploadGradesForCourse(Scanner scan, String course_Code) {
         Integer config = DatabaseUtils.getConfigNumber(conn);
         if (config != 6) {
             System.out.println("You cannot upload grades now");
@@ -97,7 +110,7 @@ public class Professor extends Person {
                     // use comma as separator
                     String[] row = line.split(cvsSplitBy);
                     String studentEmail = row[0];
-                    String courseCode = row[1];
+                    String courseCode = course_Code;
                     String checkFloatingCondition = "select * from course_offerings where course_code = '"
                             + courseCode
                             + "' and instructor_id = '" + getEmail() + "'";
@@ -108,7 +121,7 @@ public class Professor extends Person {
                         continue;
                     }
 
-                    String gradeValue = row[2];
+                    String gradeValue = row[1];
                     String table_name = "s" + studentEmail.substring(0, 11);
                     String validateCourseEnrollment = "select * from " + table_name + " where course= '"
                             + courseCode + "' and ay = '" + getAy() + "' and sem = '" + getSem() + "'";

@@ -1,5 +1,7 @@
 package studentmanagement;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.*;
 import java.util.Scanner;
 
@@ -154,6 +156,60 @@ public abstract class Person {
             while (resultSet.next()) {
                 String student_email = resultSet.getString(1);
                 viewCourseGrade(conn, student_email, course_code, ay, sem);
+            }
+            System.out.println("--------------------------------------------------------------------");
+        } catch (SQLException e) {
+            System.out.println("Error in viewCourseRecord");
+            e.printStackTrace();
+        }
+    }
+
+    public void saveCourseGrade(Connection conn, String email, String course_code, String ay, String sem,
+            String csv_file) {
+        // somewhat like table format
+        String table_name = "s" + email.substring(0, 11);
+        try {
+            ResultSet resultSet = DatabaseUtils.getResultSet(conn,
+                    "select * from " + table_name + " where course='" + course_code + "' and ay='" + ay
+                            + "' and sem='" + sem + "' ");
+            if (resultSet.next()) {
+                // create a FileWriter object to write to the csv file
+                FileWriter writer = new FileWriter(csv_file, true); // append mode
+                // write the email and grade to the csv file, separated by a comma
+                writer.write(email + "," + resultSet.getString(4) + "\n");
+                // close the writer
+                writer.close();
+                System.out.println("Saved email and grade to " + csv_file);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error in saveCourseGrade");
+            e.printStackTrace();
+        } catch (IOException e) {
+            System.out.println("Error in writing to csv file");
+            e.printStackTrace();
+        }
+    }
+
+    public void saveCourseRecord(Connection conn, String course_code, String ay, String sem, String filename) {
+
+        try {
+            String checkFloatingCondition = "select * from course_offerings where course_code = '"
+                    + course_code
+                    + "' and instructor_id = '" + getEmail() + "'";
+            ResultSet rs = DatabaseUtils.getResultSet(conn, checkFloatingCondition);
+
+            if (!rs.next()) {
+                System.out.println("You cannot upload grades for a course that you are not teaching!");
+                return;
+            }
+            ResultSet resultSet = DatabaseUtils.getResultSet(conn, "select id from user_auth where roles='s'");
+            System.out.println(
+                    "-----------Course Code: " + course_code + "---AY: " + ay + "--- SEM: " + sem + "----------------");
+            System.out.println("Student email : Grade");
+            while (resultSet.next()) {
+                String student_email = resultSet.getString(1);
+                saveCourseGrade(conn, student_email, course_code, ay, sem, filename);
             }
             System.out.println("--------------------------------------------------------------------");
         } catch (SQLException e) {

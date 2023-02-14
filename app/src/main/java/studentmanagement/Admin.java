@@ -243,11 +243,14 @@ public class Admin extends Person {
 
     private void editCourseCatalog(Scanner scan) {
         // TODO: decide here
-        // Integer config = DatabaseUtils.getConfigNumber(conn);
-        // if (config != 1) {
-        // System.out.println("Cannot edit course catalog now!");
-        // return;
-        // }
+        // TODO: remover recursive function in Student.java
+        // TODO: teacher can get all the students registered for his her course then
+        // edit the grades and upload it back to the database
+        Integer config = DatabaseUtils.getConfigNumber(conn);
+        if (config != 1) {
+            System.out.println("Cannot edit course catalog now!");
+            return;
+        }
         while (true) {
             // TODO: add course edit option
             System.out.println("1: Add a new course");

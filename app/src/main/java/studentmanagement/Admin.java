@@ -1,17 +1,9 @@
 package studentmanagement;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.sql.Array;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
+import java.io.*;
+import java.sql.*;
+import java.util.*;
 import java.util.Date;
-import java.util.Scanner;
 
 import studentmanagement.utils.*;
 
@@ -409,7 +401,6 @@ public class Admin extends Person {
                     while (rs1.next()) {
                         String course_code = rs1.getString(1);
                         String email = rs1.getString(15);
-                        String table_name = "s" + email.substring(0, 11);
                         String pc_sem = rs1.getString(12);
                         if (Integer.parseInt(pc_sem) == StaffUtils.getSemCompleted(conn, email) + 1) {
                             Student st = new Student(email, conn, getAy(), getSem());

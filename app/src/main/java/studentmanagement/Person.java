@@ -1,9 +1,6 @@
 package studentmanagement;
 
-import java.io.FileWriter;
-import java.io.IOException;
 import java.sql.*;
-import java.util.Scanner;
 
 import studentmanagement.utils.DatabaseUtils;
 

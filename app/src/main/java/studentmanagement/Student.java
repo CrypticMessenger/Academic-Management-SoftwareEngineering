@@ -60,7 +60,7 @@ public class Student extends Person {
 
             Float cgpa_score = 0.0f;
 
-            String[][] past_2_ay_sem = get_prev_2_sem_ay();
+            String[][] past_2_ay_sem = StudentUtils.get_prev_2_sem_ay(getAy(), getSem());
             String[] past_2_ay = past_2_ay_sem[0];
             String[] past_2_sem = past_2_ay_sem[1];
 
@@ -119,22 +119,11 @@ public class Student extends Person {
 
     }
 
-    private ArrayList<String> getAllPrereq(String course_code) {
-        ArrayList<String> list = new ArrayList<String>();
-
-        ArrayList<String> pre_req = getPrerequisites(course_code);
-        for (String element : pre_req) {
-            if (!list.contains(element)) {
-                list.add(element);
-                list.addAll(getAllPrereq(element));
-            }
-        }
-        return list;
-    }
-
     private Boolean checkPrereqCondition(String course_code) {
-        ArrayList<String> pre_req = getAllPrereq(course_code);
+        ArrayList<String> pre_req = getPrerequisites(course_code);
+        System.out.println(pre_req);
         ArrayList<String> courses_taken = new ArrayList<String>();
+        System.out.println(courses_taken);
         try {
             ResultSet resultSet = DatabaseUtils.getResultSet(conn,
                     "select course from " + table_name + " where grade != 'F' and grade is not null");
@@ -235,7 +224,7 @@ public class Student extends Person {
         }
     }
 
-    public void forceRegisterCourse(String course_code) {
+    public void registerCourse(String course_code, String code) {
         ResultSet resultSet;
         try {
 
@@ -358,9 +347,9 @@ public class Student extends Person {
             } else if (inputLine.equals("4")) {
                 System.out.println("Your CGPA is: " + getCGPA());
             } else if (inputLine.equals("3")) {
-                viewGrades(conn, getEmail());
+                StudentUtils.viewGrades(conn, getEmail());
             } else if (inputLine.equals("2")) {
-                viewGrades(conn, getEmail());
+                StudentUtils.viewGrades(conn, getEmail());
                 System.out.print("Enter course code: ");
                 String course_code = scan.nextLine();
                 deregisterCourse(course_code);

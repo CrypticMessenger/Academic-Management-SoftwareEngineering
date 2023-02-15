@@ -11,6 +11,7 @@ import java.sql.Statement;
 import java.util.Scanner;
 
 import studentmanagement.utils.DatabaseUtils;
+import studentmanagement.utils.StaffUtils;
 
 public class Professor extends Person {
     private String name;
@@ -57,7 +58,7 @@ public class Professor extends Person {
 
             } else if (inputLine.equals("1")) {
                 // view grades in the courses
-                viewStudentRecordsOptions(conn, scan);
+                StaffUtils.viewStudentRecordsOptions(conn, scan);
             } else if (inputLine.equals("2")) {
                 // float a course
                 floatACourse(scan);
@@ -76,7 +77,7 @@ public class Professor extends Person {
                 String courseCode = scan.nextLine();
                 System.out.println("Enter the path to save the csv file: ");
                 String path = scan.nextLine();
-                saveCourseRecord(conn, courseCode, path);
+                StaffUtils.saveCourseRecord(conn, courseCode, path, getAy(), getSem());
             } else if (inputLine.equals("7")) {
                 finalize();
                 break;

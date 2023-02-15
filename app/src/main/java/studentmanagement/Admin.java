@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
 
-import studentmanagement.utils.DatabaseUtils;
+import studentmanagement.utils.*;
 
 //TODO: refractor ccode
 //TODO: print the validation report
@@ -141,7 +141,7 @@ public class Admin extends Person {
     }
 
     private void generateTranscript(String email) {
-        if (!checkStudentExist(conn, email)) {
+        if (!StaffUtils.checkStudentExist(conn, email)) {
             System.out.println("Student does not exist");
             return;
         }
@@ -230,7 +230,7 @@ public class Admin extends Person {
         System.out.println("Cleared all the course offerings!");
         DatabaseUtils.executeUpdateQuery(conn, "Delete from report_validator");
         System.out.println("Cleared all the invalid reports!");
-        String[][] next_session = get_next_n_sem_ay(1);
+        String[][] next_session = StaffUtils.get_next_n_sem_ay(1, getAy(), getSem());
         String ay = next_session[0][0];
         String sem = next_session[1][0];
         DatabaseUtils.executeUpdateQuery(conn,
@@ -411,17 +411,17 @@ public class Admin extends Person {
                         String email = rs1.getString(15);
                         String table_name = "s" + email.substring(0, 11);
                         String pc_sem = rs1.getString(12);
-                        if (Integer.parseInt(pc_sem) == getSemCompleted(conn, email) + 1) {
+                        if (Integer.parseInt(pc_sem) == StaffUtils.getSemCompleted(conn, email) + 1) {
                             Student st = new Student(email, conn, getAy(), getSem());
                             System.out.println("Studentenrolling pc student: " + email + " in course: " + course_code);
-                            st.forceRegisterCourse(course_code);
+                            st.registerCourse(course_code, "force");
                             // String enrollPCStudent = "insert into " + table_name +
                             // "(sem,ay,course)values('" + getSem()
                             // + "','"
                             // + getAy() + "','" + course_code + "')";
                             // DatabaseUtils.executeUpdateQuery(conn, enrollPCStudent);
                         }
-                        System.out.println("sem_comp:" + getSemCompleted(conn, email));
+                        System.out.println("sem_comp:" + StaffUtils.getSemCompleted(conn, email));
                         System.out.println("pc_sem: " + pc_sem);
 
                     }
@@ -458,6 +458,37 @@ public class Admin extends Person {
 
             } else if (inputLine.equals("13")) {
                 finalize();
+                break;
+            } else {
+                System.out.println("Invalid input");
+            }
+
+        }
+    }
+
+    public void viewStudentRecordsOptions(Connection conn, Scanner scan) {
+        while (true) {
+            System.out.println("1: View records of one course");
+            System.out.println("2: View records of one student");
+            System.out.println("3: go back to menu!");
+            System.out.print("Choose: ");
+            String response = scan.nextLine();
+            if (response.equals("1")) {
+                System.out.print("Enter course code: ");
+                String course_code = scan.nextLine();
+                System.out.print("Enter ay(eg: 2013-14): ");
+                String ay = scan.nextLine();
+                System.out.print("Enter sem(eg: 1 or 2): ");
+                String sem = scan.nextLine();
+                // view for one course record
+                StudentUtils.viewCourseRecord(conn, course_code, ay, sem);
+
+            } else if (response.equals("2")) {
+                // one student DONE
+                System.out.print("Enter student email: ");
+                String student_email = scan.nextLine();
+                StudentUtils.viewGrades(conn, student_email);
+            } else if (response.equals("3")) {
                 break;
             } else {
                 System.out.println("Invalid input");

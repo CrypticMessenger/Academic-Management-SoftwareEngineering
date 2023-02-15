@@ -135,14 +135,12 @@ public class Student extends Person {
     private Boolean checkPrereqCondition(String course_code) {
         ArrayList<String> pre_req = getAllPrereq(course_code);
         ArrayList<String> courses_taken = new ArrayList<String>();
-        System.out.println(pre_req);
         try {
             ResultSet resultSet = DatabaseUtils.getResultSet(conn,
                     "select course from " + table_name + " where grade != 'F' and grade is not null");
             while (resultSet.next()) {
                 courses_taken.add(resultSet.getString(1));
             }
-            System.out.println(courses_taken);
             return courses_taken.containsAll(pre_req);
         } catch (SQLException e) {
             System.out.println("Error in checkPrereqCondition");
@@ -212,10 +210,8 @@ public class Student extends Person {
                 return;
             }
 
-            // TODO: check if course is offered for the branch?
             String query = "select * from course_catalog where course_code = '" + course_code + "' and ay = '"
                     + getAy() + "' and sem = " + getSem() + " and '" + getDepartment() + "'=any(pe_for)";
-            System.out.println(query);
             resultSet = DatabaseUtils.getResultSet(conn, query);
             if (!resultSet.next()) {
                 System.out.println("Course not offered for your branch");
@@ -355,8 +351,7 @@ public class Student extends Person {
             if (inputLine.equals("6")) {
                 finalize();
                 break;
-                // TODO: check in teacher if only teacher floating the course can upload or
-                // download grade or student sheet
+
             } else if (inputLine.equals("5")) {
                 graduationCheck();
                 System.out.println("Your CGPA is: " + getCGPA());
@@ -395,9 +390,6 @@ public class Student extends Person {
     }
 
     private Boolean graduationCheck() {
-        // TODO: check if student has passed all the cores and electives
-        String student_email = getEmail();
-        Boolean result = false;
         String query = "select s.sem, s.ay,c.c,s.course,s.grade from " + table_name
                 + " as s,course_catalog as c where s.course = c.course_code and s.ay = c.ay and s.sem = c.sem";
         ResultSet resultSet = DatabaseUtils.getResultSet(conn, query);
@@ -405,9 +397,7 @@ public class Student extends Person {
         try {
             while (resultSet.next()) {
                 String course = resultSet.getString(4);
-                String grade = resultSet.getString(5);
                 Integer credits = resultSet.getInt(3);
-                Integer gradePoint = AcademicNorms.grade_to_number.get(grade);
                 if (getPassStatus(course)) {
                     total_credits += credits;
                 } else {
@@ -416,8 +406,7 @@ public class Student extends Person {
                 }
 
             }
-            // TODO: check if student has credits >= 145
-            if (total_credits < 10) {
+            if (total_credits < AcademicNorms.minCreditReqGraduation) {
                 System.out.println("You have not completed the minimum credits required for graduation");
                 return false;
             }
@@ -426,7 +415,6 @@ public class Student extends Person {
                 System.out.println("You have completed the BTP requirements");
                 return true;
             }
-            // TODO: check if he has credited and paassed BTP CP301,302,303
             System.out.println("You have not completed the BTP requirements");
             return false;
 

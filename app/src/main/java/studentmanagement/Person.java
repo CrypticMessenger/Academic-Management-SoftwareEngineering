@@ -164,14 +164,14 @@ public abstract class Person {
         }
     }
 
-    public void saveCourseGrade(Connection conn, String email, String course_code, String ay, String sem,
+    public void saveCourseGrade(Connection conn, String email, String course_code,
             String csv_file) {
         // somewhat like table format
         String table_name = "s" + email.substring(0, 11);
         try {
             ResultSet resultSet = DatabaseUtils.getResultSet(conn,
-                    "select * from " + table_name + " where course='" + course_code + "' and ay='" + ay
-                            + "' and sem='" + sem + "' ");
+                    "select * from " + table_name + " where course='" + course_code + "' and ay='" + getAy()
+                            + "' and sem='" + getSem() + "' ");
             if (resultSet.next()) {
                 // create a FileWriter object to write to the csv file
                 FileWriter writer = new FileWriter(csv_file, true); // append mode
@@ -191,25 +191,26 @@ public abstract class Person {
         }
     }
 
-    public void saveCourseRecord(Connection conn, String course_code, String ay, String sem, String filename) {
+    public void saveCourseRecord(Connection conn, String course_code, String filename) {
 
         try {
             String checkFloatingCondition = "select * from course_offerings where course_code = '"
                     + course_code
-                    + "' and instructor_id = '" + getEmail() + "'";
+                    + "' ";
             ResultSet rs = DatabaseUtils.getResultSet(conn, checkFloatingCondition);
 
             if (!rs.next()) {
-                System.out.println("You cannot upload grades for a course that you are not teaching!");
+                System.out.println("You cannot upload/download grades for a course that is not offered.");
                 return;
             }
             ResultSet resultSet = DatabaseUtils.getResultSet(conn, "select id from user_auth where roles='s'");
             System.out.println(
-                    "-----------Course Code: " + course_code + "---AY: " + ay + "--- SEM: " + sem + "----------------");
+                    "-----------Course Code: " + course_code + "---AY: " + getAy() + "--- SEM: " + getSem()
+                            + "----------------");
             System.out.println("Student email : Grade");
             while (resultSet.next()) {
                 String student_email = resultSet.getString(1);
-                saveCourseGrade(conn, student_email, course_code, ay, sem, filename);
+                saveCourseGrade(conn, student_email, course_code, filename);
             }
             System.out.println("--------------------------------------------------------------------");
         } catch (SQLException e) {

@@ -16,11 +16,9 @@ import java.util.Scanner;
 import studentmanagement.utils.DatabaseUtils;
 
 //TODO: refractor ccode
-//TODO: show warning when ending the semester to check report_validator last time
 //TODO: print the validation report
-//TODO: program elective registration for professors;
-//TODO: program elective registration for students
-//TODO: remove useless print statements
+//
+
 public class Admin extends Person {
     private String name;
     private Connection conn;
@@ -83,10 +81,15 @@ public class Admin extends Person {
                 String sem = getSem();
                 System.out.println(
                         "----------- Validation report---AY: " + ay + "--- SEM: " + sem + "----------------");
-                System.out.println("Student email : Course code");
-                while (resultSet.next()) {
-                    String student_email = resultSet.getString(1);
-                    validateStudentGrades(student_email, ay, sem);
+                if (!resultSet.next()) {
+                    System.out.println("Good to go to next semester!!");
+                    return;
+                } else {
+                    System.out.println("Student email : Course code");
+                    while (resultSet.next()) {
+                        String student_email = resultSet.getString(1);
+                        validateStudentGrades(student_email, ay, sem);
+                    }
                 }
                 System.out.println("--------------------------------------------------------------------");
                 DatabaseUtils.setConfigNumber(conn, 8);
@@ -242,10 +245,7 @@ public class Admin extends Person {
     }
 
     private void editCourseCatalog(Scanner scan) {
-        // TODO: decide here
         // TODO: remover recursive function in Student.java
-        // TODO: teacher can get all the students registered for his her course then
-        // edit the grades and upload it back to the database
         Integer config = DatabaseUtils.getConfigNumber(conn);
         if (config != 1) {
             System.out.println("Cannot edit course catalog now!");
@@ -438,8 +438,23 @@ public class Admin extends Person {
                 // disable course enrollment
                 triggerEvent("course enrollment", "ending", 5, scan);
             } else if (inputLine.equals("9")) {
+                System.out.println("Consider checking the validation report before ending the session:");
+                System.out.println("1: go back to menu");
+                System.out.println("2: end session");
+
+                while (true) {
+                    String input = scan.nextLine();
+                    if (input.equals("2")) {
+                        triggerEvent("current session", "ending", 9, scan);
+                        break;
+                    } else if (input.equals("1")) {
+                        // end current session
+                        break;
+                    } else {
+                        System.out.println("Invalid input");
+                    }
+                }
                 // end current session
-                triggerEvent("current session", "ending", 9, scan);
 
             } else if (inputLine.equals("13")) {
                 finalize();
@@ -450,6 +465,7 @@ public class Admin extends Person {
 
         }
     }
+    // TODO: try to inherit from Person
 
     // destroyer for admin
     public void finalize() {

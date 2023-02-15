@@ -14,9 +14,6 @@ import java.util.Scanner;
 //TODO: TEACHER, do you really need to ask for sem and ay when viewign student records?
 //TODO: TEACHER when validating course, make sure you print, no student avaiable if it's empty
 //TODO: refractor code
-//TODO: extend advanced funcctionality
-//TODO: test
-//TODO: take care of ordering of status and stuff
 
 //- make more object oriented, like making student, admin or teacher class
 public class App {

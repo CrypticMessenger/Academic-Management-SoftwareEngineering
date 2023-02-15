@@ -33,6 +33,7 @@ public class Professor extends Person {
         }
     }
 
+    // TODO: course catalog should be displayed when choosen Float a course
     public String getName() {
         return this.name;
     }
@@ -46,7 +47,7 @@ public class Professor extends Person {
             System.out.println("3: Cancel a course");
             System.out.println("4: Upload grades for course");
             System.out.println("5: Validate grade submission");
-            System.out.println("6: get student list csv");
+            System.out.println("6: get student list csv for currently offered course");
             System.out.println("7: Logout");
             System.out.print("Choose: ");
             inputLine = scan.nextLine();
@@ -73,13 +74,9 @@ public class Professor extends Person {
             } else if (inputLine.equals("6")) {
                 System.out.println("Enter the course code: ");
                 String courseCode = scan.nextLine();
-                System.out.println("Enter the ay: ");
-                String ay = scan.nextLine();
-                System.out.println("Enter the sem: ");
-                String sem = scan.nextLine();
                 System.out.println("Enter the path to save the csv file: ");
                 String path = scan.nextLine();
-                saveCourseRecord(conn, courseCode, ay, sem, path);
+                saveCourseRecord(conn, courseCode, path);
             } else if (inputLine.equals("7")) {
                 finalize();
                 break;
@@ -239,7 +236,8 @@ public class Professor extends Person {
         }
     }
 
-    // TODO: try to inherit from Person
+    // TODO: check in teacher if only teacher floating the course can upload or
+    // download grade or student sheet
     public void finalize() {
         try {
             log_login_logout(conn, getEmail(), "logout");

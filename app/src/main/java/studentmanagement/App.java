@@ -8,6 +8,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Scanner;
 
+import studentmanagement.utils.DatabaseUtils;
+
 // TODO:TEACHER when floating course, course catalog should be printed.
 // TODO:TEACHER when cancelling course, floating courses by the teacher should be printed.
 //TODO:TEACHER maybe log whichever grades are uploaded by the teacher
@@ -35,6 +37,24 @@ public class App {
         return conn;
     }
 
+    public String login(String email, String password) {
+        App app = new App();
+        Connection conn = app.connect();
+        String result = "";
+        try {
+            ResultSet resultSet = DatabaseUtils.getResultSet(conn,
+                    "SELECT login_check('" + email + "','" + password + "')");
+            if (resultSet.next()) {
+                result = resultSet.getString(1);
+            }
+            return result;
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+        }
+        return result;
+    }
+
     public static void main(String[] args) throws IOException {
 
         App app = new App();
@@ -60,19 +80,13 @@ public class App {
                 password = scan.nextLine();
                 try {
                     Connection conn = app.connect();
-                    Statement statement = conn.createStatement();
-                    ResultSet resultSet = statement
-                            .executeQuery("SELECT login_check('" + email + "','" + password + "')");
-                    resultSet.next();
-                    String result = resultSet.getString(1);
-                    statement = conn.createStatement();
-                    resultSet = statement.executeQuery("select * from current_session");
+                    String result = app.login(email, password);
+                    ResultSet resultSet;
+                    resultSet = DatabaseUtils.getResultSet(conn, "select * from current_session");
                     resultSet.next();
                     String ay = resultSet.getString(1);
                     String sem = resultSet.getString(2);
-                    // ! remove close(())
-                    conn.close();
-                    conn = app.connect();
+
                     switch (result) {
 
                         // case student

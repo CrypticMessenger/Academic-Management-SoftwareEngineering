@@ -7,7 +7,6 @@ import java.util.Date;
 
 import studentmanagement.utils.*;
 
-//TODO: refractor ccode
 //TODO: print the validation report
 //
 
@@ -104,8 +103,6 @@ public class Admin extends Person {
     // TODO: when admin starts the new semseter, whole UG currilum will
     // automatically insert into course_catalog, so admin will only float the
     // electives
-    // TODO: whatif teacher removes course, student enrolled in that course should
-    // also be removed
     // TODO: when student want to register a course, PE_for should contain his
     // department
     private void validateStudentGrades(String email, String ay, String sem) {
@@ -237,7 +234,6 @@ public class Admin extends Person {
     }
 
     private void editCourseCatalog(Scanner scan) {
-        // TODO: remover recursive function in Student.java
         Integer config = DatabaseUtils.getConfigNumber(conn);
         if (config != 1) {
             System.out.println("Cannot edit course catalog now!");
@@ -337,7 +333,6 @@ public class Admin extends Person {
 
     }
 
-    // TODO: See how to use interfaces to remove repetition.
     public void adminOptions(Scanner scan) {
         System.out.println("Welcome " + getName() + " !");
         String inputLine;
@@ -417,7 +412,6 @@ public class Admin extends Person {
 
                     }
                 } catch (SQLException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
 

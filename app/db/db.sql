@@ -188,26 +188,25 @@ create table ug_curriculum (
 
 -- insert into course_catalog(course_code, L, T,P,ay,sem) values('CS301',3,1,2,'2023-24',1);
 -- insert into course_catalog(course_code, L, T,P,ay,sem) values('CS304',3,1,2,'2022-23',1);
-insert into course_catalog(course_code, L, T,P,ay,sem,pc_or_pe,pe_for,pe_minsem) values('CS301',3,1,2,'2020-21',1,'pe',Array ['cs'],0);
+-- insert into course_catalog(course_code, L, T,P,ay,sem,pc_or_pe,pe_for,pe_minsem) values('CS301',3,1,2,'2020-21',1,'pe',Array ['cs'],0);
 -- insert into course_catalog(course_code, L, T,P,ay,sem) values('CS201',3,1,2,'2023-24',1);
 -- insert into course_catalog(course_code, L, T,P,ay,sem) values('CS202',3,1,2,'2023-24',1);
 -- insert into course_catalog(course_code, L, T,P,ay,sem) values('CS204',3,1,2,'2023-24',1);
 -- insert into course_catalog(course_code, L, T,P,ay,sem) values('CS205',3,1,2,'2023-24',1);
 -- insert into course_catalog(course_code, L, T,P,pre_req,ay,sem) values('CS302',3,1,0, Array ['CS301','CS305'],'2023-24',1); 
-insert into course_catalog(course_code, L, T,P,pre_req,ay,sem,pc_or_pe,pe_for,pe_minsem) values('CS302',3,1,0, Array ['CS301','CS305'],'2021-22',2,'pe',Array ['cs'],0); 
+-- insert into course_catalog(course_code, L, T,P,pre_req,ay,sem,pc_or_pe,pe_for,pe_minsem) values('CS302',3,1,0, Array ['CS301','CS305'],'2021-22',2,'pe',Array ['cs'],0); 
 -- insert into course_catalog(course_code, L, T,P,pre_req,ay,sem) values('CS303',3,1,2,Array ['CS302'],'2023-24',1);
 -- insert into course_catalog(course_code, L, T,P,pre_req,ay,sem) values('CS303',3,1,2,Array ['CS302'],'2022-23',1);
-insert into course_catalog(course_code, L, T,P,pre_req,ay,sem,pc_or_pe,pe_for,pe_minsem) values('CS303',3,1,2,Array ['CS302'],'2022-23',2,'pe',Array ['cs'],0);
-insert into course_catalog(course_code, L, T,P,pre_req,ay,sem,pc_or_pe,pe_for,pe_minsem) values('CS303',3,1,2,Array ['CS302'],'2022-23',1,'pe',Array ['cs'],0);
+-- insert into course_catalog(course_code, L, T,P,pre_req,ay,sem,pc_or_pe,pe_for,pe_minsem) values('CS303',3,1,2,Array ['CS302'],'2022-23',2,'pe',Array ['cs'],0);
+-- insert into course_catalog(course_code, L, T,P,pre_req,ay,sem,pc_or_pe,pe_for,pe_minsem) values('CS303',3,1,2,Array ['CS302'],'2022-23',1,'pe',Array ['cs'],0);
 -- insert into course_catalog(course_code, L, T,P,pre_req,ay,sem) values('CS304',3,1,2, array ['CS303'],'2023-24',1);
 -- insert into course_catalog(course_code, L, T,P,ay,sem) values('CS305',3,0,2,'2023-24',1);
-insert into course_catalog(course_code, L, T,P,ay,sem,pc_or_pe,pe_for,pe_minsem) values('CS305',3,0,2,'2021-22',1,'pe',Array ['cs'],0);
+-- insert into course_catalog(course_code, L, T,P,ay,sem,pc_or_pe,pe_for,pe_minsem) values('CS305',3,0,2,'2021-22',1,'pe',Array ['cs'],0);
 -- insert into course_catalog(course_code, L, T,P,ay,sem) values('CS306',3,0,2,'2023-24',1);
-insert into course_catalog(course_code, L, T,P,ay,sem,pc_or_pe,pe_for,pe_minsem) values('CS306',3,0,2,'2021-22',1,'pe',Array ['cs'],0);
+-- insert into course_catalog(course_code, L, T,P,ay,sem,pc_or_pe,pe_for,pe_minsem) values('CS306',3,0,2,'2021-22',1,'pe',Array ['cs'],0);
 -- insert into course_catalog(course_code, L, T,P,ay,sem) values('CS539',3,0,2,'2023-24',1);
-insert into course_catalog(course_code, L, T,P,ay,sem,pc_or_pe,pe_for,pe_minsem) values('CS539',3,0,2,'2020-21',2,'pe',Array ['cs'],0);
+-- insert into course_catalog(course_code, L, T,P,ay,sem,pc_or_pe,pe_for,pe_minsem) values('CS539',3,0,2,'2020-21',2,'pe',Array ['cs'],0);
 
--- insert into ug_curriculum(course_code,l,t,p,pre_req,pc_for,pc_sem,pe_for,pe_minsem) values('CS101',3,1,2,null,null,null,null,null);
 
 
 
@@ -219,25 +218,25 @@ insert into user_auth(id,name,pwd,roles) values('gunturi@iitrpr.ac.in','V. Guntu
 insert into user_auth(id,name,pwd,roles) values('balwinder@iitrpr.ac.in','Balwinder Sodhi','X123','p');
 insert into user_auth(id,name,pwd,roles) values('admin@iitrpr.ac.in','Admin','X123','a');
 
-insert into course_offerings(course_code, instructor_id) values('CS401','apurva@iitrpr.ac.in');
-insert into course_offerings(course_code, instructor_id) values('ME401','gunturi@iitrpr.ac.in');
-insert into course_offerings(course_code, instructor_id) values('CS101','gunturi@iitrpr.ac.in');
-insert into course_offerings(course_code, instructor_id) values('CS202','gunturi@iitrpr.ac.in');
-insert into course_offerings(course_code, instructor_id) values('CS204','gunturi@iitrpr.ac.in');
-insert into course_offerings(course_code, instructor_id) values('CS205','gunturi@iitrpr.ac.in');
-insert into course_offerings(course_code, instructor_id,cg_constraint) values('MA102','balwinder@iitrpr.ac.in',7.5);
-insert into course_offerings(course_code, instructor_id,cg_constraint) values('CS539','balwinder@iitrpr.ac.in',0.0);
-insert into course_offerings(course_code, instructor_id) values('CS304','balwinder@iitrpr.ac.in');
+-- insert into course_offerings(course_code, instructor_id) values('CS401','apurva@iitrpr.ac.in');
+-- insert into course_offerings(course_code, instructor_id) values('ME401','gunturi@iitrpr.ac.in');
+-- insert into course_offerings(course_code, instructor_id) values('CS101','gunturi@iitrpr.ac.in');
+-- insert into course_offerings(course_code, instructor_id) values('CS202','gunturi@iitrpr.ac.in');
+-- insert into course_offerings(course_code, instructor_id) values('CS204','gunturi@iitrpr.ac.in');
+-- insert into course_offerings(course_code, instructor_id) values('CS205','gunturi@iitrpr.ac.in');
+-- insert into course_offerings(course_code, instructor_id,cg_constraint) values('MA102','balwinder@iitrpr.ac.in',7.5);
+-- insert into course_offerings(course_code, instructor_id,cg_constraint) values('CS539','balwinder@iitrpr.ac.in',0.0);
+-- insert into course_offerings(course_code, instructor_id) values('CS304','balwinder@iitrpr.ac.in');
 
-insert into current_session(ay,sem) values('2023-24',1);
+insert into current_session(ay,sem) values('2020-21',1);
 
-insert into s2020csb1072(sem,ay,course,grade) values (1,'2020-21','CS301','A');
-insert into s2020csb1072(sem,ay,course,grade) values (2,'2020-21','CS539','A-');
-insert into s2020csb1072(sem,ay,course,grade) values (1,'2021-22','CS305','B');
-insert into s2020csb1072(sem,ay,course,grade) values (1,'2021-22','CS306','A');
-insert into s2020csb1072(sem,ay,course,grade) values (2,'2021-22','CS302','A');
-insert into s2020csb1072(sem,ay,course,grade) values (1,'2022-23','CS303','F');
-insert into s2020csb1072(sem,ay,course,grade) values (2,'2022-23','CS303','A');
+-- insert into s2020csb1072(sem,ay,course,grade) values (1,'2020-21','CS301','A');
+-- insert into s2020csb1072(sem,ay,course,grade) values (2,'2020-21','CS539','A-');
+-- insert into s2020csb1072(sem,ay,course,grade) values (1,'2021-22','CS305','B');
+-- insert into s2020csb1072(sem,ay,course,grade) values (1,'2021-22','CS306','A');
+-- insert into s2020csb1072(sem,ay,course,grade) values (2,'2021-22','CS302','A');
+-- insert into s2020csb1072(sem,ay,course,grade) values (1,'2022-23','CS303','F');
+-- insert into s2020csb1072(sem,ay,course,grade) values (2,'2022-23','CS303','A');
 
 
 insert into config(sem_start,course_float_start,course_float_end,student_enroll_start,student_enroll_end,grade_submission_start,grade_submission_end,validation_end,semester_end) values(true,false,false,false,false,false,false,false,false);
@@ -252,26 +251,35 @@ insert into config(sem_start,course_float_start,course_float_end,student_enroll_
 
 insert into config_number(id) values(4);
 
+
+
 --DONE: write a trigger to get dept from user_auth table only for students
-insert into ug_curriculum values ('CS301', 3, 1, 4, null, array['cs', 'mc'], 5, null, null);
-insert into ug_curriculum values ('MA202', 3, 1, 4, array['MA102'], array['cs', 'mc', 'ce', 'mm', 'me', 'ch'], 4, null, null);
-insert into ug_curriculum values ('EE202', 3, 1, 4, array['EE103'], array['ce', 'mm'], 4, null, null);
-insert into ug_curriculum values ('ME301', 3, 1, 4, array['ME202'], array['me', 'mm'], 5, null, null);
-insert into ug_curriculum values ('CH202', 3, 1, 4, array['CH105'], array['ch', 'ce'], 4, null, null);
-insert into ug_curriculum values ('PH202', 3, 1, 4, array['PH106'], array['cs', 'mc', 'ce', 'mm', 'me', 'ch'], 4, null, null);
-insert into ug_curriculum values ('HS201', 3, 0, 3, null, array['cs', 'mc'], 4, array['ce', 'mm', 'me', 'ch'], 6);
-insert into ug_curriculum values ('CS401', 3, 1, 4, array['CS301'], array['cs', 'mc'], 7, null, null);
-insert into ug_curriculum values ('EE401', 3, 1, 4, array['EE301'], array['ce', 'mm'], 8, null, null);
-insert into ug_curriculum values ('ME401', 3, 1, 4, array['ME301'], array['me', 'mm'], 7, null, null);
-insert into ug_curriculum values ('CH401', 3, 0, 3, array['CH303'], array['ch', 'ce'], 8, array['cs', 'mc', 'me', 'mm'], 8);
-insert into ug_curriculum values ('CS101', 3, 1, 4, null, array['cs', 'mc'], 1, null, null);
-insert into ug_curriculum values ('MA102', 3, 1, 4, array['MA101'], array['cs', 'mc', 'ce', 'mm', 'me', 'ch'], 1, null, null);
-insert into ug_curriculum values ('EE103', 3, 1, 4, null, array['ce', 'mm'], 2, null, null);
-insert into ug_curriculum values ('ME104', 3, 1, 4, null, array['me', 'mm'], 2, null, null);
-insert into ug_curriculum values ('CH105', 3, 1, 4, null, array['ch', 'ce'], 2, null, null);
-insert into ug_curriculum values ('PH106', 3, 1, 4, null, array['cs', 'mc', 'ce', 'mm', 'me', 'ch'], 3, null, null);
-insert into ug_curriculum values ('HS107', 3, 0, 3, null, array['cs', 'mc'], 3, array['ce', 'mm', 'me', 'ch'], 5);
-insert into ug_curriculum values ('CS201', 3, 1, 4, array['CS101', 'MA102'], array['cs', 'mc'], 3, null, null);
-insert into ug_curriculum values ('EE301', 3, 1, 4, array['EE103', 'MA102'], array['ce', 'mm'], 4, null, null);
-insert into ug_curriculum values ('ME202', 3, 1, 4, array['ME104'], array['me', 'mm'], 4, null, null);
-insert into ug_curriculum values ('CH303', 3, 0, 3, null, array['ch', 'ce'], 5, array['cs', 'mc', 'me', 'mm'], 6);
+insert into ug_curriculum values ('GE103', 3, 0, 3, null, array['cs', 'mc','mm','me','ch','ce'], 1, null, null);
+insert into ug_curriculum values ('MA101', 3, 1, 0, null, array['cs', 'mc','mm','me','ch','ce'], 1, null, null);
+insert into ug_curriculum values ('HS103', 2, 0, 2, null, array['cs', 'mc','mm','me','ch','ce'], 1, null, null);
+insert into ug_curriculum values ('PH101', 3, 1, 0, null, array['cs', 'mc','mm','me','ch','ce'], 1, null, null);
+insert into ug_curriculum values ('GE105', 0, 0, 3, null, array['cs', 'mc','mm','me','ch','ce'], 1, null, null);
+insert into ug_curriculum values ('CS101', 3, 1, 0, null, array['cs', 'mc','mm','me','ch','ce'], 1, null, null);
+insert into ug_curriculum values ('MA102', 3, 1, 0, array['MA101'], array['cs', 'mc','mm','me','ch','ce'], 2, null, null);
+insert into ug_curriculum values ('HS101', 1.5, 0.5, 0, null, array['cs', 'mc','mm','me','ch','ce'], 2, null, null);
+insert into ug_curriculum values ('GE104', 2, 0.66, 2, null, array['cs', 'mc','mm','me','ch','ce'], 2, null, null);
+insert into ug_curriculum values ('GE101', 0, 0, 2, null, array['cs', 'mc','mm','me','ch','ce'], 2, null, null);
+insert into ug_curriculum values ('GE102', 0, 0, 4, null, array['cs', 'mc','mm','me','ch','ce'], 2, null, null);
+insert into ug_curriculum values ('CY101', 3, 1, 2, null, array['cs', 'mc','mm','me','ch','ce'], 2, null, null);
+insert into ug_curriculum values ('PH102', 0, 0, 4, null, array['cs', 'mc','mm','me','ch','ce'], 2, null, null);
+-- course_code varchar(10) not null,
+--   l integer not null,
+--   t integer not null,
+--   p numeric(10,2) not null,
+--   pre_req text [] default null,
+--   pc_for text [] default null,
+--   pc_sem integer default null,
+--   pe_for text [] default null,
+--   pe_minsem integer default null,
+insert into ug_curriculum values ('CS201', 3, 1, 2, array['CS101'], array['cs','mc'], 3, array['cs', 'mc','mm','me','ch','ce'], 4);
+insert into ug_curriculum values ('MA201', 3, 1, 0, array['MA102'], array['cs', 'mc','mm','me','ch','ce'], 3, null, null);
+insert into ug_curriculum values ('CS203', 3, 1, 3, null, array['cs', 'mc','mm','me','ch','ce'], 3, null, null);
+insert into ug_curriculum values ('GE107', 0, 0, 3, null, array['cs', 'mc','mm','me','ch','ce'], 3, null, null);
+insert into ug_curriculum values ('HS201', 3, 1, 0, null, array['cs', 'mc','mm','me','ch','ce'], 3, null, null);
+insert into ug_curriculum values ('EE201', 3, 1, 0, null, array['cs', 'mc','mm','me','ch','ce'], 3, null, null);
+

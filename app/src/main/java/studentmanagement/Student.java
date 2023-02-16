@@ -138,7 +138,7 @@ public class Student extends Person {
         }
     }
 
-    public void registerCourse(String course_code) {
+    public void registerCourse(Scanner scan) {
         ResultSet resultSet;
         try {
             // fetch current config id, and allow only if config = 4
@@ -147,6 +147,8 @@ public class Student extends Person {
                 System.out.println("Registration is not open");
                 return;
             }
+            System.out.print("Enter course code: ");
+            String course_code = scan.nextLine();
 
             // check if course is in course offering
             resultSet = DatabaseUtils.getResultSet(conn,
@@ -326,6 +328,7 @@ public class Student extends Person {
 
     }
 
+    // TODO: graduation check for admin too
     public void studentOptions(Scanner scan) {
         System.out.println("Welcome " + this.name + " !");
         while (true) {
@@ -355,9 +358,7 @@ public class Student extends Person {
                 deregisterCourse(course_code);
             } else if (inputLine.equals("1")) {
                 displayCourseCatalog(conn);
-                System.out.print("Enter course code: ");
-                String course_code = scan.nextLine();
-                registerCourse(course_code);
+                registerCourse(scan);
             } else {
                 System.out.println("Invalid input");
             }
@@ -406,6 +407,7 @@ public class Student extends Person {
             }
             System.out.println("You have not completed the BTP requirements");
             return false;
+            // TODO: download.csv is in appending mode
 
         } catch (SQLException e) {
             e.printStackTrace();

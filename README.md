@@ -44,3 +44,9 @@ Capstone.
 - Refractoring and better error handling left to be done.
 - thorough testing left to be done.
 - Encrypt passwords
+
+
+
+```shell
+./gradlew.bat run --console=plain -q
+```

@@ -1,8 +1,17 @@
 package studentmanagement;
 
-import studentmanagement.utils.*;
-import java.sql.*;
-import java.util.*;
+import java.sql.Array;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Scanner;
+
+import studentmanagement.utils.AcademicNorms;
+import studentmanagement.utils.DatabaseUtils;
+import studentmanagement.utils.StudentUtils;
 
 public class Student extends Person {
     private String name;
@@ -11,7 +20,7 @@ public class Student extends Person {
     private String table_name;
     private Float current_sem_credits;
     private Float past_2_credits;
-    private Float cgpa;
+    public Float cgpa;
 
     public Student(String email, Connection conn, String ay, String sem) {
         super(email, ay, sem);
@@ -45,7 +54,7 @@ public class Student extends Person {
         return this.name;
     }
 
-    private Float getCGPA() {
+    public Float getCGPA() {
         try {
 
             String get_cgpa_query = "select * from " + table_name + " ,course_catalog where " + table_name
@@ -138,24 +147,22 @@ public class Student extends Person {
         }
     }
 
-    public void registerCourse(Scanner scan) {
+    public String registerCourse(String course_code, Scanner scan) {
         ResultSet resultSet;
         try {
             // fetch current config id, and allow only if config = 4
             Integer config_number = DatabaseUtils.getConfigNumber(conn);
             if (config_number != 4) {
                 System.out.println("Registration is not open");
-                return;
+                return "fail:registration_not_open";
             }
-            System.out.print("Enter course code: ");
-            String course_code = scan.nextLine();
 
             // check if course is in course offering
             resultSet = DatabaseUtils.getResultSet(conn,
                     "select * from course_offerings where course_code = '" + course_code + "'");
             if (!resultSet.next()) {
                 System.out.println("Course not offered");
-                return;
+                return "fail:course_not_offered";
             }
 
             // check cgpa constraint
@@ -163,7 +170,7 @@ public class Student extends Person {
             this.cgpa = getCGPA();
             if (this.cgpa < cg_constraint) {
                 System.out.println("cgpa constraint not met");
-                return;
+                return "fail:cgpa_constraint_not_met";
             }
 
             // check if credit limit allows for registration
@@ -182,7 +189,7 @@ public class Student extends Person {
 
             if (this.current_sem_credits + requested_course_credits > credit_limit) {
                 System.out.println("Credit limit exceeded");
-                return;
+                return "fail:credit_limit_exceeded";
             }
 
             // check if student is already registered for the course also checks if this
@@ -192,13 +199,13 @@ public class Student extends Person {
                             + "' and (grade != 'F' or grade is null )");
             if (resultSet.next()) {
                 System.out.println("Already registered or credited the course");
-                return;
+                return "fail:already_registered_or_credited";
             }
 
             // check if student has taken all the prerequisites with no grade as F or null
             if (!checkPrereqCondition(course_code)) {
                 System.out.println("Prerequisite condition not met");
-                return;
+                return "fail:prerequisite_condition_not_met";
             }
 
             String query = "select * from course_catalog where course_code = '" + course_code + "' and ay = '"
@@ -206,7 +213,7 @@ public class Student extends Person {
             resultSet = DatabaseUtils.getResultSet(conn, query);
             if (!resultSet.next()) {
                 System.out.println("Course not offered for your branch");
-                return;
+                return "fail:course_not_offered_for_your_branch";
             }
 
             // register courses
@@ -219,11 +226,13 @@ public class Student extends Person {
             System.out.println("Current credits: " + (this.current_sem_credits));
             System.out.println("Credit limit: " + credit_limit);
             System.out.println("cgpa: " + this.cgpa);
+            return "success";
 
         } catch (SQLException e) {
             System.out.println("Error in Student registerCourse");
             e.printStackTrace();
         }
+        return "error:error_in_register_course";
     }
 
     public void registerCourse(String course_code, String code) {
@@ -298,14 +307,14 @@ public class Student extends Person {
         }
     }
 
-    public void deregisterCourse(String course_code) {
+    public String deregisterCourse(String course_code) {
         ResultSet resultSet;
         // config number should be 4
         try {
             Integer config_number = DatabaseUtils.getConfigNumber(conn);
             if (config_number != 4) {
                 System.out.println("Course drop is not allowed!");
-                return;
+                return "fail:not_allowed";
             }
             // student course_code should be in running state, hence grade should be null
             resultSet = DatabaseUtils.getResultSet(conn,
@@ -313,7 +322,7 @@ public class Student extends Person {
                             + getAy() + "' and sem = '" + getSem() + "'");
             if (!resultSet.next()) {
                 System.out.println("Course not registered or already credited!");
-                return;
+                return "fail:not_registered_or_credited";
             }
             // deregister courses
             String deregisterCourseQuery = "delete from " + table_name + " where course = '" + course_code
@@ -321,11 +330,46 @@ public class Student extends Person {
             Statement statement = conn.createStatement();
             statement.executeUpdate(deregisterCourseQuery);
             System.out.println("\n " + course_code + " deregistered successfully!!\n");
+            return "Success";
         } catch (SQLException e) {
             System.out.println("Error in Student deregisterCourse");
             e.printStackTrace();
         }
+        return "Error:error_in_deregister_course";
 
+    }
+
+    public void action(String inputLine, Scanner scan) {
+        String course_code;
+        switch (inputLine) {
+            case "1":
+                displayCourseCatalog(conn);
+                System.out.print("Enter course code: ");
+                course_code = scan.nextLine();
+                registerCourse(course_code, scan);
+                break;
+            case "2":
+                StudentUtils.viewGrades(conn, getEmail());
+                System.out.print("Enter course code: ");
+                course_code = scan.nextLine();
+                deregisterCourse(course_code);
+                break;
+            case "3":
+                StudentUtils.viewGrades(conn, getEmail());
+                break;
+            case "4":
+                System.out.println("Your CGPA is: " + getCGPA());
+                break;
+            case "5":
+                graduationCheck();
+                System.out.println("Your CGPA is: " + getCGPA());
+                break;
+            case "6":
+                finalize();
+                break;
+            default:
+                System.out.println("Invalid input");
+        }
     }
 
     // TODO: graduation check for admin too
@@ -340,28 +384,8 @@ public class Student extends Person {
             System.out.println("6: Logout");
             System.out.print("Choose: ");
             String inputLine = scan.nextLine();
-            if (inputLine.equals("6")) {
-                finalize();
-                break;
+            action(inputLine, scan);
 
-            } else if (inputLine.equals("5")) {
-                graduationCheck();
-                System.out.println("Your CGPA is: " + getCGPA());
-            } else if (inputLine.equals("4")) {
-                System.out.println("Your CGPA is: " + getCGPA());
-            } else if (inputLine.equals("3")) {
-                StudentUtils.viewGrades(conn, getEmail());
-            } else if (inputLine.equals("2")) {
-                StudentUtils.viewGrades(conn, getEmail());
-                System.out.print("Enter course code: ");
-                String course_code = scan.nextLine();
-                deregisterCourse(course_code);
-            } else if (inputLine.equals("1")) {
-                displayCourseCatalog(conn);
-                registerCourse(scan);
-            } else {
-                System.out.println("Invalid input");
-            }
         }
     }
 

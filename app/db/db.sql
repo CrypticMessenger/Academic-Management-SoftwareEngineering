@@ -213,6 +213,7 @@ create table ug_curriculum (
 insert into user_auth(id,name,pwd,roles) values('2020csb1070@iitrpr.ac.in','Amit Kumar','X123','s');
 insert into user_auth(id,name,pwd,roles) values('2020csb1072@iitrpr.ac.in','Ankit Sharma','X123','s');
 insert into user_auth(id,name,pwd,roles) values('2020csb1074@iitrpr.ac.in','Arshdeep Singh','X123','s');
+insert into user_auth(id,name,pwd,roles) values('2020ceb1031@iitrpr.ac.in','idk who','X123','s');
 insert into user_auth(id,name,pwd,roles) values('apurva@iitrpr.ac.in','Apurva Mudgal','X123','p');
 insert into user_auth(id,name,pwd,roles) values('gunturi@iitrpr.ac.in','V. Gunturi','X123','p');
 insert into user_auth(id,name,pwd,roles) values('balwinder@iitrpr.ac.in','Balwinder Sodhi','X123','p');
@@ -230,13 +231,12 @@ insert into user_auth(id,name,pwd,roles) values('admin@iitrpr.ac.in','Admin','X1
 
 insert into current_session(ay,sem) values('2020-21',1);
 
--- insert into s2020csb1072(sem,ay,course,grade) values (1,'2020-21','CS301','A');
--- insert into s2020csb1072(sem,ay,course,grade) values (2,'2020-21','CS539','A-');
--- insert into s2020csb1072(sem,ay,course,grade) values (1,'2021-22','CS305','B');
--- insert into s2020csb1072(sem,ay,course,grade) values (1,'2021-22','CS306','A');
--- insert into s2020csb1072(sem,ay,course,grade) values (2,'2021-22','CS302','A');
--- insert into s2020csb1072(sem,ay,course,grade) values (1,'2022-23','CS303','F');
--- insert into s2020csb1072(sem,ay,course,grade) values (2,'2022-23','CS303','A');
+-- insert into s2020csb1072(sem,ay,course,grade) values (2,'2020-21','GE103','A');
+-- insert into s2020csb1072(sem,ay,course,grade) values (2,'2020-21','MA101','A-');
+-- insert into s2020csb1072(sem,ay,course,grade) values (2,'2020-21','HS103','B');
+-- insert into s2020csb1072(sem,ay,course,grade) values (2,'2020-21','PH101','A');
+-- insert into s2020csb1072(sem,ay,course,grade) values (2,'2020-21','GE105','A');
+-- insert into s2020csb1072(sem,ay,course,grade) values (2,'2020-21','CS101','F');
 
 
 insert into config(sem_start,course_float_start,course_float_end,student_enroll_start,student_enroll_end,grade_submission_start,grade_submission_end,validation_end,semester_end) values(true,false,false,false,false,false,false,false,false);
@@ -267,15 +267,7 @@ insert into ug_curriculum values ('GE101', 0, 0, 2, null, array['cs', 'mc','mm',
 insert into ug_curriculum values ('GE102', 0, 0, 4, null, array['cs', 'mc','mm','me','ch','ce'], 2, null, null);
 insert into ug_curriculum values ('CY101', 3, 1, 2, null, array['cs', 'mc','mm','me','ch','ce'], 2, null, null);
 insert into ug_curriculum values ('PH102', 0, 0, 4, null, array['cs', 'mc','mm','me','ch','ce'], 2, null, null);
--- course_code varchar(10) not null,
---   l integer not null,
---   t integer not null,
---   p numeric(10,2) not null,
---   pre_req text [] default null,
---   pc_for text [] default null,
---   pc_sem integer default null,
---   pe_for text [] default null,
---   pe_minsem integer default null,
+
 insert into ug_curriculum values ('CS201', 3, 1, 2, array['CS101'], array['cs','mc'], 3, array['cs', 'mc','mm','me','ch','ce'], 4);
 insert into ug_curriculum values ('MA201', 3, 1, 0, array['MA102'], array['cs', 'mc','mm','me','ch','ce'], 3, null, null);
 insert into ug_curriculum values ('CS203', 3, 1, 3, null, array['cs', 'mc','mm','me','ch','ce'], 3, null, null);

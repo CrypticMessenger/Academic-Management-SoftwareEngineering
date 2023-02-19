@@ -1,4 +1,4 @@
-package studentmanagement;
+package studentmanagement.StudentTests;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -14,6 +14,8 @@ import static org.mockito.Mockito.*;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import studentmanagement.App;
+import studentmanagement.Student;
 import studentmanagement.utils.DatabaseUtils;
 
 import org.junit.jupiter.api.AfterAll;
@@ -123,6 +125,7 @@ public class RegisterDeregisterTest {
         @Test
         @Tag("register-deregister")
         void testDeRegister() {
+
                 String result = st.deregisterCourse("CS301");
                 assertEquals("fail:not_allowed", result);
                 DatabaseUtils.executeUpdateQuery(conn, "update config_number set id=4 ");
@@ -168,6 +171,7 @@ public class RegisterDeregisterTest {
         }
 
         @Test
+        @Tag("name")
         void testGetName() {
                 assertEquals("Ankit Sharma", st.getName());
         }
@@ -180,6 +184,7 @@ public class RegisterDeregisterTest {
                 DatabaseUtils.executeUpdateQuery(conn, "delete from course_catalog");
                 DatabaseUtils.executeUpdateQuery(conn, "update current_session set ay='2020-21' and sem=1 ");
                 DatabaseUtils.executeUpdateQuery(conn, "update config_number set id=4 ");
+                st.finalize();
         }
 
 }

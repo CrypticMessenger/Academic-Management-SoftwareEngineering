@@ -87,6 +87,8 @@ public class Student extends Person {
                             || (ay_temp.equals(past_2_ay[1]) && sem_temp.equals(past_2_sem[1]))) {
 
                         past_2_credits += resultSet.getFloat(9);
+                    } else {
+                        continue;
                     }
                 }
 
@@ -334,42 +336,9 @@ public class Student extends Person {
         } catch (SQLException e) {
             System.out.println("Error in Student deregisterCourse");
             e.printStackTrace();
+            return "Error:error_in_deregister_course";
         }
-        return "Error:error_in_deregister_course";
 
-    }
-
-    public void action(String inputLine, Scanner scan) {
-        String course_code;
-        switch (inputLine) {
-            case "1":
-                displayCourseCatalog(conn);
-                System.out.print("Enter course code: ");
-                course_code = scan.nextLine();
-                registerCourse(course_code, scan);
-                break;
-            case "2":
-                StudentUtils.viewGrades(conn, getEmail());
-                System.out.print("Enter course code: ");
-                course_code = scan.nextLine();
-                deregisterCourse(course_code);
-                break;
-            case "3":
-                StudentUtils.viewGrades(conn, getEmail());
-                break;
-            case "4":
-                System.out.println("Your CGPA is: " + getCGPA());
-                break;
-            case "5":
-                graduationCheck();
-                System.out.println("Your CGPA is: " + getCGPA());
-                break;
-            case "6":
-                finalize();
-                break;
-            default:
-                System.out.println("Invalid input");
-        }
     }
 
     // TODO: graduation check for admin too
@@ -384,7 +353,36 @@ public class Student extends Person {
             System.out.println("6: Logout");
             System.out.print("Choose: ");
             String inputLine = scan.nextLine();
-            action(inputLine, scan);
+            String course_code;
+            switch (inputLine) {
+                case "1":
+                    displayCourseCatalog(conn);
+                    System.out.print("Enter course code: ");
+                    course_code = scan.nextLine();
+                    registerCourse(course_code, scan);
+                    break;
+                case "2":
+                    StudentUtils.viewGrades(conn, getEmail());
+                    System.out.print("Enter course code: ");
+                    course_code = scan.nextLine();
+                    deregisterCourse(course_code);
+                    break;
+                case "3":
+                    StudentUtils.viewGrades(conn, getEmail());
+                    break;
+                case "4":
+                    System.out.println("Your CGPA is: " + getCGPA());
+                    break;
+                case "5":
+                    graduationCheck();
+                    System.out.println("Your CGPA is: " + getCGPA());
+                    break;
+                case "6":
+                    finalize();
+                    break;
+                default:
+                    System.out.println("Invalid input");
+            }
 
         }
     }
@@ -403,7 +401,7 @@ public class Student extends Person {
         return false;
     }
 
-    private Boolean graduationCheck() {
+    public Boolean graduationCheck() {
         String query = "select s.sem, s.ay,c.c,s.course,s.grade from " + table_name
                 + " as s,course_catalog as c where s.course = c.course_code and s.ay = c.ay and s.sem = c.sem";
         ResultSet resultSet = DatabaseUtils.getResultSet(conn, query);

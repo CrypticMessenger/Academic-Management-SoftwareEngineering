@@ -16,7 +16,7 @@ import studentmanagement.App;
 import studentmanagement.Professor;
 import studentmanagement.utils.DatabaseUtils;
 
-public class Option2Test {
+public class Option1Test {
     App app = null;
     Professor prof = null;
     Connection conn = null;
@@ -33,32 +33,74 @@ public class Option2Test {
         DatabaseUtils.executeUpdateQuery(conn,
                 "insert into course_catalog(course_code, L, T,P,pre_req,ay,sem,pc_or_pe,pe_for,pe_minsem) values('CS551',3,1,2,null,'2020-21',2,'pe',Array ['cs'],0)");
         DatabaseUtils.executeUpdateQuery(conn, "update config_number set id=4");
+        DatabaseUtils.executeUpdateQuery(conn,
+                "insert into s2020csb1072(sem,ay,course,grade) values (1,'2020-21','CS550','A-')");
+        DatabaseUtils.executeUpdateQuery(conn,
+                "insert into s2020csb1070(sem,ay,course,grade) values (1,'2020-21','CS550','A')");
+        DatabaseUtils.executeUpdateQuery(conn,
+                "insert into s2020csb1074(sem,ay,course,grade) values (1,'2020-21','CS550','B')");
+
     }
 
     @ParameterizedTest
-    @CsvSource({ "2,CS550,3.5,1", "2,CS550,3.5,2", "2,CS551,3.5,3" })
-    public void testOption2(String choice, String courseCode, double constraint, Integer expected) {
+    @CsvSource({ "1,1,CS550,2020-21,1,1", "1,1,CS550,2020-212,1,2", "1,1,CS550,,1,3", "1,1,CS550,2020-21,8,4",
+            "1,1,CS550,2020-21,,5" })
+    public void testOption1_oneCourse(String choice, String choice2, String courseCode, String ay, String sem,
+            Integer expected) {
         String result;
-        String input = choice + "\n" + courseCode + "\n" + constraint + "\n";
+        String input = choice + "\n" + choice2 + "\n" + courseCode + "\n" + ay + "\n" + sem + "\n";
         ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
         System.setIn(inputStream);
         Scanner scan = new Scanner(System.in);
         if (expected == 1) {
             result = prof.professorOptions(scan);
-            assertEquals("error:float_not_allowed", result);
-            return;
+            assertEquals("pass", result);
+        } else {
+            result = prof.professorOptions(scan);
+            assertEquals("fail", result);
         }
-        DatabaseUtils.executeUpdateQuery(conn, "update config_number set id=2");
-        result = prof.professorOptions(scan);
 
-        if (expected == 2) {
-            assertEquals("error:course_not_in_catalog", result);
-            return;
-        } else if (expected == 3) {
+        scan.close();
 
-            assertEquals("success", result);
-            return;
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "1,2,2020csb1072@iitrpr.ac.in,1", "1,2,2020csb1072@iisc.in,2", "1,2,gunturi@iitrpr.ac.in,3",
+            "1,2,2020csb1072@iitrprac.in,4", "1,2,2020meb1328@iitrpr.ac.in,5" })
+    public void testOption1_oneStudent(String choice, String choice2, String student_id, Integer expected) {
+        String result;
+        String input = choice + "\n" + choice2 + "\n" + student_id + "\n";
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
+        System.setIn(inputStream);
+        Scanner scan = new Scanner(System.in);
+        if (expected == 1) {
+            result = prof.professorOptions(scan);
+            assertEquals("pass", result);
+        } else {
+            result = prof.professorOptions(scan);
+            assertEquals("fail", result);
         }
+
+        scan.close();
+
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "1,3,1" })
+    public void testOption1_back(String choice, String choice2, Integer expected) {
+        String result;
+        String input = choice + "\n" + choice2 + "\n";
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
+        System.setIn(inputStream);
+        Scanner scan = new Scanner(System.in);
+        if (expected == 1) {
+            result = prof.professorOptions(scan);
+            assertEquals("pass", result);
+        } else {
+            result = prof.professorOptions(scan);
+            assertEquals("fail", result);
+        }
+
         scan.close();
 
     }

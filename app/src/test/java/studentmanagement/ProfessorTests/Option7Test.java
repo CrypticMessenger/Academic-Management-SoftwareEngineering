@@ -1,9 +1,10 @@
 package studentmanagement.ProfessorTests;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.sql.Connection;
 import java.util.Scanner;
 
@@ -16,7 +17,7 @@ import studentmanagement.App;
 import studentmanagement.Professor;
 import studentmanagement.utils.DatabaseUtils;
 
-public class Option3Test {
+public class Option7Test {
     App app = null;
     Professor prof = null;
     Connection conn = null;
@@ -26,41 +27,25 @@ public class Option3Test {
         app = new App();
         conn = app.connect();
         prof = new Professor("gunturi@iitrpr.ac.in", conn, "2020-21", "2");
-        DatabaseUtils.executeUpdateQuery(conn, "delete from current_session");
-        DatabaseUtils.executeUpdateQuery(conn, "insert into current_session values('2020-21', 2)");
-        DatabaseUtils.executeUpdateQuery(conn,
-                "insert into course_catalog(course_code, L, T,P,pre_req,ay,sem,pc_or_pe,pe_for,pe_minsem) values('CS550',3,1,2,null,'2020-21',1,'pe',Array ['cs'],0)");
-        DatabaseUtils.executeUpdateQuery(conn,
-                "insert into course_catalog(course_code, L, T,P,pre_req,ay,sem,pc_or_pe,pe_for,pe_minsem) values('CS551',3,1,2,null,'2020-21',2,'pe',Array ['cs'],0)");
-        DatabaseUtils.executeUpdateQuery(conn, "update config_number set id=4");
-        DatabaseUtils.executeUpdateQuery(conn,
-                "insert into course_offerings(course_code, instructor_id) values('CS551','gunturi@iitrpr.ac.in')");
 
     }
 
     @ParameterizedTest
-    @CsvSource({ "3,CS550,1", "3,CS550,2", "3,CS551,3" })
-    public void testOption3(String choice, String courseCode, Integer expected) {
+    @CsvSource({ "7,,1", "8,7,2" })
+    public void testOption7(String choice, String choice2, Integer expected)
+            throws Exception {
         String result;
-        String input = choice + "\n" + courseCode + "\n";
+        String input = choice + "\n" + choice2 + "\n";
         ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
         System.setIn(inputStream);
         Scanner scan = new Scanner(System.in);
-        if (expected == 1) {
+        if (expected == 1 || expected == 2) {
             result = prof.professorOptions(scan);
-            assertFalse(result == "pass");
+            assertEquals("pass", result);
             return;
         }
-        DatabaseUtils.executeUpdateQuery(conn, "update config_number set id=2");
 
-        result = prof.professorOptions(scan);
-        if (expected == 2) {
-            assertFalse(result == "pass");
-            return;
-        } else if (expected == 3) {
-            assertTrue(result == "pass");
-
-        }
+        scan.close();
 
     }
 

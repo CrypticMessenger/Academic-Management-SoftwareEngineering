@@ -43,11 +43,11 @@ public class Professor extends Person {
         System.out.println("Welcome " + getName() + " !");
         String inputLine;
         while (true) {
-            System.out.println("1: View Student grades");
-            System.out.println("2: Float a course");
-            System.out.println("3: Cancel a course");
+            System.out.println("1: View Student grades"); // done
+            System.out.println("2: Float a course"); // done
+            System.out.println("3: Cancel a course"); // done
             System.out.println("4: Upload grades for course");
-            System.out.println("5: Validate grade submission");
+            System.out.println("5: Validate grade submission"); // done
             System.out.println("6: get student list csv for currently offered course");
             System.out.println("7: Logout");
             System.out.print("Choose: ");
@@ -58,8 +58,8 @@ public class Professor extends Person {
 
             } else if (inputLine.equals("1")) {
                 // view grades in the courses
-                StaffUtils.viewStudentRecordsOptions(conn, scan);
-                return "false";
+                return StaffUtils.viewStudentRecordsOptions(conn, scan);
+
             } else if (inputLine.equals("2")) {
                 // float a course
                 // System.out.println("Enter the course code");
@@ -74,32 +74,39 @@ public class Professor extends Person {
             } else if (inputLine.equals("4")) {
                 System.out.println("Enter the course code: ");
                 String courseCode = scan.nextLine();
+                if (!courseCode.matches("^[A-Z]{2}\\d{3}$")) {
+                    System.out.println("Invalid course code");
+                    return "fail";
+                }
                 // upload grades for course
-                uploadGradesForCourse(scan, courseCode);
-                return "false";
+                return uploadGradesForCourse(scan, courseCode);
 
             } else if (inputLine.equals("6")) {
                 System.out.println("Enter the course code: ");
                 String courseCode = scan.nextLine();
+                if (!courseCode.matches("^[A-Z]{2}\\d{3}$")) {
+                    System.out.println("Invalid course code");
+                    return "fail";
+                }
                 System.out.println("Enter the path to save the csv file: ");
                 String path = scan.nextLine();
-                StaffUtils.saveCourseRecord(conn, courseCode, path, getAy(), getSem());
-                return "false";
+                return StaffUtils.saveCourseRecord(conn, courseCode, path, getAy(), getSem());
+
             } else if (inputLine.equals("7")) {
                 finalize();
                 break;
             } else
                 System.out.println("Invalid input. Try again.");
         }
-        return "false";
+        return "pass";
 
     }
 
-    private void uploadGradesForCourse(Scanner scan, String course_Code) {
+    private String uploadGradesForCourse(Scanner scan, String course_Code) {
         Integer config = DatabaseUtils.getConfigNumber(conn);
         if (config != 6) {
             System.out.println("You cannot upload grades now");
-            return;
+            return "fail";
         }
 
         try {
@@ -110,24 +117,31 @@ public class Professor extends Person {
             BufferedReader br = null;
             String line = "";
             String cvsSplitBy = ",";
+            String courseCode = course_Code;
+            String checkFloatingCondition = "select * from course_offerings where course_code = '"
+                    + courseCode
+                    + "' and instructor_id = '" + getEmail() + "'";
+            ResultSet rs = DatabaseUtils.getResultSet(conn, checkFloatingCondition);
+
+            if (!rs.next()) {
+                System.out.println("You cannot upload grades for a course that you are not teaching!");
+                return "fail";
+            }
             try {
                 br = new BufferedReader(new FileReader(csvPath));
                 while ((line = br.readLine()) != null) {
                     // use comma as separator
                     String[] row = line.split(cvsSplitBy);
                     String studentEmail = row[0];
-                    String courseCode = course_Code;
-                    String checkFloatingCondition = "select * from course_offerings where course_code = '"
-                            + courseCode
-                            + "' and instructor_id = '" + getEmail() + "'";
-                    ResultSet rs = DatabaseUtils.getResultSet(conn, checkFloatingCondition);
 
-                    if (!rs.next()) {
-                        System.out.println("You cannot upload grades for a course that you are not teaching!");
+                    String gradeValue = row[1];
+                    ResultSet rs_temp = DatabaseUtils.getResultSet(conn, "select * from user_auth where id = '"
+                            + studentEmail + "'");
+                    if (!rs_temp.next()) {
+                        System.out.println("Student " + studentEmail + " does not exist");
                         continue;
                     }
 
-                    String gradeValue = row[1];
                     String table_name = "s" + studentEmail.substring(0, 11);
                     String validateCourseEnrollment = "select * from " + table_name + " where course= '"
                             + courseCode + "' and ay = '" + getAy() + "' and sem = '" + getSem() + "'";
@@ -146,8 +160,10 @@ public class Professor extends Person {
                     DatabaseUtils.executeUpdateQuery(conn, updateReportValidator);
                 }
                 System.out.println("Grades uploaded successfully!");
+                return "pass";
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
+                return "fail";
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
@@ -163,6 +179,7 @@ public class Professor extends Person {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return "fail";
     }
 
     private String cancelACourse(Scanner scan) {

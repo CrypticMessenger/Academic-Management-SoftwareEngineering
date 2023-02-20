@@ -38,7 +38,7 @@ public class StaffUtils {
         }
     }
 
-    public static void viewStudentRecordsOptions(Connection conn, Scanner scan) {
+    public static String viewStudentRecordsOptions(Connection conn, Scanner scan) {
         while (true) {
             System.out.println("1: View records of one course");
             System.out.println("2: View records of one student");
@@ -50,23 +50,37 @@ public class StaffUtils {
                 String course_code = scan.nextLine();
                 System.out.print("Enter ay(eg: 2013-14): ");
                 String ay = scan.nextLine();
+                if (!ay.matches("^\\d{4}-\\d{2}$")) {
+                    System.out.println("Invalid ay");
+                    return "fail";
+                }
                 System.out.print("Enter sem(eg: 1 or 2): ");
                 String sem = scan.nextLine();
+                if (!sem.equals("1") && !sem.equals("2")) {
+                    System.out.println("Invalid sem");
+                    return "fail";
+                }
                 // view for one course record
-                StudentUtils.viewCourseRecord(conn, course_code, ay, sem);
+                return StudentUtils.viewCourseRecord(conn, course_code, ay, sem);
 
             } else if (response.equals("2")) {
                 // one student DONE
                 System.out.print("Enter student email: ");
                 String student_email = scan.nextLine();
-                StudentUtils.viewGrades(conn, student_email);
+                if (!student_email.matches("^\\d{4}[A-Za-z0-9]{3}\\d{4}@iitrpr\\.ac\\.in$")) {
+                    System.out.println("Invalid email");
+                    return "fail";
+                }
+                return StudentUtils.viewGrades(conn, student_email);
             } else if (response.equals("3")) {
-                break;
+
+                return "pass";
             } else {
                 System.out.println("Invalid input");
             }
 
         }
+
     }
 
     public static String[][] get_next_n_sem_ay(Integer n, String ay, String sem) {
@@ -122,7 +136,7 @@ public class StaffUtils {
         }
     }
 
-    public static void saveCourseRecord(Connection conn, String course_code, String filename, String ay, String sem) {
+    public static String saveCourseRecord(Connection conn, String course_code, String filename, String ay, String sem) {
 
         try {
             String checkFloatingCondition = "select * from course_offerings where course_code = '"
@@ -132,7 +146,7 @@ public class StaffUtils {
 
             if (!rs.next()) {
                 System.out.println("You cannot upload/download grades for a course that is not offered.");
-                return;
+                return "fail";
             }
             ResultSet resultSet = DatabaseUtils.getResultSet(conn, "select id from user_auth where roles='s'");
             System.out.println(
@@ -144,10 +158,12 @@ public class StaffUtils {
                 saveCourseGrade(conn, student_email, course_code, filename, ay, sem);
             }
             System.out.println("--------------------------------------------------------------------");
+            return "pass";
         } catch (SQLException e) {
             System.out.println("Error in viewCourseRecord");
             e.printStackTrace();
         }
+        return "fail";
     }
 
 }

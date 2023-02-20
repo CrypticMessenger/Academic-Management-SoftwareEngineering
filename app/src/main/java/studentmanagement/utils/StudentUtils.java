@@ -5,11 +5,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class StudentUtils {
-    public static void viewGrades(Connection conn, String student_email) {
+    public static String viewGrades(Connection conn, String student_email) {
         try {
             if (!StaffUtils.checkStudentExist(conn, student_email)) {
                 System.out.println("Student does not exist");
-                return;
+                return "fail";
             }
             String table_name = "s" + student_email.substring(0, 11);
 
@@ -21,10 +21,12 @@ public class StudentUtils {
                         resultSet.getString(1) + " | " + resultSet.getString(2) + " | " + resultSet.getString(3)
                                 + " | " + resultSet.getString(4));
             }
+            return "pass";
         } catch (SQLException e) {
             System.out.println("Error in Student viewGrades");
             e.printStackTrace();
         }
+        return "error";
     }
 
     public static String[][] get_prev_2_sem_ay(String ay, String sem) {
@@ -53,7 +55,7 @@ public class StudentUtils {
         return past_2_ay_sem;
     }
 
-    public static void viewCourseGrade(Connection conn, String email, String course_code, String ay, String sem) {
+    public static Boolean viewCourseGrade(Connection conn, String email, String course_code, String ay, String sem) {
         // somewhat like table format
         String table_name = "s" + email.substring(0, 11);
         try {
@@ -63,15 +65,18 @@ public class StudentUtils {
             if (resultSet.next()) {
                 System.out.println(email + " : " + resultSet.getString(4));
             }
+            return true;
 
         } catch (SQLException e) {
             System.out.println("Error in viewCourseGrade");
             e.printStackTrace();
         }
+        return false;
     }
 
-    public static void viewCourseRecord(Connection conn, String course_code, String ay, String sem) {
-
+    public static String viewCourseRecord(Connection conn, String course_code, String ay, String sem) {
+        String result = "fail";
+        Boolean res = true;
         try {
             ResultSet resultSet = DatabaseUtils.getResultSet(conn, "select id from user_auth where roles='s'");
             System.out.println(
@@ -79,12 +84,16 @@ public class StudentUtils {
             System.out.println("Student email : Grade");
             while (resultSet.next()) {
                 String student_email = resultSet.getString(1);
-                viewCourseGrade(conn, student_email, course_code, ay, sem);
+                res = res && viewCourseGrade(conn, student_email, course_code, ay, sem);
             }
             System.out.println("--------------------------------------------------------------------");
+            if (res) {
+                result = "pass";
+            }
         } catch (SQLException e) {
             System.out.println("Error in viewCourseRecord");
             e.printStackTrace();
         }
+        return result;
     }
 }

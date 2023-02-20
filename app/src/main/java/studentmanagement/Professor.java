@@ -39,7 +39,7 @@ public class Professor extends Person {
         return this.name;
     }
 
-    public void professorOptions(Scanner scan) {
+    public String professorOptions(Scanner scan) {
         System.out.println("Welcome " + getName() + " !");
         String inputLine;
         while (true) {
@@ -54,27 +54,29 @@ public class Professor extends Person {
             inputLine = scan.nextLine();
             if (inputLine.equals("5")) {
                 // validate grade submission
-                validateGradeSubmission();
+                return validateGradeSubmission();
 
             } else if (inputLine.equals("1")) {
                 // view grades in the courses
                 StaffUtils.viewStudentRecordsOptions(conn, scan);
+                return "false";
             } else if (inputLine.equals("2")) {
                 // float a course
                 // System.out.println("Enter the course code");
                 // String courseCode = scan.nextLine();
                 // floatACourse(scan, courseCode);
 
-                floatACourse(scan);
+                return floatACourse(scan);
             } else if (inputLine.equals("3")) {
                 // cancel a course
-                cancelACourse(scan);
+                return cancelACourse(scan);
 
             } else if (inputLine.equals("4")) {
                 System.out.println("Enter the course code: ");
                 String courseCode = scan.nextLine();
                 // upload grades for course
                 uploadGradesForCourse(scan, courseCode);
+                return "false";
 
             } else if (inputLine.equals("6")) {
                 System.out.println("Enter the course code: ");
@@ -82,12 +84,14 @@ public class Professor extends Person {
                 System.out.println("Enter the path to save the csv file: ");
                 String path = scan.nextLine();
                 StaffUtils.saveCourseRecord(conn, courseCode, path, getAy(), getSem());
+                return "false";
             } else if (inputLine.equals("7")) {
                 finalize();
                 break;
             } else
                 System.out.println("Invalid input. Try again.");
         }
+        return "false";
 
     }
 
@@ -161,11 +165,11 @@ public class Professor extends Person {
         }
     }
 
-    public Boolean cancelACourse(Scanner scan) {
+    private String cancelACourse(Scanner scan) {
         Integer config = DatabaseUtils.getConfigNumber(conn);
         if (config != 2) {
             System.out.println("You cannot cancel a course now");
-            return false;
+            return "fail";
         }
         System.out.print("Enter the course code: ");
         String courseCode = scan.nextLine();
@@ -175,21 +179,21 @@ public class Professor extends Person {
             ResultSet rs = DatabaseUtils.getResultSet(conn, checkFloatingCondition);
             if (!rs.next()) {
                 System.out.println("You cannot cancel a course that you are not teaching!");
-                return false;
+                return "fail";
             } else {
                 String cancelCourse = "delete from course_offerings where course_code = '" + courseCode
                         + "' and instructor_id = '" + getEmail() + "'";
                 DatabaseUtils.executeUpdateQuery(conn, cancelCourse);
                 System.out.println("Course cancelled successfully!");
-                return true;
+                return "pass";
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return false;
+        return "fail";
     }
 
-    public String floatACourse(Scanner scan) {
+    private String floatACourse(Scanner scan) {
         Integer config = DatabaseUtils.getConfigNumber(conn);
         if (config != 2) {
             System.out.println("You cannot float a course now");
@@ -220,11 +224,11 @@ public class Professor extends Person {
         return "fail";
     }
 
-    private void validateGradeSubmission() {
+    private String validateGradeSubmission() {
         Integer config = DatabaseUtils.getConfigNumber(conn);
         if (config != 8) {
             System.out.println("You cannot validate grade submission now");
-            return;
+            return "fail";
         }
         String extractAllCourses = "select course_code from course_offerings where instructor_id = '"
                 + getEmail() + "'";
@@ -241,9 +245,11 @@ public class Professor extends Person {
 
                 }
             }
+            return "pass";
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return "fail";
     }
 
     // TODO: check in teacher if only teacher floating the course can upload or

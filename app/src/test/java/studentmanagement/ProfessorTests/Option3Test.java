@@ -1,7 +1,7 @@
 package studentmanagement.ProfessorTests;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.sql.Connection;
@@ -16,7 +16,7 @@ import studentmanagement.App;
 import studentmanagement.Professor;
 import studentmanagement.utils.DatabaseUtils;
 
-public class CancelTest {
+public class Option3Test {
     App app = null;
     Professor prof = null;
     Connection conn = null;
@@ -39,26 +39,26 @@ public class CancelTest {
     }
 
     @ParameterizedTest
-    @CsvSource({ "CS550,1", "CS550,2", "CS551,3" })
-    public void testCancel(String courseCode, Integer expected) {
-        Boolean result;
-        String input = courseCode + "\n";
+    @CsvSource({ "3,CS550,1", "3,CS550,2", "3,CS551,3" })
+    public void testOption3(String choice, String courseCode, Integer expected) {
+        String result;
+        String input = choice + "\n" + courseCode + "\n";
         ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
         System.setIn(inputStream);
         Scanner scan = new Scanner(System.in);
         if (expected == 1) {
-            result = prof.cancelACourse(scan);
-            assertFalse(result);
+            result = prof.professorOptions(scan);
+            assertFalse(result == "pass");
             return;
         }
         DatabaseUtils.executeUpdateQuery(conn, "update config_number set id=2");
 
-        result = prof.cancelACourse(scan);
+        result = prof.professorOptions(scan);
         if (expected == 2) {
-            assertFalse(result);
+            assertFalse(result == "pass");
             return;
         } else if (expected == 3) {
-            assertFalse(!result);
+            assertTrue(result == "pass");
 
         }
 

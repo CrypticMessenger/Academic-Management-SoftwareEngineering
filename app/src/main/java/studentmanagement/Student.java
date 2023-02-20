@@ -387,7 +387,7 @@ public class Student extends Person {
         }
     }
 
-    private Boolean getPassStatus(String course_code) {
+    public Boolean getPassStatus(String course_code) {
         String query = "select * from " + table_name + " where course = '" + course_code
                 + "' and grade !='F' and grade is not null";
         ResultSet resultSet = DatabaseUtils.getResultSet(conn, query);

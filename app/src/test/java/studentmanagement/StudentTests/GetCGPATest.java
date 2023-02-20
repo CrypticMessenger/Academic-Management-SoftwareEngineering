@@ -1,13 +1,8 @@
 package studentmanagement.StudentTests;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.sql.Connection;
-import java.util.Scanner;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import javax.swing.Action;
-import javax.xml.crypto.Data;
+import java.sql.Connection;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

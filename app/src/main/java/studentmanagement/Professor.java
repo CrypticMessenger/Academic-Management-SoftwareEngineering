@@ -61,6 +61,10 @@ public class Professor extends Person {
                 StaffUtils.viewStudentRecordsOptions(conn, scan);
             } else if (inputLine.equals("2")) {
                 // float a course
+                // System.out.println("Enter the course code");
+                // String courseCode = scan.nextLine();
+                // floatACourse(scan, courseCode);
+
                 floatACourse(scan);
             } else if (inputLine.equals("3")) {
                 // cancel a course
@@ -157,11 +161,11 @@ public class Professor extends Person {
         }
     }
 
-    private void cancelACourse(Scanner scan) {
+    public Boolean cancelACourse(Scanner scan) {
         Integer config = DatabaseUtils.getConfigNumber(conn);
         if (config != 2) {
             System.out.println("You cannot cancel a course now");
-            return;
+            return false;
         }
         System.out.print("Enter the course code: ");
         String courseCode = scan.nextLine();
@@ -171,44 +175,49 @@ public class Professor extends Person {
             ResultSet rs = DatabaseUtils.getResultSet(conn, checkFloatingCondition);
             if (!rs.next()) {
                 System.out.println("You cannot cancel a course that you are not teaching!");
-                return;
+                return false;
             } else {
                 String cancelCourse = "delete from course_offerings where course_code = '" + courseCode
                         + "' and instructor_id = '" + getEmail() + "'";
                 DatabaseUtils.executeUpdateQuery(conn, cancelCourse);
                 System.out.println("Course cancelled successfully!");
+                return true;
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return false;
     }
 
-    private void floatACourse(Scanner scan) {
+    public String floatACourse(Scanner scan) {
         Integer config = DatabaseUtils.getConfigNumber(conn);
         if (config != 2) {
             System.out.println("You cannot float a course now");
-            return;
+            return "error:float_not_allowed";
         }
         System.out.println("Enter the course code");
         String courseCode = scan.nextLine();
+
         String checkCourseCatalog = "select * from course_catalog where course_code = '" + courseCode
                 + "' and sem = '" + getSem() + "' and ay = '" + getAy() + "'";
         try {
             ResultSet rs = DatabaseUtils.getResultSet(conn, checkCourseCatalog);
             if (!rs.next()) {
                 System.out.println("Course does not exist in course catalog!");
-                return;
+                return "error:course_not_in_catalog";
             } else {
                 System.out.println("Enter minimum cgpa:");
-                Integer minCGPA = Integer.parseInt(scan.nextLine());
+                double minCGPA = Double.parseDouble(scan.nextLine());
                 String offerCourse = "insert into course_offerings(course_code,instructor_id,cg_constraint) values('"
                         + courseCode + "','" + getEmail() + "'," + minCGPA + ")";
                 DatabaseUtils.executeUpdateQuery(conn, offerCourse);
                 System.out.println("Course floated successfully!");
+                return "success";
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return "fail";
     }
 
     private void validateGradeSubmission() {

@@ -49,7 +49,7 @@ public abstract class Person {
             statement.executeUpdate();
         } catch (SQLException e) {
             System.out.println("Error in log_login_logout");
-            e.printStackTrace();
+            // e.printStackTrace();
         }
     }
 

@@ -1,7 +1,6 @@
 package studentmanagement.StudentTests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.contains;
 
 import java.io.ByteArrayInputStream;
 import java.sql.Connection;
@@ -143,9 +142,6 @@ public class Option1_2Test {
 
         }
 
-        // TODO: something realted to finalize() is happening, that red thing in debug
-        // console. also test is failing, maybe try again.
-        // exiting and we are still executing the test
         @ParameterizedTest
         @CsvSource({ "1,CS302,1", "1,CS302,2", "1,CS588,3", "1,CS202,4", "1,CS539,5", "1,CS201,6", "1,CS544,7",
                         "1,CS202,8", "2,CompSci582,9", "2,CS5845,10" })
@@ -182,6 +178,7 @@ public class Option1_2Test {
                         scan.close();
                         return;
                 }
+                scan.close();
 
         }
 
@@ -192,11 +189,13 @@ public class Option1_2Test {
 
         @AfterEach
         void cleanUpDeregister() {
+                conn = app.connect();
                 DatabaseUtils.executeUpdateQuery(conn, "delete from s2020csb1072");
                 DatabaseUtils.executeUpdateQuery(conn, "delete from course_offerings");
                 DatabaseUtils.executeUpdateQuery(conn, "delete from course_catalog");
                 DatabaseUtils.executeUpdateQuery(conn, "update current_session set ay='2020-21' and sem=1 ");
                 DatabaseUtils.executeUpdateQuery(conn, "update config_number set id=4 ");
-                st.finalize();
+                conn = null;
+                app = null;
         }
 }

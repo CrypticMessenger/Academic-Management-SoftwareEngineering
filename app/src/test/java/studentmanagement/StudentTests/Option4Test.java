@@ -8,7 +8,6 @@ import java.util.Scanner;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
@@ -175,12 +174,14 @@ public class Option4Test {
 
         @AfterEach
         public void cleanup() throws Exception {
+                conn = app.connect();
                 DatabaseUtils.executeUpdateQuery(conn, "delete from s2020csb1072");
                 DatabaseUtils.executeUpdateQuery(conn, "delete from course_offerings");
                 DatabaseUtils.executeUpdateQuery(conn, "delete from course_catalog");
                 DatabaseUtils.executeUpdateQuery(conn, "delete from current_session");
                 DatabaseUtils.executeUpdateQuery(conn, "insert into current_session values('2020-21', 1)");
                 DatabaseUtils.executeUpdateQuery(conn, "update config_number set id=4 ");
-                st.finalize();
+                app = null;
+                conn = null;
         }
 }

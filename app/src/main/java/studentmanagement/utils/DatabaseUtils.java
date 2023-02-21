@@ -25,7 +25,7 @@ public class DatabaseUtils {
             statement.executeUpdate(query);
         } catch (SQLException e) {
             System.out.println("Error in executeUpdateQuery");
-            e.printStackTrace();
+            // e.printStackTrace();
         }
     }
 

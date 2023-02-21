@@ -49,7 +49,6 @@ public class Option7Test {
     @AfterEach
     public void tearDown() {
 
-        prof.finalize();
         conn = null;
         app = null;
 

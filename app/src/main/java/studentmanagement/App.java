@@ -89,6 +89,7 @@ public class App {
                     switch (result) {
 
                         // case student
+
                         case "s":
                             Student student = new Student(email, conn, ay, sem);
                             student.studentOptions(scan);

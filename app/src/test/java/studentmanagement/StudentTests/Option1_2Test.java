@@ -1,27 +1,29 @@
 package studentmanagement.StudentTests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.contains;
 
+import java.io.ByteArrayInputStream;
 import java.sql.Connection;
 import java.util.Scanner;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import studentmanagement.App;
 import studentmanagement.Student;
 import studentmanagement.utils.DatabaseUtils;
 
-public class RegisterDeregisterTest {
+public class Option1_2Test {
         App app = null;
         Student st = null;
         Connection conn = null;
 
         @BeforeEach
-        @Tag("register-deregister")
-        public void setUpDeregister() throws Exception {
+        public void setUp() throws Exception {
                 app = new App();
                 conn = app.connect();
                 st = new Student("2020csb1072@iitrpr.ac.in", conn, "2020-21", "2");
@@ -111,62 +113,84 @@ public class RegisterDeregisterTest {
 
         }
 
-        @Test
-        @Tag("register-deregister")
-        void testDeRegister() {
-
-                String result = st.deregisterCourse("CS301");
-                assertEquals("fail:not_allowed", result);
+        @ParameterizedTest
+        @CsvSource({ "2,CS301,1", "2,CS301,2", "2,CS532,3", "2,CS539,4", "2,CompSci582,5", "2,CS5845,6" })
+        public void testOption2(String choice, String courseCode, Integer expected) {
+                String result;
+                String input = choice + "\n" + courseCode + "\n6\n";
+                ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
+                System.setIn(inputStream);
+                Scanner scan = new Scanner(System.in);
+                if (expected == 1) {
+                        result = st.studentOptions(scan);
+                        assertEquals("fail", result);
+                        return;
+                }
                 DatabaseUtils.executeUpdateQuery(conn, "update config_number set id=4 ");
-                result = st.deregisterCourse("CS301");
-                assertEquals("fail:not_registered_or_credited", result);
-                result = st.deregisterCourse("CS532");
-                assertEquals("fail:not_registered_or_credited", result);
-                result = st.deregisterCourse("CS539");
-                assertEquals("Success", result);
+                if (expected == 2 || expected == 3 || expected == 5 || expected == 6) {
+                        result = st.studentOptions(scan);
+                        assertEquals("fail", result);
+                        return;
+                }
+
+                if (expected == 4) {
+                        result = st.studentOptions(scan);
+                        assertEquals("pass", result);
+                        return;
+                }
+
+                scan.close();
+
         }
 
-        @Test
-        @Tag("register-deregister")
-        void testRegister() {
+        // TODO: something realted to finalize() is happening, that red thing in debug
+        // console. also test is failing, maybe try again.
+        // exiting and we are still executing the test
+        @ParameterizedTest
+        @CsvSource({ "1,CS302,1", "1,CS302,2", "1,CS588,3", "1,CS202,4", "1,CS539,5", "1,CS201,6", "1,CS544,7",
+                        "1,CS202,8", "2,CompSci582,9", "2,CS5845,10" })
+        public void testOption1(String choice, String courseCode, Integer expected) {
+                String result;
+                String input = choice + "\n" + courseCode + "\n6\n";
+                ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
+                System.setIn(inputStream);
                 Scanner scan = new Scanner(System.in);
-                String result = st.registerCourse("CS302", scan);
-                assertEquals("fail:registration_not_open", result);
-
+                if (expected == 1) {
+                        result = st.studentOptions(scan);
+                        assertEquals("fail", result);
+                        scan.close();
+                        return;
+                }
                 DatabaseUtils.executeUpdateQuery(conn, "update config_number set id=4 ");
-
-                result = st.registerCourse("CS302", scan);
-                assertEquals("fail:course_not_offered", result);
-
-                result = st.registerCourse("CS588", scan);
-                assertEquals("fail:cgpa_constraint_not_met", result);
-
-                result = st.registerCourse("CS202", scan);
-                assertEquals("fail:credit_limit_exceeded", result);
+                if (expected == 2 || expected == 3 || expected == 4 || expected == 9 || expected == 10) {
+                        result = st.studentOptions(scan);
+                        assertEquals("fail", result);
+                        scan.close();
+                        return;
+                }
 
                 DatabaseUtils.executeUpdateQuery(conn, "delete from s2020csb1072 where course='CS544'");
+                if (expected == 5 || expected == 6 || expected == 7) {
+                        result = st.studentOptions(scan);
+                        assertEquals("fail", result);
+                        scan.close();
+                        return;
+                }
+                if (expected == 8) {
+                        result = st.studentOptions(scan);
+                        assertEquals("pass", result);
+                        scan.close();
+                        return;
+                }
 
-                result = st.registerCourse("CS539", scan);
-                assertEquals("fail:already_registered_or_credited", result);
-
-                result = st.registerCourse("CS201", scan);
-                assertEquals("fail:prerequisite_condition_not_met", result);
-
-                result = st.registerCourse("CS544", scan);
-                assertEquals("fail:course_not_offered_for_your_branch", result);
-
-                result = st.registerCourse("CS202", scan);
-                assertEquals("success", result);
         }
 
         @Test
-        @Tag("name")
         void testGetName() {
                 assertEquals("Ankit Sharma", st.getName());
         }
 
         @AfterEach
-        @Tag("register-deregister")
         void cleanUpDeregister() {
                 DatabaseUtils.executeUpdateQuery(conn, "delete from s2020csb1072");
                 DatabaseUtils.executeUpdateQuery(conn, "delete from course_offerings");
@@ -175,5 +199,4 @@ public class RegisterDeregisterTest {
                 DatabaseUtils.executeUpdateQuery(conn, "update config_number set id=4 ");
                 st.finalize();
         }
-
 }

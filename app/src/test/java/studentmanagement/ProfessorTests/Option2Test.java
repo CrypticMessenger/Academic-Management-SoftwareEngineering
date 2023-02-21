@@ -39,7 +39,7 @@ public class Option2Test {
     @CsvSource({ "2,CS550,3.5,1", "2,CS550,3.5,2", "2,CS551,3.5,3" })
     public void testOption2(String choice, String courseCode, double constraint, Integer expected) {
         String result;
-        String input = choice + "\n" + courseCode + "\n" + constraint + "\n";
+        String input = choice + "\n" + courseCode + "\n" + constraint + "\n7\n";
         ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
         System.setIn(inputStream);
         Scanner scan = new Scanner(System.in);
@@ -61,11 +61,6 @@ public class Option2Test {
         }
         scan.close();
 
-    }
-
-    @Test
-    void testName() {
-        assertEquals("V. Gunturi", prof.getName());
     }
 
     @AfterEach

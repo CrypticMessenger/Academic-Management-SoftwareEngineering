@@ -61,7 +61,7 @@ public class Option6Test {
                         "6,CS551,D:/vesthrax/Software engineering/StudentManagement/app/src/main/java/studentmanagement/grade_upload/CS551.csv,6" })
         public void testOption6(String choice, String courseCode, String csv_path, Integer expected) throws Exception {
                 String result;
-                String input = choice + "\n" + courseCode + "\n" + csv_path + "\n";
+                String input = choice + "\n" + courseCode + "\n" + csv_path + "\n7\n";
                 ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
                 System.setIn(inputStream);
                 Scanner scan = new Scanner(System.in);

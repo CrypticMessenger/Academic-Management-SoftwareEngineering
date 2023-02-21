@@ -42,6 +42,8 @@ public class Professor extends Person {
     public String professorOptions(Scanner scan) {
         System.out.println("Welcome " + getName() + " !");
         String inputLine;
+        String result = "pass";
+        // TODO: remove return statements
         while (true) {
             System.out.println("1: View Student grades"); // done
             System.out.println("2: Float a course"); // done
@@ -54,43 +56,41 @@ public class Professor extends Person {
             inputLine = scan.nextLine();
             if (inputLine.equals("5")) {
                 // validate grade submission
-                return validateGradeSubmission();
+                result = validateGradeSubmission();
 
             } else if (inputLine.equals("1")) {
                 // view grades in the courses
-                return StaffUtils.viewStudentRecordsOptions(conn, scan);
+                result = StaffUtils.viewStudentRecordsOptions(conn, scan);
 
             } else if (inputLine.equals("2")) {
-                // float a course
-                // System.out.println("Enter the course code");
-                // String courseCode = scan.nextLine();
-                // floatACourse(scan, courseCode);
 
-                return floatACourse(scan);
+                result = floatACourse(scan);
             } else if (inputLine.equals("3")) {
                 // cancel a course
-                return cancelACourse(scan);
+                result = cancelACourse(scan);
 
             } else if (inputLine.equals("4")) {
                 System.out.println("Enter the course code: ");
                 String courseCode = scan.nextLine();
                 if (!courseCode.matches("^[A-Z]{2}\\d{3}$")) {
                     System.out.println("Invalid course code");
-                    return "fail";
+                    result = "fail";
+                } else {
+                    // upload grades for course
+                    result = uploadGradesForCourse(scan, courseCode);
                 }
-                // upload grades for course
-                return uploadGradesForCourse(scan, courseCode);
 
             } else if (inputLine.equals("6")) {
                 System.out.println("Enter the course code: ");
                 String courseCode = scan.nextLine();
                 if (!courseCode.matches("^[A-Z]{2}\\d{3}$")) {
                     System.out.println("Invalid course code");
-                    return "fail";
+                    result = "fail";
+                } else {
+                    System.out.println("Enter the path to save the csv file: ");
+                    String path = scan.nextLine();
+                    result = StaffUtils.saveCourseRecord(conn, courseCode, path, getAy(), getSem());
                 }
-                System.out.println("Enter the path to save the csv file: ");
-                String path = scan.nextLine();
-                return StaffUtils.saveCourseRecord(conn, courseCode, path, getAy(), getSem());
 
             } else if (inputLine.equals("7")) {
                 finalize();
@@ -98,7 +98,7 @@ public class Professor extends Person {
             } else
                 System.out.println("Invalid input. Try again.");
         }
-        return "pass";
+        return result;
 
     }
 

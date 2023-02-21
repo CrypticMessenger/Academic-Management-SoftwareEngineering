@@ -16,6 +16,7 @@ import studentmanagement.App;
 import studentmanagement.Professor;
 import studentmanagement.utils.DatabaseUtils;
 
+//TODO: make sure to clean testing code, so that it's fast
 public class Option1Test {
     App app = null;
     Professor prof = null;
@@ -43,12 +44,50 @@ public class Option1Test {
     }
 
     @ParameterizedTest
-    @CsvSource({ "1,1,CS550,2020-21,1,1", "1,1,CS550,2020-212,1,2", "1,1,CS550,,1,3", "1,1,CS550,2020-21,8,4",
-            "1,1,CS550,2020-21,,5" })
+    @CsvSource({ "1,1,CS550,2020-21,1,7,1", "1,1,CS550,2020-212,1,7,2", "1,1,CS550,,1,7,3", "1,1,CS550,2020-21,8,7,4",
+            "1,1,CS550,2020-21,,7,5" })
     public void testOption1_oneCourse(String choice, String choice2, String courseCode, String ay, String sem,
+            String exit,
             Integer expected) {
         String result;
-        String input = choice + "\n" + choice2 + "\n" + courseCode + "\n" + ay + "\n" + sem + "\n";
+        if (expected == 1) {
+            String input = choice + "\n" + choice2 + "\n" + courseCode + "\n" + ay + "\n" + sem + "\n" + exit + "\n";
+
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
+            System.setIn(inputStream);
+            Scanner scan = new Scanner(System.in);
+            result = prof.professorOptions(scan);
+            assertEquals("pass", result);
+            scan.close();
+        } else if (expected == 2 || expected == 3) {
+            String input = choice + "\n" + choice2 + "\n" + courseCode + "\n" + ay + "\n" + exit + "\n";
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
+            System.setIn(inputStream);
+            Scanner scan = new Scanner(System.in);
+            result = prof.professorOptions(scan);
+            assertEquals("fail", result);
+            scan.close();
+
+        } else {
+            String input = choice + "\n" + choice2 + "\n" + courseCode + "\n" + ay + "\n" + sem + "\n" + exit + "\n";
+
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
+            System.setIn(inputStream);
+            Scanner scan = new Scanner(System.in);
+            result = prof.professorOptions(scan);
+            assertEquals("fail", result);
+            scan.close();
+        }
+
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "1,2,2020csb1072@iitrpr.ac.in,7,1", "1,2,2020csb1072@iisc.in,7,2", "1,2,gunturi@iitrpr.ac.in,7,3",
+            "1,2,2020csb1072@iitrprac.in,7,4", "1,2,2020meb1328@iitrpr.ac.in,7,5" })
+    public void testOption1_oneStudent(String choice, String choice2, String student_id, String exit,
+            Integer expected) {
+        String result;
+        String input = choice + "\n" + choice2 + "\n" + student_id + "\n" + exit + "\n";
         ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
         System.setIn(inputStream);
         Scanner scan = new Scanner(System.in);
@@ -65,31 +104,10 @@ public class Option1Test {
     }
 
     @ParameterizedTest
-    @CsvSource({ "1,2,2020csb1072@iitrpr.ac.in,1", "1,2,2020csb1072@iisc.in,2", "1,2,gunturi@iitrpr.ac.in,3",
-            "1,2,2020csb1072@iitrprac.in,4", "1,2,2020meb1328@iitrpr.ac.in,5" })
-    public void testOption1_oneStudent(String choice, String choice2, String student_id, Integer expected) {
+    @CsvSource({ "1,3,7,1" })
+    public void testOption1_back(String choice, String choice2, String exit, Integer expected) {
         String result;
-        String input = choice + "\n" + choice2 + "\n" + student_id + "\n";
-        ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
-        System.setIn(inputStream);
-        Scanner scan = new Scanner(System.in);
-        if (expected == 1) {
-            result = prof.professorOptions(scan);
-            assertEquals("pass", result);
-        } else {
-            result = prof.professorOptions(scan);
-            assertEquals("fail", result);
-        }
-
-        scan.close();
-
-    }
-
-    @ParameterizedTest
-    @CsvSource({ "1,3,1" })
-    public void testOption1_back(String choice, String choice2, Integer expected) {
-        String result;
-        String input = choice + "\n" + choice2 + "\n";
+        String input = choice + "\n" + choice2 + "\n" + exit + "\n";
         ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
         System.setIn(inputStream);
         Scanner scan = new Scanner(System.in);
@@ -124,6 +142,5 @@ public class Option1Test {
         prof.finalize();
         conn = null;
         app = null;
-
     }
 }

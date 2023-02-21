@@ -43,7 +43,7 @@ public class Option5Test {
         @CsvSource({ "5,1", "5,2" })
         public void testOption5(String choice, Integer expected) {
                 String result;
-                String input = choice + "\n";
+                String input = choice + "\n7\n";
                 ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
                 System.setIn(inputStream);
                 Scanner scan = new Scanner(System.in);

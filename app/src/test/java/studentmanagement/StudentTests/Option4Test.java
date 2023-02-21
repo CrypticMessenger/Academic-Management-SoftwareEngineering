@@ -2,17 +2,21 @@ package studentmanagement.StudentTests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.io.ByteArrayInputStream;
 import java.sql.Connection;
+import java.util.Scanner;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import studentmanagement.App;
 import studentmanagement.Student;
 import studentmanagement.utils.DatabaseUtils;
 
-public class GetCGPATest {
+public class Option4Test {
         App app = null;
         Student st = null;
         Connection conn = null;
@@ -153,10 +157,20 @@ public class GetCGPATest {
                 DatabaseUtils.executeUpdateQuery(conn, "insert into current_session values('2021-22', 2)");
         }
 
-        @Test
-        public void testCGPA() {
-                double result = st.getCGPA();
-                assertEquals(8.647, result, 0.001);
+        // TODO: start from here and write test cases for the methods in Student.java
+        @ParameterizedTest
+        @CsvSource({ "4,1" })
+        public void testOption4(String choice, Integer expected) {
+                String result;
+                String input = choice + "\n6\n";
+                ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
+                System.setIn(inputStream);
+                Scanner scan = new Scanner(System.in);
+
+                result = st.studentOptions(scan);
+                assertEquals(8.647, Double.parseDouble(result), 0.001);
+                scan.close();
+
         }
 
         @AfterEach

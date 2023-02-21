@@ -42,7 +42,7 @@ public class Option3Test {
     @CsvSource({ "3,CS550,1", "3,CS550,2", "3,CS551,3" })
     public void testOption3(String choice, String courseCode, Integer expected) {
         String result;
-        String input = choice + "\n" + courseCode + "\n";
+        String input = choice + "\n" + courseCode + "\n7\n";
         ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
         System.setIn(inputStream);
         Scanner scan = new Scanner(System.in);

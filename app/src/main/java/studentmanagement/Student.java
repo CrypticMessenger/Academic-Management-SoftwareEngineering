@@ -365,6 +365,7 @@ public class Student extends Person {
             System.out.println("6: Logout");
             System.out.print("Choose: ");
             String inputLine = scan.nextLine();
+            // System.out.println(inputLine);
             if (inputLine.equals("1")) {
                 displayCourseCatalog(conn);
 
@@ -379,9 +380,9 @@ public class Student extends Person {
                 result = getCGPA().toString();
                 System.out.println("Your CGPA is: " + result);
             } else if (inputLine.equals("5")) {
-                graduationCheck();
-                result = getCGPA().toString();
-                System.out.println("Your CGPA is: " + result);
+                result = graduationCheck().toString();
+
+                System.out.println("Your CGPA is: " + this.cgpa);
             } else if (inputLine.equals("6")) {
                 finalize();
                 break;

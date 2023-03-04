@@ -40,6 +40,7 @@ public abstract class Person {
         return sem;
     }
 
+    // TODO: print sgp in transript
     public void log_login_logout(Connection conn, String email, String status) {
         try {
             String enter_logout_log = "Insert into login_log(email,status) values (?,?)";

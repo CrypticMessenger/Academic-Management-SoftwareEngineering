@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.ByteArrayInputStream;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Scanner;
 
 import org.junit.jupiter.api.AfterEach;
@@ -95,7 +96,8 @@ public class Option1_2Test {
                 DatabaseUtils.executeUpdateQuery(conn,
                                 "insert into course_offerings(course_code, instructor_id) values('CS544','gunturi@iitrpr.ac.in')");
 
-                DatabaseUtils.executeUpdateQuery(conn, "update current_session set ay='2020-21' and sem=2 ");
+                DatabaseUtils.executeUpdateQuery(conn, "delete from current_session");
+                DatabaseUtils.executeUpdateQuery(conn, "insert into current_session(ay,sem) values('2020-21',2)");
                 DatabaseUtils.executeUpdateQuery(conn,
                                 "insert into s2020csb1072(sem,ay,course) values (2,'2020-21','CS539')");
                 DatabaseUtils.executeUpdateQuery(conn,
@@ -144,10 +146,15 @@ public class Option1_2Test {
 
         @ParameterizedTest
         @CsvSource({ "1,CS302,1", "1,CS302,2", "1,CS588,3", "1,CS202,4", "1,CS539,5", "1,CS201,6", "1,CS544,7",
-                        "1,CS202,8", "2,CompSci582,9", "2,CS5845,10" })
+                        "1,CS202,8", "1,CompSci582,9", "1,CS5845,10" })
         public void testOption1(String choice, String courseCode, Integer expected) {
                 String result;
-                String input = choice + "\n" + courseCode + "\n6\n";
+                String input = "";
+                if (expected != 1) {
+                        input = choice + "\n" + courseCode + "\n6\n";
+                } else {
+                        input = choice + "\n6\n";
+                }
                 ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
                 System.setIn(inputStream);
                 Scanner scan = new Scanner(System.in);
@@ -189,11 +196,13 @@ public class Option1_2Test {
 
         @AfterEach
         void cleanUpDeregister() {
+
                 conn = app.connect();
                 DatabaseUtils.executeUpdateQuery(conn, "delete from s2020csb1072");
                 DatabaseUtils.executeUpdateQuery(conn, "delete from course_offerings");
                 DatabaseUtils.executeUpdateQuery(conn, "delete from course_catalog");
-                DatabaseUtils.executeUpdateQuery(conn, "update current_session set ay='2020-21' and sem=1 ");
+                DatabaseUtils.executeUpdateQuery(conn, "delete from current_session");
+                DatabaseUtils.executeUpdateQuery(conn, "insert into current_session(ay,sem) values('2020-21',1)");
                 DatabaseUtils.executeUpdateQuery(conn, "update config_number set id=4 ");
                 conn = null;
                 app = null;

@@ -37,12 +37,12 @@ public class Admin extends Person {
         return this.name;
     }
 
-    private void triggerEvent(String event, String state, Integer new_config, Scanner scanner) {
+    private String triggerEvent(String event, String state, Integer new_config, Scanner scanner) {
         Integer config = DatabaseUtils.getConfigNumber(conn);
         String question = state.equals("starting") ? "start" : "end";
         if (config == new_config) {
             System.out.println(event + " already " + question + "ed!!");
-            return;
+            return "fail";
         }
         while (true) {
             System.out.println("Are you sure you want to " + question + " " + event + "? (y/n)");
@@ -50,10 +50,10 @@ public class Admin extends Person {
             if (response.equals("y")) {
                 DatabaseUtils.setConfigNumber(conn, new_config);
                 System.out.println(event + " " + question + "ed!!");
-                break;
+                return "pass";
             } else if (response.equals("n")) {
                 System.out.println("OPERATION: " + state + "" + event + " aborted!!");
-                break;
+                return "fail";
             } else {
                 System.out.println("Invalid input");
             }
@@ -61,7 +61,7 @@ public class Admin extends Person {
         }
     }
 
-    private void generateValidationReport() {
+    private String generateValidationReport() {
         // generateValidationReport();
         Integer config = DatabaseUtils.getConfigNumber(conn);
         if (config == 7) {
@@ -72,26 +72,26 @@ public class Admin extends Person {
                 String sem = getSem();
                 System.out.println(
                         "----------- Validation report---AY: " + ay + "--- SEM: " + sem + "----------------");
-                if (!resultSet.next()) {
-                    System.out.println("Good to go to next semester!!");
-                    return;
-                } else {
-                    System.out.println("Student email : Course code");
-                    while (resultSet.next()) {
-                        String student_email = resultSet.getString(1);
-                        validateStudentGrades(student_email, ay, sem);
-                    }
+
+                System.out.println("Student email : Course code");
+                while (resultSet.next()) {
+                    String student_email = resultSet.getString(1);
+                    validateStudentGrades(student_email, ay, sem);
                 }
+
                 System.out.println("--------------------------------------------------------------------");
                 DatabaseUtils.setConfigNumber(conn, 8);
                 System.out.println("Validation report generated!");
+                return "pass";
             } catch (SQLException e) {
                 System.out.println("Error in generateValidationReport");
                 e.printStackTrace();
+                return "fail";
             }
 
         } else {
             System.out.println("Grade submission not ended yet!");
+            return "fail";
         }
     }
 
@@ -213,8 +213,12 @@ public class Admin extends Person {
         }
     }
 
-    private void startNewSession(Scanner scan) {
-        triggerEvent("new session", "starting", 1, scan);
+    private String startNewSession(Scanner scan) {
+        String result = "";
+        result = triggerEvent("new session", "starting", 1, scan);
+        if (result.equals("fail")) {
+            return "fail";
+        }
         DatabaseUtils.executeUpdateQuery(conn, "Delete from course_offerings");
         System.out.println("Cleared all the course offerings!");
         DatabaseUtils.executeUpdateQuery(conn, "Delete from report_validator");
@@ -230,6 +234,7 @@ public class Admin extends Person {
                 + getAy() + "'," + getSem() + ",pre_req,'pc',pc_for,pe_for,pc_sem,pe_minsem from ug_curriculum";
         DatabaseUtils.executeUpdateQuery(conn, setupCourseCatalog);
         System.out.println("New session started!");
+        return "pass";
 
     }
 
@@ -333,21 +338,22 @@ public class Admin extends Person {
 
     }
 
-    public void adminOptions(Scanner scan) {
+    public String adminOptions(Scanner scan) {
         System.out.println("Welcome " + getName() + " !");
         String inputLine;
+        String result = "fail";
         while (true) {
             System.out.println("1: Edit course Catalogue");
-            System.out.println("2: allow course float!");
-            System.out.println("3: dis-allow course float!");
-            System.out.println("4: Allow course enrollment!");
-            System.out.println("5: Dis-allow course enrollment!");
-            System.out.println("6: Start grade submission");
-            System.out.println("7: End grade submission");
-            System.out.println("8: Validate grade submission");
-            System.out.println("9: end current session!");
-            System.out.println("10: Start a new Academic session");
-            System.out.println("11: View student records");
+            System.out.println("2: allow course float!"); // done
+            System.out.println("3: dis-allow course float!"); // done sorta
+            System.out.println("4: Allow course enrollment!"); // done
+            System.out.println("5: Dis-allow course enrollment!"); // done
+            System.out.println("6: Start grade submission"); // done
+            System.out.println("7: End grade submission"); // done
+            System.out.println("8: Validate grade submission"); // done
+            System.out.println("9: end current session!"); // done
+            System.out.println("10: Start a new Academic session"); // done
+            System.out.println("11: View student records"); // done
             System.out.println("12: Generate transcripts");
             System.out.println("13: Logout");
             System.out.print("Choose: ");
@@ -358,7 +364,7 @@ public class Admin extends Person {
 
             } else if (inputLine.equals("11")) {
                 // view student records
-                viewStudentRecordsOptions(conn, scan);
+                result = viewStudentRecordsOptions(conn, scan);
 
             } else if (inputLine.equals("12")) {
                 // generate transcripts
@@ -366,63 +372,69 @@ public class Admin extends Person {
 
             } else if (inputLine.equals("6")) {
                 // start grade submission
-                triggerEvent("grade submission", "starting", 6, scan);
+                result = triggerEvent("grade submission", "starting", 6, scan);
 
             } else if (inputLine.equals("7")) {
                 // end grade submission
-                triggerEvent("grade submission", "ending", 7, scan);
+                result = triggerEvent("grade submission", "ending", 7, scan);
 
             } else if (inputLine.equals("8")) {
                 // validate grade submission
-                generateValidationReport();
+                result = generateValidationReport();
 
             } else if (inputLine.equals("10")) {
                 // start new session
-                startNewSession(scan);
+                result = startNewSession(scan);
 
             } else if (inputLine.equals("2")) {
                 // allow course float
-                triggerEvent("course float", "starting", 2, scan);
+                result = triggerEvent("course float", "starting", 2, scan);
 
             } else if (inputLine.equals("3")) {
                 // dis-allow course float
-                triggerEvent("course float", "ending", 3, scan);
-                String enrollPCStudents = "select * from course_catalog,user_auth where user_auth.dept = any(course_catalog.pc_for) and user_auth.roles = 's' and course_catalog.ay='"
-                        + getAy() + "' and course_catalog.sem=" + getSem() + "";
-                System.out.println(enrollPCStudents);
+                result = triggerEvent("course float", "ending", 3, scan);
+                if (!result.equals("fail")) {
 
-                ResultSet rs1 = DatabaseUtils.getResultSet(conn, enrollPCStudents);
-                try {
-                    while (rs1.next()) {
-                        String course_code = rs1.getString(1);
-                        String email = rs1.getString(15);
-                        String pc_sem = rs1.getString(12);
-                        if (Integer.parseInt(pc_sem) == StaffUtils.getSemCompleted(conn, email) + 1) {
-                            Student st = new Student(email, conn, getAy(), getSem());
-                            System.out.println("Studentenrolling pc student: " + email + " in course: " + course_code);
-                            st.registerCourse(course_code, "force");
-                            // String enrollPCStudent = "insert into " + table_name +
-                            // "(sem,ay,course)values('" + getSem()
-                            // + "','"
-                            // + getAy() + "','" + course_code + "')";
-                            // DatabaseUtils.executeUpdateQuery(conn, enrollPCStudent);
+                    String enrollPCStudents = "select * from course_catalog,user_auth where user_auth.dept = any(course_catalog.pc_for) and user_auth.roles = 's' and course_catalog.ay='"
+                            + getAy() + "' and course_catalog.sem=" + getSem() + "";
+                    System.out.println(enrollPCStudents);
+                    // TODO: make a function here to make it cleaner
+                    ResultSet rs1 = DatabaseUtils.getResultSet(conn, enrollPCStudents);
+                    try {
+                        while (rs1.next()) {
+                            String course_code = rs1.getString(1);
+                            String email = rs1.getString(15);
+                            String pc_sem = rs1.getString(12);
+                            if (Integer.parseInt(pc_sem) == StaffUtils.getSemCompleted(conn, email) + 1) {
+                                Connection conn_temp = DatabaseUtils.connect();
+                                Student st = new Student(email, conn_temp, getAy(), getSem());
+                                System.out.println(
+                                        "Studentenrolling pc student: " + email + " in course: " + course_code);
+                                st.registerCourse(course_code, "force");
+                                st.finalize();// TODO: student logsout when he actually doesn't
+
+                            }
+                            System.out.println("sem_comp:" + StaffUtils.getSemCompleted(conn, email));
+                            System.out.println("pc_sem: " + pc_sem);
+
                         }
-                        System.out.println("sem_comp:" + StaffUtils.getSemCompleted(conn, email));
-                        System.out.println("pc_sem: " + pc_sem);
-
+                        result = "pass";
+                    } catch (SQLException e) {
+                        // e.printStackTrace();
+                        System.out.println("error here!");
+                        result = "fail";
                     }
-                } catch (SQLException e) {
-                    e.printStackTrace();
                 }
 
             } else if (inputLine.equals("4")) {
                 // allow course enrollment
-                triggerEvent("course enrollment", "starting", 4, scan);
+                result = triggerEvent("course enrollment", "starting", 4, scan);
 
             } else if (inputLine.equals("5")) {
                 // disable course enrollment
-                triggerEvent("course enrollment", "ending", 5, scan);
+                result = triggerEvent("course enrollment", "ending", 5, scan);
             } else if (inputLine.equals("9")) {
+
                 System.out.println("Consider checking the validation report before ending the session:");
                 System.out.println("1: go back to menu");
                 System.out.println("2: end session");
@@ -430,10 +442,11 @@ public class Admin extends Person {
                 while (true) {
                     String input = scan.nextLine();
                     if (input.equals("2")) {
-                        triggerEvent("current session", "ending", 9, scan);
+                        result = triggerEvent("current session", "ending", 9, scan);
                         break;
                     } else if (input.equals("1")) {
                         // end current session
+                        result = "fail";
                         break;
                     } else {
                         System.out.println("Invalid input");
@@ -449,9 +462,10 @@ public class Admin extends Person {
             }
 
         }
+        return result;
     }
 
-    public void viewStudentRecordsOptions(Connection conn, Scanner scan) {
+    public String viewStudentRecordsOptions(Connection conn, Scanner scan) {
         while (true) {
             System.out.println("1: View records of one course");
             System.out.println("2: View records of one student");
@@ -466,20 +480,21 @@ public class Admin extends Person {
                 System.out.print("Enter sem(eg: 1 or 2): ");
                 String sem = scan.nextLine();
                 // view for one course record
-                StudentUtils.viewCourseRecord(conn, course_code, ay, sem);
+                return StudentUtils.viewCourseRecord(conn, course_code, ay, sem);
 
             } else if (response.equals("2")) {
                 // one student DONE
                 System.out.print("Enter student email: ");
                 String student_email = scan.nextLine();
-                StudentUtils.viewGrades(conn, student_email);
+                return StudentUtils.viewGrades(conn, student_email);
             } else if (response.equals("3")) {
-                break;
+                return "fail";
             } else {
                 System.out.println("Invalid input");
             }
 
         }
+
     }
     // TODO: try to inherit from Person
 

@@ -1,11 +1,29 @@
 package studentmanagement.utils;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 public class DatabaseUtils {
+    private static final String url = "jdbc:postgresql://localhost/academic_management";
+    private static final String user = "postgres";
+    private static final String password = "1421";
+
+    public static Connection connect() {
+        Connection conn = null;
+        try {
+            // Connect to the database
+            System.out.println("Connecting...");
+            conn = DriverManager.getConnection(url, user, password);
+            // Print a message to the console
+        } catch (SQLException e) {
+            // Print a message to the console
+            System.out.println(e.getMessage());
+        }
+        return conn;
+    }
 
     public static ResultSet getResultSet(Connection conn, String query) {
         try {

@@ -238,11 +238,12 @@ public class Admin extends Person {
 
     }
 
-    private void editCourseCatalog(Scanner scan) {
+    private String editCourseCatalog(Scanner scan) {
+        String result = "fail";
         Integer config = DatabaseUtils.getConfigNumber(conn);
         if (config != 1) {
             System.out.println("Cannot edit course catalog now!");
-            return;
+            return "fail";
         }
         while (true) {
             // TODO: add course edit option
@@ -255,6 +256,10 @@ public class Admin extends Person {
                 try {
                     System.out.print("Enter course code: ");
                     String course_code = scan.nextLine();
+                    if (!course_code.matches("^[A-Z]{2}\\d{3}$")) {
+                        System.out.println("Invalid course code");
+                        continue;
+                    }
                     String checkCourseQuery = "select * from course_catalog where course_code = '" + course_code
                             + "' and ay= '" + getAy() + "' and sem = '" + getSem() + "'";
                     ResultSet resultSet = DatabaseUtils.getResultSet(conn, checkCourseQuery);
@@ -286,6 +291,13 @@ public class Admin extends Person {
                     }
                     String pre_req_string = "'" + String.join("','", pre_req) + "'";
                     ArrayList<String> pe_for = new ArrayList<String>();
+                    ArrayList<String> branches = new ArrayList<String>();
+                    branches.add("cs");
+                    branches.add("mm");
+                    branches.add("mc");
+                    branches.add("ch");
+                    branches.add("ce");
+                    branches.add("me");
                     System.out.println("Enter PE for: ");
                     while (true) {
                         System.out.println(
@@ -293,6 +305,10 @@ public class Admin extends Person {
                         String course_pe_for = scan.nextLine();
                         if (course_pe_for.equals("done")) {
                             break;
+                        }
+                        if (!branches.contains(course_pe_for)) {
+                            System.out.println("Invalid branch code!");
+                            continue;
                         }
                         if (pe_for.contains(course_pe_for)) {
                             System.out.println("Course already added as a PE for!");
@@ -318,19 +334,25 @@ public class Admin extends Person {
                             + "],'pe',Array[" + pe_for_string + "]," + pe_minsem + ")";
                     DatabaseUtils.executeUpdateQuery(conn, query);
                     System.out.println("Course added to catalog!");
+                    result = "pass";
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
             } else if (response.equals("2")) {
                 System.out.print("Enter course code: ");
                 String course_code = scan.nextLine();
+                if (!course_code.matches("^[A-Z]{2}\\d{3}$")) {
+                    System.out.println("Invalid course code");
+                    continue;
+                }
                 String query = "delete from course_catalog where course_code = '" + course_code + "' and ay = '"
                         + getAy()
                         + "' and sem = '" + getSem() + "'";
                 DatabaseUtils.executeUpdateQuery(conn, query);
                 System.out.println("Course removed from catalog!");
+                result = "pass";
             } else if (response.equals("3")) {
-                break;
+                return result;
             } else {
                 System.out.println("Invalid input");
             }
@@ -343,7 +365,7 @@ public class Admin extends Person {
         String inputLine;
         String result = "fail";
         while (true) {
-            System.out.println("1: Edit course Catalogue");
+            System.out.println("1: Edit course Catalogue"); // done
             System.out.println("2: allow course float!"); // done
             System.out.println("3: dis-allow course float!"); // done sorta
             System.out.println("4: Allow course enrollment!"); // done
@@ -354,13 +376,13 @@ public class Admin extends Person {
             System.out.println("9: end current session!"); // done
             System.out.println("10: Start a new Academic session"); // done
             System.out.println("11: View student records"); // done
-            System.out.println("12: Generate transcripts");
+            System.out.println("12: Generate transcripts"); // doing
             System.out.println("13: Logout");
             System.out.print("Choose: ");
             inputLine = scan.nextLine();
             if (inputLine.equals("1")) {
                 // edit catalog function
-                editCourseCatalog(scan);
+                result = editCourseCatalog(scan);
 
             } else if (inputLine.equals("11")) {
                 // view student records

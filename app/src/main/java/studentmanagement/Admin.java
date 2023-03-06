@@ -129,17 +129,17 @@ public class Admin extends Person {
         }
     }
 
-    private void generateTranscript(String email) {
+    private String generateTranscript(String email) {
         if (!StaffUtils.checkStudentExist(conn, email)) {
             System.out.println("Student does not exist");
-            return;
+            return "fail";
         }
         String table_name = "s" + email.substring(0, 11);
         String transcriptFilter = "select sem,ay,course,coalesce(grade,'Ongoing') from " + table_name;
         // print in .txt file
         try {
             ResultSet resultSet = DatabaseUtils.getResultSet(conn, transcriptFilter);
-            String _path_dir = "app/src/main/java/studentmanagement/student_transcripts/";
+            String _path_dir = "D:/vesthrax/Software engineering/StudentManagement/app/src/main/java/studentmanagement/student_transcripts/";
             String filename = _path_dir + table_name + ".txt";
             File file = new File(filename);
             if (!file.exists()) {
@@ -168,28 +168,41 @@ public class Admin extends Person {
             }
             bw.close();
             System.out.println("\tTranscript generated for " + email + "");
+            return "pass";
         } catch (SQLException | IOException e) {
             System.out.println("Error in generate transcript");
             e.printStackTrace();
         }
+        return "fail";
 
     }
 
-    private void generateAllTranscripts() {
+    private String generateAllTranscripts() {
+        String result = "pass";
+        Boolean flag = true;
         try {
             ResultSet resultSet = DatabaseUtils.getResultSet(conn, "select id from user_auth where roles='s'");
             while (resultSet.next()) {
                 String email = resultSet.getString(1);
-                generateTranscript(email);
+                String status = generateTranscript(email);
+                flag = flag && !(status == "fail");
+
             }
             System.out.println("\n\tAll transcripts generated \n\n");
         } catch (SQLException e) {
             System.out.println("Error in generateAllTranscripts");
             e.printStackTrace();
+            flag = false;
+
         }
+        if (!flag) {
+            result = "fail";
+        }
+        return result;
     }
 
-    private void generateStudentTranscriptOptions(Scanner scan) {
+    private String generateStudentTranscriptOptions(Scanner scan) {
+        String result = "fail";
         while (true) {
 
             System.out.println("1: Generate transcript for one student");
@@ -200,17 +213,22 @@ public class Admin extends Person {
             if (response.equals("1")) {
                 System.out.print("Enter student email: ");
                 String student_email = scan.nextLine();
-                generateTranscript(student_email);
-                break;
+                if (!student_email.matches("^\\d{4}[a-z]{3}\\d{4}@iitrpr\\.ac\\.in$")) {
+                    System.out.println("Invalid input");
+                    continue;
+                }
+                result = generateTranscript(student_email);
+
             } else if (response.equals("2")) {
-                generateAllTranscripts();
-                break;
+                result = generateAllTranscripts();
+
             } else if (response.equals("3")) {
-                break;
+                return result;
             } else {
                 System.out.println("Invalid input");
             }
         }
+
     }
 
     private String startNewSession(Scanner scan) {
@@ -390,7 +408,7 @@ public class Admin extends Person {
 
             } else if (inputLine.equals("12")) {
                 // generate transcripts
-                generateStudentTranscriptOptions(scan);
+                result = generateStudentTranscriptOptions(scan);
 
             } else if (inputLine.equals("6")) {
                 // start grade submission

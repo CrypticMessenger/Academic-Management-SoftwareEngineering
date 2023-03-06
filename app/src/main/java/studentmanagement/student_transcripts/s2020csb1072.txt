@@ -1,14 +1,6 @@
 Student email : 2020csb1072@iitrpr.ac.in
-Current AY : 2023-24
+Current AY : 2020-21
 Current SEM : 2
-Time of generation : Sun Feb 12 23:58:30 IST 2023---------------------------------------
+Time of generation : Mon Mar 06 16:40:18 IST 2023---------------------------------------
 SEM | AY | Course code | Grade
 1 | 2020-21 | CS301 | A
-2 | 2020-21 | CS539 | A-
-1 | 2021-22 | CS305 | B
-1 | 2021-22 | CS306 | A
-2 | 2021-22 | CS302 | A
-1 | 2022-23 | CS303 | F
-2 | 2022-23 | CS303 | A
-1 | 2023-24 | CS205 | Ongoing
-2 | 2023-24 | CS995 | A

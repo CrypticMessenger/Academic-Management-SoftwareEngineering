@@ -422,7 +422,7 @@ public class Student extends Person {
                 result = getCGPA().toString();
                 System.out.println("Your CGPA is: " + result);
             } else if (inputLine.equals("5")) {
-                result = graduationCheck().toString();
+                result = StudentUtils.graduationCheck(getEmail(), conn).toString();
 
                 System.out.println("Your CGPA is: " + this.cgpa);
             } else if (inputLine.equals("6")) {
@@ -436,67 +436,6 @@ public class Student extends Person {
 
         }
         return result;
-    }
-
-    /*
-     * checks if student has passed the course everr.
-     * accounts for cases like if it has failed first and then passed later
-     * returns true if passed, false otherwise
-     */
-    public Boolean getPassStatus(String course_code) {
-        String query = "select * from " + table_name + " where course = '" + course_code
-                + "' and grade !='F' and grade is not null";
-        ResultSet resultSet = DatabaseUtils.getResultSet(conn, query);
-        try {
-            if (resultSet.next()) {
-                return true;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    /*
-     * checks if student is elgible for graduation or not
-     * checks if student has passed all the courses
-     * checks if student has completed the minimum credits required for graduation
-     * checks if all the B.Tech capstones is done
-     * returns true if elgible, false otherwise
-     */
-    public Boolean graduationCheck() {
-        String query = "select s.sem, s.ay,c.c,s.course,s.grade from " + table_name
-                + " as s,course_catalog as c where s.course = c.course_code and s.ay = c.ay and s.sem = c.sem";
-        ResultSet resultSet = DatabaseUtils.getResultSet(conn, query);
-        Integer total_credits = 0;
-        try {
-            while (resultSet.next()) {
-                String course = resultSet.getString(4);
-                Integer credits = resultSet.getInt(3);
-                if (getPassStatus(course)) {
-                    total_credits += credits;
-                } else {
-                    System.out.println("You have not passed the course: " + course);
-                    return false;
-                }
-
-            }
-            if (total_credits < AcademicNorms.minCreditReqGraduation) {
-                System.out.println("You have not completed the minimum credits required for graduation");
-                return false;
-            }
-            System.out.println("You have completed " + total_credits + " credits");
-            if (getPassStatus("CP301") && getPassStatus("CP302") && getPassStatus("CP303")) {
-                System.out.println("You have completed the BTP requirements");
-                return true;
-            }
-            System.out.println("You have not completed the BTP requirements");
-            return false;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
     }
 
     /*

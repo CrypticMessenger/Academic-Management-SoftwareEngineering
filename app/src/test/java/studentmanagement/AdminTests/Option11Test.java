@@ -12,7 +12,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 import studentmanagement.Admin;
-import studentmanagement.App;
 import studentmanagement.utils.DatabaseUtils;
 
 public class Option11Test {
@@ -41,19 +40,19 @@ public class Option11Test {
         // case statements in java
         switch (expected) {
             case 1:
-                input = choice + "\n1\nCS302\n2020-21\n2\n13\n";
+                input = choice + "\n1\nCS302\n2020-21\n2\n15\n";
                 break;
             case 2:
-                input = choice + "\n2\n2020csb1072@iitrpr.ac.in\n13\n";
+                input = choice + "\n2\n2020csb1072@iitrpr.ac.in\n15\n";
                 break;
             case 3:
-                input = choice + "\n2\n2020meb1328@iitrpr.ac.in\n13\n";
+                input = choice + "\n2\n2020meb1528@iitrpr.ac.in\n15\n";
                 break;
             case 4:
-                input = choice + "\n3\n13\n";
+                input = choice + "\n3\n15\n";
                 break;
             case 5:
-                input = choice + "\n99\n3\n13\n";
+                input = choice + "\n99\n3\n15\n";
                 break;
 
         }

@@ -36,7 +36,7 @@ public class Option8Test {
     @CsvSource({ "8,1", "8,2", "8,3" })
     public void testOption8(String choice, Integer expected) {
         String result;
-        String input = choice + "\n13\n";
+        String input = choice + "\n15\n";
         // case statements in java
 
         ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());

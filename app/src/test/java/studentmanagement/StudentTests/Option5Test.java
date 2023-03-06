@@ -13,6 +13,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 import studentmanagement.Student;
 import studentmanagement.utils.DatabaseUtils;
+import studentmanagement.utils.StudentUtils;
 
 public class Option5Test {
         Student st = null;
@@ -341,7 +342,7 @@ public class Option5Test {
                         return;
 
                 }
-                result = st.getPassStatus("").toString();
+                result = StudentUtils.getPassStatus("", "2020csb1072@iitrpr.ac.in", conn).toString();
                 assertEquals("false", result);
                 scan.close();
 

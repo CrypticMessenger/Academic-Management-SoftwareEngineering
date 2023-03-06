@@ -32,7 +32,6 @@ public class DatabaseUtils {
             return resultSet;
         } catch (SQLException e) {
             System.out.println("Error in getResultSet");
-            e.printStackTrace();
             return null;
         }
     }
@@ -43,7 +42,6 @@ public class DatabaseUtils {
             statement.executeUpdate(query);
         } catch (SQLException e) {
             System.out.println("Error in executeUpdateQuery");
-            e.printStackTrace();
         }
     }
 
@@ -56,7 +54,6 @@ public class DatabaseUtils {
             return config_number;
         } catch (SQLException e) {
             System.out.println("Error in getConfigNumber");
-            e.printStackTrace();
             return -1;
         }
     }

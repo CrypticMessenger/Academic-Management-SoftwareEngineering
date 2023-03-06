@@ -15,7 +15,6 @@ import org.junit.jupiter.params.provider.CsvSource;
 import studentmanagement.Professor;
 import studentmanagement.utils.DatabaseUtils;
 
-//TODO: make sure to clean testing code, so that it's fast
 public class Option1Test {
     Professor prof = null;
     Connection conn = null;

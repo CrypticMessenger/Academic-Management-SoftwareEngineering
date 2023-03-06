@@ -35,19 +35,19 @@ public class Option12Test {
         String input = "";
         switch (expected) {
             case 1:
-                input = choice + "\n1\n2020csb1072@iitrpr.ac.in\n3\n13\n";
+                input = choice + "\n1\n2020csb1072@iitrpr.ac.in\n3\n15\n";
                 break;
             case 2: // fail
-                input = choice + "\n1\n2020meb1072@iitrpr.ac.in\n3\n13\n";
+                input = choice + "\n1\n2020meb1072@iitrpr.ac.in\n3\n15\n";
                 break;
             case 3: // fail
-                input = choice + "\n1\n2020csbet1072@iitrpr.ac.in\n3\n13\n";
+                input = choice + "\n1\n2020csbet1072@iitrpr.ac.in\n3\n15\n";
                 break;
             case 4:
-                input = choice + "\n2\n99\n3\n13\n";
+                input = choice + "\n2\n99\n3\n15\n";
                 break;
             case 5:
-                input = choice + "\n2\n99\n3\n99\n13\n";
+                input = choice + "\n2\n99\n3\n99\n15\n";
                 break;
 
         }

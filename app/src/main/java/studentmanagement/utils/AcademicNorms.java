@@ -20,8 +20,5 @@ public class AcademicNorms {
     }
 
     // setter for minSemCredits
-    public static void setMinMaxSemCredits(Float minSemCredits) {
-        AcademicNorms.minMaxSemCredits = minSemCredits;
-    }
 
 }

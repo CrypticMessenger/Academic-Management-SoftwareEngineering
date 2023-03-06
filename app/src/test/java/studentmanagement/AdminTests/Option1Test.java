@@ -35,25 +35,25 @@ public class Option1Test {
         String input = "";
         switch (expected) {
             case 1:
-                input = choice + "\n13\n";
+                input = choice + "\n15\n";
                 break;
             case 2:
-                input = choice + "\n1\nCompSci678\n3\n13\n";
+                input = choice + "\n1\nCompSci678\n3\n15\n";
                 break;
             case 3:
-                input = choice + "\n1\nCS302\n3\n13\n";
+                input = choice + "\n1\nCS302\n3\n15\n";
                 break;
             case 4:
-                input = choice + "\n1\nCS302\n3\n1\n2\nCS301\ndone\ncs\nmc\ndone\n\n3\n13\n";
+                input = choice + "\n1\nCS302\n3\n1\n2\nCS301\ndone\ncs\nmc\ndone\n\n3\n15\n";
                 break;
             case 5:
-                input = choice + "\n1\nCS302\n3\n1\n2\nCS301\nCS301\ndone\ncs\nmc\ndone\n\n3\n13\n";
+                input = choice + "\n1\nCS302\n3\n1\n2\nCS301\nCS301\ndone\ncs\nmc\ndone\n\n3\n15\n";
                 break;
             case 6:
-                input = choice + "\n1\nCS302\n3\n1\n2\nCS301\nCS301\ndone\ncs\nmc\nphy\ndone\n0\n3\n13\n";
+                input = choice + "\n1\nCS302\n3\n1\n2\nCS301\nCS301\ndone\ncs\nmc\nphy\ndone\n0\n3\n15\n";
                 break;
             case 7:
-                input = choice + "\n1\nCS302\n3\n1\n2\nCS301\nCS301\ndone\ncs\nmc\ncs\nphy\ndone\n0\n3\n13\n";
+                input = choice + "\n1\nCS302\n3\n1\n2\nCS301\nCS301\ndone\ncs\nmc\ncs\nphy\ndone\n0\n3\n15\n";
                 break;
         }
         ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
@@ -97,19 +97,19 @@ public class Option1Test {
         String input = "";
         switch (expected) {
             case 1:
-                input = choice + "\n13\n";
+                input = choice + "\n15\n";
                 break;
             case 2:
-                input = choice + "\n2\nCompSci678\n3\n13\n";
+                input = choice + "\n2\nCompSci678\n3\n15\n";
                 break;
             case 3:
-                input = choice + "\n2\nCS302\n3\n13\n";
+                input = choice + "\n2\nCS302\n3\n15\n";
                 break;
             case 4:
-                input = choice + "\n2\nCS302\n3\n13\n";
+                input = choice + "\n2\nCS302\n3\n15\n";
                 break;
             case 5:
-                input = choice + "\n4\n2\nCS302\n3\n13\n";
+                input = choice + "\n4\n2\nCS302\n3\n15\n";
                 break;
 
         }

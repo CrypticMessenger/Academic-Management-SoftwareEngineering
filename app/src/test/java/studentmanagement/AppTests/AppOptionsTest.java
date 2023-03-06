@@ -25,7 +25,7 @@ public class AppOptionsTest {
 
     @ParameterizedTest
     @CsvSource({ "1,2020csb1072@iitrpr.ac.in,X123,7,1", "1,gunturi@iitrpr.ac.in,X123,8,2",
-            "1,admin@iitrpr.ac.in,X123,13,3", "1,god@lpu.ac.in,X123,4,4", "1,god@lpu.ac.in,X123,99,5" })
+            "1,admin@iitrpr.ac.in,X123,15,3", "1,god@lpu.ac.in,X123,4,4", "1,god@lpu.ac.in,X123,99,5" })
     public void testOptions(String choice, String email, String password, String logout, Integer expected) {
         String result;
         String input = "";

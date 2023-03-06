@@ -35,19 +35,19 @@ public class Option7Test {
         // case statements in java
         switch (expected) {
             case 1:
-                input = choice + "\n13\n";
+                input = choice + "\n15\n";
                 break;
             case 2:
-                input = choice + "\ny\n13\n";
+                input = choice + "\ny\n15\n";
                 break;
             case 3:
-                input = choice + "\nn\n13\n";
+                input = choice + "\nn\n15\n";
                 break;
             case 4:
-                input = choice + "\nok\ny\n13\n";
+                input = choice + "\nok\ny\n15\n";
                 break;
             case 5:
-                input = choice + "\nok\nn\n13\n";
+                input = choice + "\nok\nn\n15\n";
                 break;
 
         }

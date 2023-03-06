@@ -12,7 +12,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 import studentmanagement.Admin;
-import studentmanagement.App;
 import studentmanagement.utils.DatabaseUtils;
 
 public class Option10Test {
@@ -36,19 +35,19 @@ public class Option10Test {
         // case statements in java
         switch (expected) {
             case 1:
-                input = choice + "\n13\n";
+                input = choice + "\n15\n";
                 break;
             case 2:
-                input = choice + "\ny\n13\n";
+                input = choice + "\ny\n15\n";
                 break;
             case 3:
-                input = choice + "\nn\n13\n";
+                input = choice + "\nn\n15\n";
                 break;
             case 4:
-                input = choice + "\nok\ny\n13\n";
+                input = choice + "\nok\ny\n15\n";
                 break;
             case 5:
-                input = choice + "\nok\nn\n13\n";
+                input = choice + "\nok\nn\n15\n";
                 break;
 
         }

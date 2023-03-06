@@ -157,7 +157,6 @@ public class StaffUtils {
             return "pass";
         } catch (SQLException e) {
             System.out.println("Error in viewCourseRecord");
-            e.printStackTrace();
         }
         return "fail";
     }

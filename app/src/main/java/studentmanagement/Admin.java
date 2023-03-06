@@ -122,7 +122,6 @@ public class Admin extends Person {
             e.printStackTrace();
         }
     }
-    // TODO: download.csv is in appending mode
     // TODO: print sgpa in transript
 
     private String generateTranscript(String email) {
@@ -380,7 +379,7 @@ public class Admin extends Person {
         while (true) {
             System.out.println("1: Edit course Catalogue"); // done
             System.out.println("2: allow course float!"); // done
-            System.out.println("3: dis-allow course float!"); // done sorta
+            System.out.println("3: dis-allow course float!"); // done
             System.out.println("4: Allow course enrollment!"); // done
             System.out.println("5: Dis-allow course enrollment!"); // done
             System.out.println("6: Start grade submission"); // done
@@ -389,8 +388,10 @@ public class Admin extends Person {
             System.out.println("9: end current session!"); // done
             System.out.println("10: Start a new Academic session"); // done
             System.out.println("11: View student records"); // done
-            System.out.println("12: Generate transcripts"); // doing
-            System.out.println("13: Logout");
+            System.out.println("12: Generate transcripts"); // done
+            System.out.println("13: Edit phone number"); // done
+            System.out.println("14: Graduation check for a student");
+            System.out.println("15: Logout");
             System.out.print("Choose: ");
             inputLine = scan.nextLine();
             if (inputLine.equals("1")) {
@@ -446,7 +447,7 @@ public class Admin extends Person {
                                 System.out.println(
                                         "Studentenrolling pc student: " + email + " in course: " + course_code);
                                 st.registerCourse(course_code, "force");
-                                st.finalize();// TODO: student logsout when he actually doesn't
+                                st.finalize();
 
                             }
                             System.out.println("sem_comp:" + StaffUtils.getSemCompleted(conn, email));
@@ -489,6 +490,13 @@ public class Admin extends Person {
                 // end current session
 
             } else if (inputLine.equals("13")) {
+                result = editPhoneNumber(conn, scan);
+            } else if (inputLine.equals("14")) {
+                System.out.print("Enter student email: ");
+                String email = scan.nextLine();
+                Boolean grad = StudentUtils.graduationCheck(email, conn);
+                result = grad ? "pass" : "fail";
+            } else if (inputLine.equals("15")) {
                 finalize();
                 break;
             } else {

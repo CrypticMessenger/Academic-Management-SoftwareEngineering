@@ -7,9 +7,6 @@ import java.util.Date;
 
 import studentmanagement.utils.*;
 
-//TODO: print the validation report
-//
-
 public class Admin extends Person {
     private String name;
     private Connection conn;
@@ -95,10 +92,6 @@ public class Admin extends Person {
         }
     }
 
-    // TODO: graduation check for admin too
-    // TODO: check if registration is allowed for student, before asking for course
-    // code
-
     private void validateStudentGrades(String email, String ay, String sem) {
         String table_name = "s" + email.substring(0, 11);
         String invalidEntryFilter = "select course from " + table_name + " where grade is null and ay='" + ay
@@ -122,7 +115,6 @@ public class Admin extends Person {
             e.printStackTrace();
         }
     }
-    // TODO: print sgpa in transript
 
     private String generateTranscript(String email) {
         if (!StaffUtils.checkStudentExist(conn, email)) {
@@ -434,7 +426,6 @@ public class Admin extends Person {
                     String enrollPCStudents = "select * from course_catalog,user_auth where user_auth.dept = any(course_catalog.pc_for) and user_auth.roles = 's' and course_catalog.ay='"
                             + getAy() + "' and course_catalog.sem=" + getSem() + "";
                     System.out.println(enrollPCStudents);
-                    // TODO: make a function here to make it cleaner
                     ResultSet rs1 = DatabaseUtils.getResultSet(conn, enrollPCStudents);
                     try {
                         while (rs1.next()) {

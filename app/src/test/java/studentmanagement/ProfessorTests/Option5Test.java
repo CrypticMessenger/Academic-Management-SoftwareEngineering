@@ -14,19 +14,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-import studentmanagement.App;
 import studentmanagement.Professor;
 import studentmanagement.utils.DatabaseUtils;
 
 public class Option5Test {
-        App app = null;
         Professor prof = null;
         Connection conn = null;
 
         @BeforeEach
         public void setUp() {
-                app = new App();
-                conn = app.connect();
+                conn = DatabaseUtils.connect();
                 prof = new Professor("gunturi@iitrpr.ac.in", conn, "2020-21", "1");
                 DatabaseUtils.executeUpdateQuery(conn, "delete from current_session");
                 DatabaseUtils.executeUpdateQuery(conn, "insert into current_session values('2020-21', 1)");
@@ -43,7 +40,7 @@ public class Option5Test {
         @CsvSource({ "5,1", "5,2" })
         public void testOption5(String choice, Integer expected) {
                 String result;
-                String input = choice + "\n7\n";
+                String input = choice + "\n8\n";
                 ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
                 System.setIn(inputStream);
                 Scanner scan = new Scanner(System.in);
@@ -80,7 +77,7 @@ public class Option5Test {
 
         @AfterEach
         public void tearDown() {
-                conn = app.connect();
+                conn = DatabaseUtils.connect();
                 DatabaseUtils.executeUpdateQuery(conn, "delete from s2020csb1072");
                 DatabaseUtils.executeUpdateQuery(conn, "delete from s2020csb1070");
                 DatabaseUtils.executeUpdateQuery(conn, "delete from s2020csb1074");
@@ -91,7 +88,6 @@ public class Option5Test {
                 DatabaseUtils.executeUpdateQuery(conn, "insert into current_session values('2020-21', 1)");
                 DatabaseUtils.executeUpdateQuery(conn, "update config_number set id=4 ");
                 conn = null;
-                app = null;
 
         }
 }

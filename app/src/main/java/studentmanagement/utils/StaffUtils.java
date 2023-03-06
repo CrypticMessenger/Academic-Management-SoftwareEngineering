@@ -134,7 +134,6 @@ public class StaffUtils {
     }
 
     public static String saveCourseRecord(Connection conn, String course_code, String filename, String ay, String sem) {
-
         try {
             String checkFloatingCondition = "select * from course_offerings where course_code = '"
                     + course_code
@@ -161,6 +160,37 @@ public class StaffUtils {
             e.printStackTrace();
         }
         return "fail";
+    }
+
+    public static void displayCourseCatalog(Connection conn) {
+        ResultSet rs = DatabaseUtils.getResultSet(conn, "select * from course_catalog");
+        System.out.println(
+                "course_code | l | t | p | c | ay | sem | pre_req | pc_or_pe | pc_for | pe_for | pc_sem | pe_minsem");
+
+        try {
+            while (rs.next()) {
+                String course_code = rs.getString("course_code");
+                int l = rs.getInt("l");
+                int t = rs.getInt("t");
+                int p = rs.getInt("p");
+                int c = rs.getInt("c");
+                String ay = rs.getString("ay");
+                int sem = rs.getInt("sem");
+                String pre_req = rs.getString("pre_req");
+                String pc_or_pe = rs.getString("pc_or_pe");
+                String pc_for = rs.getString("pc_for");
+                String pe_for = rs.getString("pe_for");
+                int pc_sem = rs.getInt("pc_sem");
+                int pe_minsem = rs.getInt("pe_minsem");
+
+                System.out.println(course_code + " | " + l + " | " + t + " | " + p + " | " + c + " | " + ay + " | "
+                        + sem
+                        + " | " + pre_req + " | " + pc_or_pe + " | " + pc_for + " | " + pe_for + " | " + pc_sem + " | "
+                        + pe_minsem);
+            }
+        } catch (SQLException e) {
+
+        }
     }
 
 }

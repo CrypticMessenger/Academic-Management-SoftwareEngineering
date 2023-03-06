@@ -1,15 +1,17 @@
 package studentmanagement;
 
 import java.sql.*;
+import java.util.Scanner;
 
 import studentmanagement.utils.DatabaseUtils;
 
-// an abstract class named Person with name and email
+// an abstract class named Person with email, ay and sem as attributes
 public abstract class Person {
     private String email;
     private static String ay;
     private static String sem;
 
+    // constructor
     public Person(String email, String ay_in, String sem_in) {
         this.email = email;
         ay = ay_in;
@@ -40,7 +42,7 @@ public abstract class Person {
         return sem;
     }
 
-    // TODO: print sgp in transript
+    // logs login and logout timestamps in database
     public void log_login_logout(Connection conn, String email, String status) {
         try {
             String enter_logout_log = "Insert into login_log(email,status) values (?,?)";
@@ -53,7 +55,29 @@ public abstract class Person {
         }
     }
 
-    public void displayCourseCatalog(Connection conn) {
+    /*
+     * Allows student to edit phone number
+     * returns status of operation in string
+     */
+    public String editPhoneNumber(Connection conn, Scanner scan) {
+        String result = "pass";
+        System.out.print("Enter new phone number: ");
+        String new_phone = scan.nextLine();
+        if (!new_phone.matches("^\\d{10}$")) {
+            System.out.println("Invalid phone number");
+            result = "fail";
+        } else {
+
+            DatabaseUtils.executeUpdateQuery(conn, "update user_auth set phone = '" + new_phone + "' where id = '"
+                    + getEmail() + "'");
+            System.out.println("Phone number updated successfully");
+        }
+        return result;
+    }
+
+    // prints course offerings, avaiable for course enrollment for students, and
+    // degistration for professors.
+    public void displayCourseOfferings(Connection conn) {
         ResultSet resultSet = DatabaseUtils.getResultSet(conn, "select * from course_offerings ");
 
         try {

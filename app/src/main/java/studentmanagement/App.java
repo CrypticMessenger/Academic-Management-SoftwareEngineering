@@ -2,43 +2,18 @@ package studentmanagement;
 
 import java.io.*;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Scanner;
 
 import studentmanagement.utils.DatabaseUtils;
 
-// TODO:TEACHER when floating course, course catalog should be printed.
-// TODO:TEACHER when cancelling course, floating courses by the teacher should be printed.
-//TODO:TEACHER maybe log whichever grades are uploaded by the teacher
-//TODO: TEACHER, do you really need to ask for sem and ay when viewign student records?
-//TODO: TEACHER when validating course, make sure you print, no student avaiable if it's empty
-//TODO: refractor code
-
-//- make more object oriented, like making student, admin or teacher class
 public class App {
-    private final String url = "jdbc:postgresql://localhost/academic_management";
-    private final String user = "postgres";
-    private final String password = "1421";
 
-    public Connection connect() {
-        Connection conn = null;
-        try {
-            // Connect to the database
-            System.out.println("Connecting...");
-            conn = DriverManager.getConnection(url, user, password);
-            // Print a message to the console
-        } catch (SQLException e) {
-            // Print a message to the console
-            System.out.println(e.getMessage());
-        }
-        return conn;
-    }
-
+    // login method. returns s for student, p for professor, a for admin, and f for
+    // failure
     public String login(String email, String password) {
-        App app = new App();
-        Connection conn = app.connect();
+        Connection conn = DatabaseUtils.connect();
         String result = "";
         try {
             ResultSet resultSet = DatabaseUtils.getResultSet(conn,
@@ -54,29 +29,31 @@ public class App {
         return result;
     }
 
+    // display options: login, exit
     public String in_options(Scanner scan, Connection conn) {
-        String inputLine;
         String res = "";
-        String email = "";
-        String password = "";
-        while (true) {
+        try {
 
-            System.out.println("1: Login");
-            System.out.println("2: Exit");
-            System.out.print("Choose: ");
-            inputLine = scan.nextLine();
-            if (inputLine.equals("2")) {
-                System.out.println("Bye.");
-                res = "exit";
-                return res;
-            } else if (inputLine.equals("1")) {
+            String inputLine;
+            String email = "";
+            String password = "";
+            while (true) {
 
-                System.out.println("Login");
-                System.out.print("email: ");
-                email = scan.nextLine();
-                System.out.print("password: ");
-                password = scan.nextLine();
-                try {
+                System.out.println("1: Login");
+                System.out.println("2: Exit");
+                System.out.print("Choose: ");
+                inputLine = scan.nextLine();
+                if (inputLine.equals("2")) {
+                    System.out.println("Bye.");
+                    res = "exit";
+                    return res;
+                } else if (inputLine.equals("1")) {
+
+                    System.out.println("Login");
+                    System.out.print("email: ");
+                    email = scan.nextLine();
+                    System.out.print("password: ");
+                    password = scan.nextLine();
 
                     String result = login(email, password);
                     ResultSet resultSet;
@@ -108,16 +85,16 @@ public class App {
 
                         // case login failed
                         default:
-
                             System.out.println("Login Failed! Try again.");
                             break;
                     }
-                } catch (SQLException e) {
-                    System.out.println("error in login!");
-                    e.printStackTrace();
-                    break;
+
+                } else {
+                    continue;
                 }
             }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
         return res;
     }
@@ -125,8 +102,9 @@ public class App {
     public static void main(String[] args) throws IOException {
 
         App app = new App();
-        Connection conn = app.connect();
+        Connection conn = DatabaseUtils.connect();
         Scanner scan = new Scanner(System.in);
+
         app.in_options(scan, conn);
         scan.close();
     }

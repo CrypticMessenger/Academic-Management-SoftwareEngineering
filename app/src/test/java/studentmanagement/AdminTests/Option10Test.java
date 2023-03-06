@@ -16,14 +16,12 @@ import studentmanagement.App;
 import studentmanagement.utils.DatabaseUtils;
 
 public class Option10Test {
-    App app = null;
     Admin admin = null;
     Connection conn = null;
 
     @BeforeEach
     public void setUp() {
-        app = new App();
-        conn = app.connect();
+        conn = DatabaseUtils.connect();
         admin = new Admin("admin@iitrpr.ac.in", conn, "2020-21", "2");
         DatabaseUtils.executeUpdateQuery(conn, "delete from config_number");
         DatabaseUtils.executeUpdateQuery(conn, "insert into config_number values(1)");
@@ -86,11 +84,10 @@ public class Option10Test {
 
     @AfterEach
     public void tearDown() {
-        conn = app.connect();
+        conn = DatabaseUtils.connect();
         DatabaseUtils.executeUpdateQuery(conn, "delete from config_number");
         DatabaseUtils.executeUpdateQuery(conn, "insert into config_number  values(4)");
 
         conn = null;
-        app = null;
     }
 }

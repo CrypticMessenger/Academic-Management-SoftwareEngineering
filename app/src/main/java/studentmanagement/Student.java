@@ -22,6 +22,7 @@ public class Student extends Person {
     private Float past_2_credits;
     public Float cgpa;
 
+    // Constructor
     public Student(String email, Connection conn, String ay, String sem) {
         super(email, ay, sem);
         this.current_sem_credits = 0.0f;
@@ -46,14 +47,17 @@ public class Student extends Person {
 
     }
 
+    // getter for department
     public String getDepartment() {
         return department;
     }
 
+    // getter for name
     public String getName() {
         return this.name;
     }
 
+    // calculates and returns cgpa
     public Float getCGPA() {
         try {
 
@@ -105,6 +109,12 @@ public class Student extends Person {
         }
     }
 
+    /*
+     * This code gets the prerequisites for a given course code
+     * It does this by getting the result set from the database and then
+     * iterating through it to create an array of the prerequisites
+     * The prerequisites are then added to the list and returned
+     */
     private ArrayList<String> getPrerequisites(String course_code) {
 
         ArrayList<String> list = new ArrayList<String>();
@@ -124,24 +134,29 @@ public class Student extends Person {
             }
         } catch (SQLException e) {
             System.out.println("Error in getPrerequisites");
-            e.printStackTrace();
         }
         return list;
 
     }
 
-    private Boolean checkPrereqCondition(String course_code) {
-        ArrayList<String> pre_req = getPrerequisites(course_code);
-        System.out.println(pre_req);
-        ArrayList<String> courses_taken = new ArrayList<String>();
-        System.out.println(courses_taken);
+    /*
+     * This code checks the prerequisite condition for a given course code
+     * It does this by getting the result set from the database and then
+     * iterating through it checking if he/she passed in all the courses
+     * returns boolean
+     */
+    private Boolean checkPrereqCondition(String courseCode) {
+        ArrayList<String> preReq = getPrerequisites(courseCode);
+        System.out.println(preReq);
+        ArrayList<String> coursesTaken = new ArrayList<String>();
+        System.out.println(coursesTaken);
         try {
             ResultSet resultSet = DatabaseUtils.getResultSet(conn,
                     "select course from " + table_name + " where grade != 'F' and grade is not null");
             while (resultSet.next()) {
-                courses_taken.add(resultSet.getString(1));
+                coursesTaken.add(resultSet.getString(1));
             }
-            return courses_taken.containsAll(pre_req);
+            return coursesTaken.containsAll(preReq);
         } catch (SQLException e) {
             System.out.println("Error in checkPrereqCondition");
             e.printStackTrace();
@@ -149,6 +164,18 @@ public class Student extends Person {
         }
     }
 
+    /*
+     * registers course for student
+     * checks if registration is open
+     * inputs course code
+     * checks if course is offered
+     * checks if cgpa constraints are met
+     * checks if credit limit constraints are met
+     * checks if course is already registered
+     * checks if prerequisite conditions are met
+     * checks if course is offered for the branch
+     * return string status pass or fail
+     */
     private String registerCourse(Scanner scan) {
         ResultSet resultSet;
         try {
@@ -189,7 +216,7 @@ public class Student extends Person {
                             + getAy() + "' and sem = '" + getSem() + "'");
             resultSet.next();
             Float requested_course_credits = resultSet.getFloat(5);
-            // if avg past credits is less than 12, then credit limit is 12
+            // if avg past credits is less than 24, then credit limit is 24
             Float minSemCredits = AcademicNorms.minMaxSemCredits;
             Float credit_limit = (1.25f * avg_past_credits) < minSemCredits ? minSemCredits
                     : (1.25f * avg_past_credits);
@@ -319,6 +346,12 @@ public class Student extends Person {
         return "fail";
     }
 
+    /*
+     * deregister course for student
+     * checks if course drop is allowed
+     * checks if student is registered for the course and hasn't already credited it
+     * returns status of operation in string
+     */
     private String deregisterCourse(Scanner scan) {
         ResultSet resultSet;
         // config number should be 4
@@ -357,7 +390,10 @@ public class Student extends Person {
 
     }
 
-    // TODO: graduation check for admin too
+    /*
+     * option interface for student options
+     * returns status of operation in string
+     */
     public String studentOptions(Scanner scan) {
         System.out.println("Welcome " + this.name + " !");
         String result = "pass";
@@ -367,12 +403,13 @@ public class Student extends Person {
             System.out.println("3: View grades and courses");
             System.out.println("4: Get Current CGPA");
             System.out.println("5: Student  graduation check");
-            System.out.println("6: Logout");
+            System.out.println("6: Edit phone number");
+            System.out.println("7: Logout");
             System.out.print("Choose: ");
             String inputLine = scan.nextLine();
             // System.out.println(inputLine);
             if (inputLine.equals("1")) {
-                displayCourseCatalog(conn);
+                displayCourseOfferings(conn);
 
                 result = registerCourse(scan);
             } else if (inputLine.equals("2")) {
@@ -389,6 +426,8 @@ public class Student extends Person {
 
                 System.out.println("Your CGPA is: " + this.cgpa);
             } else if (inputLine.equals("6")) {
+                result = editPhoneNumber(conn, scan);
+            } else if (inputLine.equals("7")) {
                 finalize();
                 break;
             } else {
@@ -399,6 +438,11 @@ public class Student extends Person {
         return result;
     }
 
+    /*
+     * checks if student has passed the course everr.
+     * accounts for cases like if it has failed first and then passed later
+     * returns true if passed, false otherwise
+     */
     public Boolean getPassStatus(String course_code) {
         String query = "select * from " + table_name + " where course = '" + course_code
                 + "' and grade !='F' and grade is not null";
@@ -413,6 +457,13 @@ public class Student extends Person {
         return false;
     }
 
+    /*
+     * checks if student is elgible for graduation or not
+     * checks if student has passed all the courses
+     * checks if student has completed the minimum credits required for graduation
+     * checks if all the B.Tech capstones is done
+     * returns true if elgible, false otherwise
+     */
     public Boolean graduationCheck() {
         String query = "select s.sem, s.ay,c.c,s.course,s.grade from " + table_name
                 + " as s,course_catalog as c where s.course = c.course_code and s.ay = c.ay and s.sem = c.sem";
@@ -441,7 +492,6 @@ public class Student extends Person {
             }
             System.out.println("You have not completed the BTP requirements");
             return false;
-            // TODO: download.csv is in appending mode
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -449,7 +499,10 @@ public class Student extends Person {
         return false;
     }
 
-    // destructor for student
+    /*
+     * destructor for student.
+     * while destructing, logs logout in database.
+     */
     public void finalize() {
         try {
             log_login_logout(conn, getEmail(), "logout");

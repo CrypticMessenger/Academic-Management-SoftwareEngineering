@@ -12,18 +12,15 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 import studentmanagement.Admin;
-import studentmanagement.App;
 import studentmanagement.utils.DatabaseUtils;
 
 public class Option12Test {
-    App app = null;
     Admin admin = null;
     Connection conn = null;
 
     @BeforeEach
     public void setUp() {
-        app = new App();
-        conn = app.connect();
+        conn = DatabaseUtils.connect();
         admin = new Admin("admin@iitrpr.ac.in", conn, "2020-21", "2");
         DatabaseUtils.executeUpdateQuery(conn, "insert into s2020csb1072 values(1,'2020-21','CS301','A')");
         DatabaseUtils.executeUpdateQuery(conn,
@@ -83,11 +80,10 @@ public class Option12Test {
 
     @AfterEach
     public void tearDown() {
-        conn = app.connect();
+        conn = DatabaseUtils.connect();
 
         DatabaseUtils.executeUpdateQuery(conn, "delete from course_catalog");
         DatabaseUtils.executeUpdateQuery(conn, "delete from s2020csb1072");
         conn = null;
-        app = null;
     }
 }

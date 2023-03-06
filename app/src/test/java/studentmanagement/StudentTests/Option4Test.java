@@ -11,19 +11,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-import studentmanagement.App;
 import studentmanagement.Student;
 import studentmanagement.utils.DatabaseUtils;
 
 public class Option4Test {
-        App app = null;
         Student st = null;
         Connection conn = null;
 
         @BeforeEach
         public void setUp() {
-                app = new App();
-                conn = app.connect();
+                conn = DatabaseUtils.connect();
                 st = new Student("2020csb1072@iitrpr.ac.in", conn, "2020-21", "2");
                 DatabaseUtils.executeUpdateQuery(conn,
                                 "insert into s2020csb1072(sem,ay,course,grade) values (1,'2020-21','CS101','F')");
@@ -156,12 +153,11 @@ public class Option4Test {
                 DatabaseUtils.executeUpdateQuery(conn, "insert into current_session values('2021-22', 2)");
         }
 
-        // TODO: start from here and write test cases for the methods in Student.java
         @ParameterizedTest
         @CsvSource({ "4,1" })
         public void testOption4(String choice, Integer expected) {
                 String result;
-                String input = choice + "\n6\n";
+                String input = choice + "\n7\n";
                 ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
                 System.setIn(inputStream);
                 Scanner scan = new Scanner(System.in);
@@ -174,14 +170,13 @@ public class Option4Test {
 
         @AfterEach
         public void cleanup() throws Exception {
-                conn = app.connect();
+                conn = DatabaseUtils.connect();
                 DatabaseUtils.executeUpdateQuery(conn, "delete from s2020csb1072");
                 DatabaseUtils.executeUpdateQuery(conn, "delete from course_offerings");
                 DatabaseUtils.executeUpdateQuery(conn, "delete from course_catalog");
                 DatabaseUtils.executeUpdateQuery(conn, "delete from current_session");
                 DatabaseUtils.executeUpdateQuery(conn, "insert into current_session values('2020-21', 1)");
                 DatabaseUtils.executeUpdateQuery(conn, "update config_number set id=4 ");
-                app = null;
                 conn = null;
         }
 }

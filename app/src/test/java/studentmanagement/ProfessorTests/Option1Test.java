@@ -12,20 +12,17 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-import studentmanagement.App;
 import studentmanagement.Professor;
 import studentmanagement.utils.DatabaseUtils;
 
 //TODO: make sure to clean testing code, so that it's fast
 public class Option1Test {
-    App app = null;
     Professor prof = null;
     Connection conn = null;
 
     @BeforeEach
     public void setUp() {
-        app = new App();
-        conn = app.connect();
+        conn = DatabaseUtils.connect();
         prof = new Professor("gunturi@iitrpr.ac.in", conn, "2020-21", "2");
         DatabaseUtils.executeUpdateQuery(conn, "delete from current_session");
         DatabaseUtils.executeUpdateQuery(conn, "insert into current_session values('2020-21', 2)");
@@ -44,8 +41,8 @@ public class Option1Test {
     }
 
     @ParameterizedTest
-    @CsvSource({ "1,1,CS550,2020-21,1,7,1", "1,1,CS550,2020-212,1,7,2", "1,1,CS550,,1,7,3", "1,1,CS550,2020-21,8,7,4",
-            "1,1,CS550,2020-21,,7,5" })
+    @CsvSource({ "1,1,CS550,2020-21,1,8,1", "1,1,CS550,2020-212,1,8,2", "1,1,CS550,,1,8,3", "1,1,CS550,2020-21,8,8,4",
+            "1,1,CS550,2020-21,,8,5" })
     public void testOption1_oneCourse(String choice, String choice2, String courseCode, String ay, String sem,
             String exit,
             Integer expected) {
@@ -82,8 +79,8 @@ public class Option1Test {
     }
 
     @ParameterizedTest
-    @CsvSource({ "1,2,2020csb1072@iitrpr.ac.in,7,1", "1,2,2020csb1072@iisc.in,7,2", "1,2,gunturi@iitrpr.ac.in,7,3",
-            "1,2,2020csb1072@iitrprac.in,7,4", "1,2,2020meb1328@iitrpr.ac.in,7,5" })
+    @CsvSource({ "1,2,2020csb1072@iitrpr.ac.in,8,1", "1,2,2020csb1072@iisc.in,8,2", "1,2,gunturi@iitrpr.ac.in,8,3",
+            "1,2,2020csb1072@iitrprac.in,8,4", "1,2,2020meb1328@iitrpr.ac.in,8,5" })
     public void testOption1_oneStudent(String choice, String choice2, String student_id, String exit,
             Integer expected) {
         String result;
@@ -104,7 +101,7 @@ public class Option1Test {
     }
 
     @ParameterizedTest
-    @CsvSource({ "1,3,7,1" })
+    @CsvSource({ "1,3,8,1" })
     public void testOption1_back(String choice, String choice2, String exit, Integer expected) {
         String result;
         String input = choice + "\n" + choice2 + "\n" + exit + "\n";
@@ -130,7 +127,7 @@ public class Option1Test {
 
     @AfterEach
     public void tearDown() {
-        conn = app.connect();
+        conn = DatabaseUtils.connect();
         DatabaseUtils.executeUpdateQuery(conn, "delete from s2020csb1072");
         DatabaseUtils.executeUpdateQuery(conn, "delete from s2020csb1070");
         DatabaseUtils.executeUpdateQuery(conn, "delete from s2020csb1074");
@@ -141,6 +138,5 @@ public class Option1Test {
         DatabaseUtils.executeUpdateQuery(conn, "insert into current_session values('2020-21', 1)");
         DatabaseUtils.executeUpdateQuery(conn, "update config_number set id=4 ");
         conn = null;
-        app = null;
     }
 }

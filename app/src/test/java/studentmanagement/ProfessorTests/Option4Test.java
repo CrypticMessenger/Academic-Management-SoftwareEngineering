@@ -14,19 +14,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-import studentmanagement.App;
 import studentmanagement.Professor;
 import studentmanagement.utils.DatabaseUtils;
 
 public class Option4Test {
-        App app = null;
         Professor prof = null;
         Connection conn = null;
 
         @BeforeEach
         public void setUp() {
-                app = new App();
-                conn = app.connect();
+                conn = DatabaseUtils.connect();
                 prof = new Professor("gunturi@iitrpr.ac.in", conn, "2020-21", "2");
                 DatabaseUtils.executeUpdateQuery(conn, "delete from current_session");
                 DatabaseUtils.executeUpdateQuery(conn, "insert into current_session values('2020-21', 2)");
@@ -53,15 +50,16 @@ public class Option4Test {
 
         @ParameterizedTest
         @CsvSource({
-                        "4,CS550,D:/vesthrax/Software engineering/StudentManagement/app/src/main/java/studentmanagement/grade_upload/CS551.csv,1",
-                        "4,CS9999,D:/vesthrax/Software engineering/StudentManagement/app/src/main/java/studentmanagement/grade_upload/CS551.csv,2",
-                        "4,CompSci551,D:/vesthrax/Software engineering/StudentManagement/app/src/main/java/studentmanagement/grade_upload/CS551.csv,3",
-                        "4,CS550,D:/vesthrax/Software engineering/StudentManagement/app/src/main/java/studentmanagement/grade_upload/CS551.csv,4",
-                        "4,CS551,D:/vesthrax/Software engineering/StudentManagement/app/src/main/java/studentmanagement/grade_upload/CS551.csv,5",
-                        "4,CS551,D:/vesthrax/Software engineering/StudentManagement/app/src/main/java/studentmanagement/grade_upload/CS551.csv,6" })
+                        "4,CS550,/src/main/java/studentmanagement/grade_upload/CS551.csv,1",
+                        "4,CS9999,/src/main/java/studentmanagement/grade_upload/CS551.csv,2",
+                        "4,CompSci551,/src/main/java/studentmanagement/grade_upload/CS551.csv,3",
+                        "4,CS550,/src/main/java/studentmanagement/grade_upload/CS551.csv,4",
+                        "4,CS551,/src/main/java/studentmanagement/grade_upload/CS551.csv,5",
+                        "4,CS551,/src/main/java/studentmanagement/grade_upload/CS551.csv,6" })
         public void testOption4(String choice, String courseCode, String csv_path, Integer expected) throws Exception {
                 String result;
-                String input = choice + "\n" + courseCode + "\n" + csv_path + "\n7\n";
+                csv_path = System.getProperty("user.dir").replace('\\', '/') + csv_path;
+                String input = choice + "\n" + courseCode + "\n" + csv_path + "\n8\n";
                 ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
                 System.setIn(inputStream);
                 Scanner scan = new Scanner(System.in);
@@ -82,6 +80,7 @@ public class Option4Test {
                                 "2020csb1074@iitrpr.ac.in,B-",
                                 "2020ceb1031@iitrpr.ac.in,B-", "2020meb1328@iitrpr.ac.in,B" };
                 String fileName = csv_path;
+
                 FileWriter writer = new FileWriter(fileName);
                 // Write each data row
                 for (String row : data) {
@@ -109,7 +108,7 @@ public class Option4Test {
 
         @AfterEach
         public void tearDown() {
-                conn = app.connect();
+                conn = DatabaseUtils.connect();
                 DatabaseUtils.executeUpdateQuery(conn, "delete from s2020csb1072");
                 DatabaseUtils.executeUpdateQuery(conn, "delete from s2020csb1070");
                 DatabaseUtils.executeUpdateQuery(conn, "delete from s2020csb1074");
@@ -120,7 +119,6 @@ public class Option4Test {
                 DatabaseUtils.executeUpdateQuery(conn, "insert into current_session values('2020-21', 1)");
                 DatabaseUtils.executeUpdateQuery(conn, "update config_number set id=4 ");
                 conn = null;
-                app = null;
 
         }
 }

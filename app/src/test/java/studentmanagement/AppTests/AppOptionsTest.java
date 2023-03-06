@@ -11,6 +11,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 import studentmanagement.App;
+import studentmanagement.utils.DatabaseUtils;
 
 public class AppOptionsTest {
     App app = null;
@@ -19,12 +20,12 @@ public class AppOptionsTest {
     @BeforeEach
     public void setUp() {
         app = new App();
-        conn = app.connect();
+        conn = DatabaseUtils.connect();
     }
 
     @ParameterizedTest
-    @CsvSource({ "1,2020csb1072@iitrpr.ac.in,X123,6,1", "1,gunturi@iitrpr.ac.in,X123,7,2",
-            "1,admin@iitrpr.ac.in,X123,13,3", "1,god@lpu.ac.in,X123,4,4" })
+    @CsvSource({ "1,2020csb1072@iitrpr.ac.in,X123,7,1", "1,gunturi@iitrpr.ac.in,X123,8,2",
+            "1,admin@iitrpr.ac.in,X123,13,3", "1,god@lpu.ac.in,X123,4,4", "1,god@lpu.ac.in,X123,99,5" })
     public void testOptions(String choice, String email, String password, String logout, Integer expected) {
         String result;
         String input = "";
@@ -33,6 +34,9 @@ public class AppOptionsTest {
 
         } else {
             input = choice + "\n" + email + "\n" + password + "\n2\n";
+        }
+        if (expected == 5) {
+            input = logout + "\n" + choice + "\n" + email + "\n" + password + "\n2\n";
         }
         ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
         System.setIn(inputStream);

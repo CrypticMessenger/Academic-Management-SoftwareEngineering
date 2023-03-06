@@ -95,16 +95,10 @@ public class Admin extends Person {
         }
     }
 
-    // ToDO: refractor teacher part
+    // TODO: graduation check for admin too
     // TODO: check if registration is allowed for student, before asking for course
     // code
-    // TODO: getAy() doesn't work if admin changes semester, so take care of it.
-    // TODO: admin can edit UG curriculum when semester has ended that is config = 9
-    // TODO: when admin starts the new semseter, whole UG currilum will
-    // automatically insert into course_catalog, so admin will only float the
-    // electives
-    // TODO: when student want to register a course, PE_for should contain his
-    // department
+
     private void validateStudentGrades(String email, String ay, String sem) {
         String table_name = "s" + email.substring(0, 11);
         String invalidEntryFilter = "select course from " + table_name + " where grade is null and ay='" + ay
@@ -128,6 +122,8 @@ public class Admin extends Person {
             e.printStackTrace();
         }
     }
+    // TODO: download.csv is in appending mode
+    // TODO: print sgpa in transript
 
     private String generateTranscript(String email) {
         if (!StaffUtils.checkStudentExist(conn, email)) {
@@ -264,7 +260,6 @@ public class Admin extends Person {
             return "fail";
         }
         while (true) {
-            // TODO: add course edit option
             System.out.println("1: Add a new course");
             System.out.println("2: Remove a course");
             System.out.println("3: go back!");
@@ -460,7 +455,6 @@ public class Admin extends Person {
                         }
                         result = "pass";
                     } catch (SQLException e) {
-                        // e.printStackTrace();
                         System.out.println("error here!");
                         result = "fail";
                     }
@@ -536,7 +530,6 @@ public class Admin extends Person {
         }
 
     }
-    // TODO: try to inherit from Person
 
     // destroyer for admin
     public void finalize() {

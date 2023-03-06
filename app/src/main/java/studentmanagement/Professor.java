@@ -17,6 +17,9 @@ public class Professor extends Person {
     private String name;
     private Connection conn;
 
+    /*
+     * Constructor for Professor class
+     */
     public Professor(String email, Connection conn, String ay, String sem) {
         super(email, ay, sem);
         this.conn = conn;
@@ -34,24 +37,47 @@ public class Professor extends Person {
         }
     }
 
-    // TODO: course catalog should be displayed when choosen Float a course
+    /*
+     * name getter
+     */
     public String getName() {
         return this.name;
     }
 
+    /*
+     * display all courses floated by the professor on console.
+     * better accessiblity for the professor
+     */
+    private void displayFloatedCourses() {
+        String extractAllCourses = "select course_code from course_offerings where instructor_id = '"
+                + getEmail() + "'";
+        ResultSet resultSet = DatabaseUtils.getResultSet(conn, extractAllCourses);
+        System.out.println("Following courses are offered by you:");
+        try {
+            while (resultSet.next()) {
+                System.out.println(resultSet.getString(1));
+            }
+        } catch (SQLException e) {
+            System.out.println("Error in displayFloatedCourses");
+        }
+    }
+
+    /*
+     * Interface of professor options available
+     */
     public String professorOptions(Scanner scan) {
         System.out.println("Welcome " + getName() + " !");
         String inputLine;
         String result = "pass";
-        // TODO: remove return statements
         while (true) {
-            System.out.println("1: View Student grades"); // done
-            System.out.println("2: Float a course"); // done
-            System.out.println("3: Cancel a course"); // done
+            System.out.println("1: View Student grades");
+            System.out.println("2: Float a course");
+            System.out.println("3: Cancel a course");
             System.out.println("4: Upload grades for course");
-            System.out.println("5: Validate grade submission"); // done
+            System.out.println("5: Validate grade submission");
             System.out.println("6: get student list csv for currently offered course");
-            System.out.println("7: Logout");
+            System.out.println("7: Edit Phone number");
+            System.out.println("8: Logout");
             System.out.print("Choose: ");
             inputLine = scan.nextLine();
             if (inputLine.equals("5")) {
@@ -70,15 +96,8 @@ public class Professor extends Person {
                 result = cancelACourse(scan);
 
             } else if (inputLine.equals("4")) {
-                System.out.println("Enter the course code: ");
-                String courseCode = scan.nextLine();
-                if (!courseCode.matches("^[A-Z]{2}\\d{3}$")) {
-                    System.out.println("Invalid course code");
-                    result = "fail";
-                } else {
-                    // upload grades for course
-                    result = uploadGradesForCourse(scan, courseCode);
-                }
+                // upload grades for course
+                result = uploadGradesForCourse(scan);
 
             } else if (inputLine.equals("6")) {
                 System.out.println("Enter the course code: ");
@@ -87,12 +106,15 @@ public class Professor extends Person {
                     System.out.println("Invalid course code");
                     result = "fail";
                 } else {
-                    System.out.println("Enter the path to save the csv file: ");
+                    System.out.println("Enter  path of csv file to save: ");
                     String path = scan.nextLine();
+                    System.out.println(path);
                     result = StaffUtils.saveCourseRecord(conn, courseCode, path, getAy(), getSem());
                 }
 
             } else if (inputLine.equals("7")) {
+                result = editPhoneNumber(conn, scan);
+            } else if (inputLine.equals("8")) {
                 finalize();
                 break;
             } else
@@ -102,7 +124,17 @@ public class Professor extends Person {
 
     }
 
-    private String uploadGradesForCourse(Scanner scan, String course_Code) {
+    /*
+     * upload grades for a course through csv file.
+     * checks for if it's allowed to upload grades.
+     */
+    private String uploadGradesForCourse(Scanner scan) {
+        System.out.println("Enter the course code: ");
+        String courseCode = scan.nextLine();
+        if (!courseCode.matches("^[A-Z]{2}\\d{3}$")) {
+            System.out.println("Invalid course code");
+            return "fail";
+        }
         Integer config = DatabaseUtils.getConfigNumber(conn);
         if (config != 6) {
             System.out.println("You cannot upload grades now");
@@ -111,13 +143,13 @@ public class Professor extends Person {
 
         try {
 
-            System.out.print("Enter .csv file path: ");
+            System.out.print("Enter relative path of .csv file name that is in grade_upload folder: ");
             String csvPath = scan.nextLine();
             // read csv file
             BufferedReader br = null;
             String line = "";
             String cvsSplitBy = ",";
-            String courseCode = course_Code;
+
             String checkFloatingCondition = "select * from course_offerings where course_code = '"
                     + courseCode
                     + "' and instructor_id = '" + getEmail() + "'";
@@ -162,9 +194,10 @@ public class Professor extends Person {
                 System.out.println("Grades uploaded successfully!");
                 return "pass";
             } catch (FileNotFoundException e) {
-                e.printStackTrace();
+                System.out.println("File not found");
                 return "fail";
             } catch (IOException e) {
+                System.out.println("Error reading file");
                 e.printStackTrace();
             } finally {
                 if (br != null) {
@@ -182,12 +215,18 @@ public class Professor extends Person {
         return "fail";
     }
 
+    /*
+     * Cancel a course
+     * can only cancel if it's allowed
+     * you have floated the course and want to cancel it
+     */
     private String cancelACourse(Scanner scan) {
         Integer config = DatabaseUtils.getConfigNumber(conn);
         if (config != 2) {
             System.out.println("You cannot cancel a course now");
             return "fail";
         }
+        displayFloatedCourses();
         System.out.print("Enter the course code: ");
         String courseCode = scan.nextLine();
         String checkFloatingCondition = "select * from course_offerings where course_code = '" + courseCode
@@ -210,12 +249,16 @@ public class Professor extends Person {
         return "fail";
     }
 
+    /*
+     * Float a course
+     */
     private String floatACourse(Scanner scan) {
         Integer config = DatabaseUtils.getConfigNumber(conn);
         if (config != 2) {
             System.out.println("You cannot float a course now");
             return "error:float_not_allowed";
         }
+        StaffUtils.displayCourseCatalog(conn);
         System.out.println("Enter the course code");
         String courseCode = scan.nextLine();
 
@@ -241,6 +284,11 @@ public class Professor extends Person {
         return "fail";
     }
 
+    /*
+     * Validate grade submission
+     * generates a validation report that says after grade submission, whose grades
+     * are still not uploaded.
+     */
     private String validateGradeSubmission() {
         Integer config = DatabaseUtils.getConfigNumber(conn);
         if (config != 8) {
@@ -269,8 +317,6 @@ public class Professor extends Person {
         return "fail";
     }
 
-    // TODO: check in teacher if only teacher floating the course can upload or
-    // download grade or student sheet
     public void finalize() {
         try {
             log_login_logout(conn, getEmail(), "logout");

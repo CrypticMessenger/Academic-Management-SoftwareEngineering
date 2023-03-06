@@ -55,6 +55,7 @@ create table user_auth (
     pwd varchar(255) not null,
     roles varchar(255) not null,
     dept varchar(255) default null,
+    phone varchar(255) default null,
     primary key (id)
 );
 CREATE OR REPLACE FUNCTION add_student_record()

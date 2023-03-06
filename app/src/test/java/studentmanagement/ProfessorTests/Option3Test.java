@@ -12,19 +12,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-import studentmanagement.App;
 import studentmanagement.Professor;
 import studentmanagement.utils.DatabaseUtils;
 
 public class Option3Test {
-    App app = null;
     Professor prof = null;
     Connection conn = null;
 
     @BeforeEach
     public void setUp() {
-        app = new App();
-        conn = app.connect();
+        conn = DatabaseUtils.connect();
         prof = new Professor("gunturi@iitrpr.ac.in", conn, "2020-21", "2");
         DatabaseUtils.executeUpdateQuery(conn, "delete from current_session");
         DatabaseUtils.executeUpdateQuery(conn, "insert into current_session values('2020-21', 2)");
@@ -42,7 +39,7 @@ public class Option3Test {
     @CsvSource({ "3,CS550,1", "3,CS550,2", "3,CS551,3" })
     public void testOption3(String choice, String courseCode, Integer expected) {
         String result;
-        String input = choice + "\n" + courseCode + "\n7\n";
+        String input = choice + "\n" + courseCode + "\n8\n";
         ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
         System.setIn(inputStream);
         Scanner scan = new Scanner(System.in);
@@ -66,7 +63,7 @@ public class Option3Test {
 
     @AfterEach
     public void tearDown() {
-        conn = app.connect();
+        conn = DatabaseUtils.connect();
         DatabaseUtils.executeUpdateQuery(conn, "delete from s2020csb1072");
         DatabaseUtils.executeUpdateQuery(conn, "delete from s2020csb1070");
         DatabaseUtils.executeUpdateQuery(conn, "delete from s2020csb1074");
@@ -77,7 +74,6 @@ public class Option3Test {
         DatabaseUtils.executeUpdateQuery(conn, "insert into current_session values('2020-21', 1)");
         DatabaseUtils.executeUpdateQuery(conn, "update config_number set id=4 ");
         conn = null;
-        app = null;
 
     }
 }

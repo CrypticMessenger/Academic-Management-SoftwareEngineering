@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.ByteArrayInputStream;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Scanner;
 
 import org.junit.jupiter.api.AfterEach;
@@ -13,19 +12,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-import studentmanagement.App;
 import studentmanagement.Student;
 import studentmanagement.utils.DatabaseUtils;
 
 public class Option1_2Test {
-        App app = null;
         Student st = null;
         Connection conn = null;
 
         @BeforeEach
         public void setUp() throws Exception {
-                app = new App();
-                conn = app.connect();
+                conn = DatabaseUtils.connect();
                 st = new Student("2020csb1072@iitrpr.ac.in", conn, "2020-21", "2");
                 DatabaseUtils.executeUpdateQuery(conn,
                                 "insert into s2020csb1072(sem,ay,course,grade) values (1,'2020-21','CS101','F')");
@@ -118,7 +114,7 @@ public class Option1_2Test {
         @CsvSource({ "2,CS301,1", "2,CS301,2", "2,CS532,3", "2,CS539,4", "2,CompSci582,5", "2,CS5845,6" })
         public void testOption2(String choice, String courseCode, Integer expected) {
                 String result;
-                String input = choice + "\n" + courseCode + "\n6\n";
+                String input = choice + "\n" + courseCode + "\n7\n";
                 ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
                 System.setIn(inputStream);
                 Scanner scan = new Scanner(System.in);
@@ -151,9 +147,9 @@ public class Option1_2Test {
                 String result;
                 String input = "";
                 if (expected != 1) {
-                        input = choice + "\n" + courseCode + "\n6\n";
+                        input = choice + "\n" + courseCode + "\n7\n";
                 } else {
-                        input = choice + "\n6\n";
+                        input = choice + "\n7\n";
                 }
                 ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
                 System.setIn(inputStream);
@@ -229,7 +225,7 @@ public class Option1_2Test {
         @AfterEach
         void cleanUpDeregister() {
 
-                conn = app.connect();
+                conn = DatabaseUtils.connect();
                 DatabaseUtils.executeUpdateQuery(conn, "delete from s2020csb1072");
                 DatabaseUtils.executeUpdateQuery(conn, "delete from course_offerings");
                 DatabaseUtils.executeUpdateQuery(conn, "delete from course_catalog");
@@ -237,6 +233,5 @@ public class Option1_2Test {
                 DatabaseUtils.executeUpdateQuery(conn, "insert into current_session(ay,sem) values('2020-21',1)");
                 DatabaseUtils.executeUpdateQuery(conn, "update config_number set id=4 ");
                 conn = null;
-                app = null;
         }
 }

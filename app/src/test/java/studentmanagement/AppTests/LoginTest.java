@@ -1,10 +1,12 @@
-package studentmanagement;
+package studentmanagement.AppTests;
 
 import org.junit.jupiter.api.Test;
 
+import studentmanagement.App;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class AppTest {
+public class LoginTest {
 
     @Test
     public void testStudentLogin() {

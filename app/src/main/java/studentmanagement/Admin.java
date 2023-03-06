@@ -545,8 +545,7 @@ public class Admin extends Person {
 
             conn.close();
         } catch (SQLException e) {
-            System.out.println("Error in Admin destructor");
-            e.printStackTrace();
+
         }
     }
 }

@@ -49,8 +49,7 @@ public abstract class Person {
             statement.setString(2, status);
             statement.executeUpdate();
         } catch (SQLException e) {
-            System.out.println("Error in log_login_logout");
-            // e.printStackTrace();
+
         }
     }
 
@@ -59,19 +58,14 @@ public abstract class Person {
 
         try {
             while (resultSet.next()) {
-                try {
-                    String course_code = resultSet.getString(1);
-                    String course_name = resultSet.getString(2);
-                    Float cgpa_constraint = resultSet.getFloat(3);
-                    System.out.println(course_code + " " + course_name + " " + cgpa_constraint);
-                } catch (SQLException e) {
-                    System.out.println("Error in displayCourseCatalog");
-                    e.printStackTrace();
-                }
+                String course_code = resultSet.getString(1);
+                String course_name = resultSet.getString(2);
+                Float cgpa_constraint = resultSet.getFloat(3);
+                System.out.println(course_code + " " + course_name + " " + cgpa_constraint);
+
             }
         } catch (SQLException e) {
-            System.out.println("Error in displayCourseCatalog");
-            e.printStackTrace();
+
         }
     }
 

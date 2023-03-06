@@ -189,6 +189,38 @@ public class Option1_2Test {
 
         }
 
+        @ParameterizedTest
+        @CsvSource({ "CS302,1", "CS302,2", "CS588,3", "CS202,4", "CS539,5", "CS201,6",
+                        "CS202,8", "CompSci582,9", "CS5845,10" })
+        public void testOption_1force(String courseCode, Integer expected) {
+                String result;
+
+                if (expected == 1) {
+                        result = st.registerCourse(courseCode, "force");
+                        assertEquals("fail", result);
+                        return;
+                }
+                DatabaseUtils.executeUpdateQuery(conn, "update config_number set id=4 ");
+                if (expected == 2 || expected == 3 || expected == 4 || expected == 9 || expected == 10) {
+                        result = st.registerCourse(courseCode, "force");
+                        assertEquals("fail", result);
+                        return;
+                }
+
+                DatabaseUtils.executeUpdateQuery(conn, "delete from s2020csb1072 where course='CS544'");
+                if (expected == 5 || expected == 6 || expected == 7) {
+                        result = st.registerCourse(courseCode, "force");
+                        assertEquals("fail", result);
+                        return;
+                }
+                if (expected == 8) {
+                        result = st.registerCourse(courseCode, "force");
+                        assertEquals("pass", result);
+                        return;
+                }
+
+        }
+
         @Test
         void testGetName() {
                 assertEquals("Ankit Sharma", st.getName());

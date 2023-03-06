@@ -54,13 +54,11 @@ public class App {
         return result;
     }
 
-    public static void main(String[] args) throws IOException {
-
-        App app = new App();
+    public String in_options(Scanner scan, Connection conn) {
+        String inputLine;
+        String res = "";
         String email = "";
         String password = "";
-        Scanner scan = new Scanner(System.in);
-        String inputLine;
         while (true) {
 
             System.out.println("1: Login");
@@ -69,7 +67,8 @@ public class App {
             inputLine = scan.nextLine();
             if (inputLine.equals("2")) {
                 System.out.println("Bye.");
-                System.exit(0);
+                res = "exit";
+                return res;
             } else if (inputLine.equals("1")) {
 
                 System.out.println("Login");
@@ -78,8 +77,8 @@ public class App {
                 System.out.print("password: ");
                 password = scan.nextLine();
                 try {
-                    Connection conn = app.connect();
-                    String result = app.login(email, password);
+
+                    String result = login(email, password);
                     ResultSet resultSet;
                     resultSet = DatabaseUtils.getResultSet(conn, "select * from current_session");
                     resultSet.next();
@@ -92,24 +91,24 @@ public class App {
 
                         case "s":
                             Student student = new Student(email, conn, ay, sem);
-                            student.studentOptions(scan);
+                            res = student.studentOptions(scan);
                             break;
 
                         // case professor
                         case "p":
                             Professor professor = new Professor(email, conn, ay, sem);
-                            professor.professorOptions(scan);
+                            res = professor.professorOptions(scan);
                             break;
 
                         // case admin
                         case "a":
                             Admin admin = new Admin(email, conn, ay, sem);
-                            admin.adminOptions(scan);
+                            res = admin.adminOptions(scan);
                             break;
 
                         // case login failed
                         default:
-                            conn.close();
+
                             System.out.println("Login Failed! Try again.");
                             break;
                     }
@@ -120,7 +119,15 @@ public class App {
                 }
             }
         }
+        return res;
+    }
 
+    public static void main(String[] args) throws IOException {
+
+        App app = new App();
+        Connection conn = app.connect();
+        Scanner scan = new Scanner(System.in);
+        app.in_options(scan, conn);
         scan.close();
     }
 }

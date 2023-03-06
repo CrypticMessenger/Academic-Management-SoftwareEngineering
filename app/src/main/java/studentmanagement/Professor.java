@@ -276,8 +276,7 @@ public class Professor extends Person {
             log_login_logout(conn, getEmail(), "logout");
             conn.close();
         } catch (SQLException e) {
-            System.out.println("Error in Professor destructor");
-            e.printStackTrace();
+
         }
     }
 }

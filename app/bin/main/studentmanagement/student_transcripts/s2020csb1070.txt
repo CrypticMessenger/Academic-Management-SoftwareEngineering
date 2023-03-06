@@ -1,5 +1,5 @@
 Student email : 2020csb1070@iitrpr.ac.in
 Current AY : 2020-21
 Current SEM : 2
-Time of generation : Mon Mar 06 16:40:18 IST 2023---------------------------------------
+Time of generation : Mon Mar 06 18:56:56 IST 2023---------------------------------------
 SEM | AY | Course code | Grade

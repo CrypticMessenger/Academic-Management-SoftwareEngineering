@@ -242,7 +242,11 @@ public class Student extends Person {
         return "error";
     }
 
-    public void registerCourse(String course_code, String code) {
+    public String registerCourse(String course_code, String code) {
+        if (!course_code.matches("^[A-Z]{2}\\d{3}$")) {
+            System.out.println("Invalid course code");
+            return "fail";
+        }
         ResultSet resultSet;
         try {
 
@@ -251,7 +255,7 @@ public class Student extends Person {
                     "select * from course_offerings where course_code = '" + course_code + "'");
             if (!resultSet.next()) {
                 System.out.println("Course not offered");
-                return;
+                return "fail";
             }
 
             // check cgpa constraint
@@ -259,7 +263,7 @@ public class Student extends Person {
             this.cgpa = getCGPA();
             if (this.cgpa < cg_constraint) {
                 System.out.println("cgpa constraint not met");
-                return;
+                return "fail";
             }
 
             // check if credit limit allows for registration
@@ -278,7 +282,7 @@ public class Student extends Person {
 
             if (this.current_sem_credits + requested_course_credits > credit_limit) {
                 System.out.println("Credit limit exceeded");
-                return;
+                return "fail";
             }
 
             // check if student is already registered for the course also checks if this
@@ -288,13 +292,13 @@ public class Student extends Person {
                             + "' and (grade != 'F' or grade is null )");
             if (resultSet.next()) {
                 System.out.println("Already registered or credited the course");
-                return;
+                return "fail";
             }
 
             // check if student has taken all the prerequisites with no grade as F or null
             if (!checkPrereqCondition(course_code)) {
                 System.out.println("Prerequisite condition not met");
-                return;
+                return "fail";
             }
 
             // register courses
@@ -307,11 +311,12 @@ public class Student extends Person {
             System.out.println("Current credits: " + (this.current_sem_credits));
             System.out.println("Credit limit: " + credit_limit);
             System.out.println("cgpa: " + this.cgpa);
-
+            return "pass";
         } catch (SQLException e) {
             System.out.println("Error in Student registerCourse");
             e.printStackTrace();
         }
+        return "fail";
     }
 
     private String deregisterCourse(Scanner scan) {
@@ -450,8 +455,7 @@ public class Student extends Person {
             log_login_logout(conn, getEmail(), "logout");
             conn.close();
         } catch (SQLException e) {
-            System.out.println("Error in Student destructor");
-            e.printStackTrace();
+
         }
     }
 

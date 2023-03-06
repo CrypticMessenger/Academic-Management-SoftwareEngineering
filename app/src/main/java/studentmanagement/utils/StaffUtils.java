@@ -20,7 +20,7 @@ public class StaffUtils {
             result = resultSet.getInt(1);
         } catch (SQLException e) {
             System.out.println("Error in getSemCompleted");
-            e.printStackTrace();
+
         }
         return result;
 
@@ -33,7 +33,7 @@ public class StaffUtils {
             return resultSetCheckStudent.next();
         } catch (SQLException e) {
             System.out.println("Error in checkStudentExist");
-            e.printStackTrace();
+
             return false;
         }
     }
@@ -127,12 +127,9 @@ public class StaffUtils {
                 System.out.println("Saved email and grade to " + csv_file);
             }
 
-        } catch (SQLException e) {
+        } catch (SQLException | IOException e) {
             System.out.println("Error in saveCourseGrade");
-            e.printStackTrace();
-        } catch (IOException e) {
-            System.out.println("Error in writing to csv file");
-            e.printStackTrace();
+
         }
     }
 

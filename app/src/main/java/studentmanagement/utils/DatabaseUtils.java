@@ -64,4 +64,16 @@ public class DatabaseUtils {
 
     }
 
+    public static Boolean checkStudentExist(Connection conn, String email) {
+        try {
+            String checkStudentQuery = "select * from user_auth where id ='" + email + "' and roles='s'";
+            ResultSet resultSetCheckStudent = DatabaseUtils.getResultSet(conn, checkStudentQuery);
+            return resultSetCheckStudent.next();
+        } catch (SQLException e) {
+            System.out.println("Error in checkStudentExist");
+
+            return false;
+        }
+    }
+
 }

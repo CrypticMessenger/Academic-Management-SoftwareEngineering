@@ -1,5 +1,45 @@
 # Academic Management
 
+
+## How to run
+### Part 1: Connect to database:
+- run following commands inorder in bash terminal with postgres installed:
+  ```
+  cd ./app/db/
+  ./init.sh
+  ```
+- enter password if prompted to do so
+- type ```psql`` in the teminal
+- run the following commands:
+  ```
+  create database academic_management;
+  \i db.sql
+  ```
+
+### Part 2: Run the application:
+- run the following command in terminal:
+  ```
+  ./gradlew.bat run --console=plain -q (for windows)
+  ./gradlew run --console=plain -q (for linux)
+  ```
+- to build run the following command:
+  ```
+  ./gradlew.bat build jacocoTestReport (for windows)
+  ./gradlew build jacocoTestReport (for linux)
+  ```
+
+### Part 3: Evaluate the application
+- see the test and coverage reports in the following directory:
+  ```
+  ./app/build/reports/tests/test/index.html
+  ./app/build/reports/jacoco/test/html/index.html
+  ```
+### Part 4: Plans
+- see the directory ```diagrams``` for activity and class diagram.
+
+
+
+
 ## Basic functionalities
 - [x]  A Student must be able to: 
   - [x]  Register/deregister for a course:

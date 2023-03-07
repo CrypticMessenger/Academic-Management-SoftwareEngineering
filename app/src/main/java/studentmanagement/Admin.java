@@ -117,7 +117,7 @@ public class Admin extends Person {
     }
 
     private String generateTranscript(String email) {
-        if (!StaffUtils.checkStudentExist(conn, email)) {
+        if (!DatabaseUtils.checkStudentExist(conn, email)) {
             System.out.println("Student does not exist");
             return "fail";
         }
@@ -228,7 +228,7 @@ public class Admin extends Person {
         System.out.println("Cleared all the course offerings!");
         DatabaseUtils.executeUpdateQuery(conn, "Delete from report_validator");
         System.out.println("Cleared all the invalid reports!");
-        String[][] next_session = StaffUtils.get_next_n_sem_ay(1, getAy(), getSem());
+        String[][] next_session = AdminUtils.get_next_n_sem_ay(1, getAy(), getSem());
         String ay = next_session[0][0];
         String sem = next_session[1][0];
         DatabaseUtils.executeUpdateQuery(conn,
@@ -432,7 +432,7 @@ public class Admin extends Person {
                             String course_code = rs1.getString(1);
                             String email = rs1.getString(15);
                             String pc_sem = rs1.getString(12);
-                            if (Integer.parseInt(pc_sem) == StaffUtils.getSemCompleted(conn, email) + 1) {
+                            if (Integer.parseInt(pc_sem) == AdminUtils.getSemCompleted(conn, email) + 1) {
                                 Connection conn_temp = DatabaseUtils.connect();
                                 Student st = new Student(email, conn_temp, getAy(), getSem());
                                 System.out.println(
@@ -441,7 +441,7 @@ public class Admin extends Person {
                                 st.finalize();
 
                             }
-                            System.out.println("sem_comp:" + StaffUtils.getSemCompleted(conn, email));
+                            System.out.println("sem_comp:" + AdminUtils.getSemCompleted(conn, email));
                             System.out.println("pc_sem: " + pc_sem);
 
                         }
@@ -513,7 +513,7 @@ public class Admin extends Person {
                 System.out.print("Enter sem(eg: 1 or 2): ");
                 String sem = scan.nextLine();
                 // view for one course record
-                return StudentUtils.viewCourseRecord(conn, course_code, ay, sem);
+                return AdminUtils.viewCourseRecord(conn, course_code, ay, sem);
 
             } else if (response.equals("2")) {
                 // one student DONE

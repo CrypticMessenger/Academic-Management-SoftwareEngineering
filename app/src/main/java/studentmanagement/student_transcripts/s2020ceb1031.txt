@@ -1,5 +1,5 @@
 Student email : 2020ceb1031@iitrpr.ac.in
 Current AY : 2020-21
 Current SEM : 2
-Time of generation : Tue Mar 07 02:44:50 IST 2023---------------------------------------
+Time of generation : Tue Mar 07 20:33:44 IST 2023---------------------------------------
 SEM | AY | Course code | Grade

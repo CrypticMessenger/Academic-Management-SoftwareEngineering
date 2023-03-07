@@ -11,7 +11,7 @@ import java.sql.Statement;
 import java.util.Scanner;
 
 import studentmanagement.utils.DatabaseUtils;
-import studentmanagement.utils.StaffUtils;
+import studentmanagement.utils.ProfessorUtils;
 
 public class Professor extends Person {
     private String name;
@@ -86,7 +86,7 @@ public class Professor extends Person {
 
             } else if (inputLine.equals("1")) {
                 // view grades in the courses
-                result = StaffUtils.viewStudentRecordsOptions(conn, scan);
+                result = ProfessorUtils.viewStudentRecordsOptions(conn, scan);
 
             } else if (inputLine.equals("2")) {
 
@@ -109,7 +109,7 @@ public class Professor extends Person {
                     System.out.println("Enter  path of csv file to save: ");
                     String path = scan.nextLine();
                     System.out.println(path);
-                    result = StaffUtils.saveCourseRecord(conn, courseCode, path, getAy(), getSem());
+                    result = ProfessorUtils.saveCourseRecord(conn, courseCode, path, getAy(), getSem());
                 }
 
             } else if (inputLine.equals("7")) {
@@ -258,7 +258,7 @@ public class Professor extends Person {
             System.out.println("You cannot float a course now");
             return "error:float_not_allowed";
         }
-        StaffUtils.displayCourseCatalog(conn);
+        ProfessorUtils.displayCourseCatalog(conn);
         System.out.println("Enter the course code");
         String courseCode = scan.nextLine();
 

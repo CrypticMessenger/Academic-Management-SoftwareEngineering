@@ -75,22 +75,4 @@ public abstract class Person {
         return result;
     }
 
-    // prints course offerings, avaiable for course enrollment for students, and
-    // degistration for professors.
-    public void displayCourseOfferings(Connection conn) {
-        ResultSet resultSet = DatabaseUtils.getResultSet(conn, "select * from course_offerings ");
-
-        try {
-            while (resultSet.next()) {
-                String course_code = resultSet.getString(1);
-                String course_name = resultSet.getString(2);
-                Float cgpa_constraint = resultSet.getFloat(3);
-                System.out.println(course_code + " " + course_name + " " + cgpa_constraint);
-
-            }
-        } catch (SQLException e) {
-
-        }
-    }
-
 }

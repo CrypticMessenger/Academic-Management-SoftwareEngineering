@@ -19,6 +19,4 @@ public class AcademicNorms {
         grade_to_number.put("F", 0);
     }
 
-    // setter for minSemCredits
-
 }

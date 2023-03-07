@@ -409,7 +409,7 @@ public class Student extends Person {
             String inputLine = scan.nextLine();
             // System.out.println(inputLine);
             if (inputLine.equals("1")) {
-                displayCourseOfferings(conn);
+                StudentUtils.displayCourseOfferings(conn);
 
                 result = registerCourse(scan);
             } else if (inputLine.equals("2")) {

@@ -81,12 +81,7 @@ Capstone.
    ```📍Checkpoint: 14-02-23 21:31```
 
 ## Bonus functionalities
-- Refractoring and better error handling left to be done.
-- thorough testing left to be done.
-- Encrypt passwords
+- Refractoring and better error handling left to be done. ✅
+- thorough testing left to be done. ✅
 
 
-
-```shell
-./gradlew.bat run --console=plain -q
-```
